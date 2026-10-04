@@ -1,49 +1,41 @@
 "use client";
 
-import { useState } from "react";
 import { m } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Mail, MapPin, Phone, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Mail, MapPin, Phone, MessageSquare } from "lucide-react";
 import { Button } from "./ui/Button";
 import { fadeUp, slideInRight } from "@/lib/motion";
 
 type FormData = {
   name: string;
-  email: string;
-  service: string;
-  budget: string;
+  organization: string;
+  teamSize: string;
+  package: string;
   message: string;
-  "bot-field"?: string;
 };
 
 export default function Contact() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+  const onSubmit = (data: FormData) => {
+    const phoneNumber = "923000219721";
     
-    try {
-      const formData = new FormData();
-      formData.append("form-name", "contact");
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value as string);
-      });
+    // Construct the WhatsApp message text
+    const text = `*New Quote Request!*
+    
+*Name:* ${data.name}
+*Organization:* ${data.organization || "N/A"}
+*Team Size:* ${data.teamSize}
+*Package:* ${data.package}
 
-      await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData as any).toString()
-      });
+*Message:*
+${data.message}`;
 
-      setIsSuccess(true);
-      reset();
-    } catch (error) {
-      console.error("Form submission error", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Encode the text for the URL
+    const encodedText = encodeURIComponent(text);
+    
+    // Open WhatsApp in a new tab
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, "_blank");
   };
 
   return (
@@ -61,7 +53,7 @@ export default function Contact() {
               Let's build something <span className="text-gradient">amazing</span>
             </h2>
             <p className="text-lg text-text-muted mb-12 max-w-md">
-              Ready to scale your business? Tell us about your project, and our team will get back to you within 24 hours.
+              Ready to scale your business? Fill out the details below and chat with our team directly on WhatsApp to get an instant quote.
             </p>
 
             <div className="space-y-6">
@@ -81,7 +73,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="font-medium text-white">Call / WhatsApp</div>
-                  <div>+1 (555) 123-4567</div>
+                  <div>+92 300 0219721</div>
                 </div>
               </div>
               
@@ -105,107 +97,74 @@ export default function Contact() {
             className="flex-1"
           >
             <div className="glass-card p-8 md:p-10 relative">
-              {isSuccess ? (
-                <m.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center py-12 text-center h-full min-h-[400px]"
-                >
-                  <CheckCircle2 className="w-20 h-20 text-success mb-6" />
-                  <h3 className="text-2xl font-display font-bold text-white mb-2">Message Sent!</h3>
-                  <p className="text-text-muted mb-8">We've received your request and will be in touch shortly.</p>
-                  <Button onClick={() => setIsSuccess(false)}>Send Another Message</Button>
-                </m.div>
-              ) : (
-                <form 
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="space-y-6"
-                  name="contact"
-                  data-netlify="true"
-                  netlify-honeypot="bot-field"
-                >
-                  <input type="hidden" name="form-name" value="contact" />
-                  <p className="hidden">
-                    <label>
-                      Don’t fill this out if you’re human: <input {...register("bot-field")} />
-                    </label>
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Full Name</label>
-                      <input
-                        {...register("name", { required: true })}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                        placeholder="John Doe"
-                      />
-                      {errors.name && <span className="text-xs text-red-400">Name is required</span>}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Email Address</label>
-                      <input
-                        type="email"
-                        {...register("email", { required: true })}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                        placeholder="john@example.com"
-                      />
-                      {errors.email && <span className="text-xs text-red-400">Email is required</span>}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Service Needed</label>
-                      <select
-                        {...register("service")}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
-                      >
-                        <option value="custom-software">Custom Software</option>
-                        <option value="web-dev">Web Development</option>
-                        <option value="hosting">Domains & Hosting</option>
-                        <option value="cpanel">Local cPanel Setup</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">Budget Range</label>
-                      <select
-                        {...register("budget")}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
-                      >
-                        <option value="<1k">Less than $1,000</option>
-                        <option value="1k-5k">$1,000 - $5,000</option>
-                        <option value="5k-10k">$5,000 - $10,000</option>
-                        <option value=">10k">$10,000+</option>
-                      </select>
-                    </div>
-                  </div>
-
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Project Details</label>
-                    <textarea
-                      {...register("message", { required: true })}
-                      rows={4}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"
-                      placeholder="Tell us about your goals, timeline, and any specific requirements..."
+                    <label className="text-sm font-medium text-white">Full Name</label>
+                    <input
+                      {...register("name", { required: true })}
+                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                      placeholder="John Doe"
                     />
-                    {errors.message && <span className="text-xs text-red-400">Message is required</span>}
+                    {errors.name && <span className="text-xs text-red-400">Name is required</span>}
                   </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white">Organization Name</label>
+                    <input
+                      {...register("organization")}
+                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                      placeholder="Your Company LLC"
+                    />
+                  </div>
+                </div>
 
-                  <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <MessageSquare className="w-5 h-5" />
-                        Send Request
-                      </>
-                    )}
-                  </Button>
-                </form>
-              )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white">Package Needed</label>
+                    <select
+                      {...register("package")}
+                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
+                    >
+                      <option value="Offline Software">Offline Software</option>
+                      <option value="Server-Based Software">Server-Based Software</option>
+                      <option value="Website with Free Hosting">Website with Free Hosting</option>
+                      <option value="Website with Hosting & Domain">Website with Hosting & Domain</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white">Working Team Size</label>
+                    <select
+                      {...register("teamSize")}
+                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
+                    >
+                      <option value="1-10">1 - 10</option>
+                      <option value="10-20">10 - 20</option>
+                      <option value="20-50">20 - 50</option>
+                      <option value="50-100">50 - 100</option>
+                      <option value="100+">100+</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white">Project Details / Message</label>
+                  <textarea
+                    {...register("message", { required: true })}
+                    rows={4}
+                    className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"
+                    placeholder="Tell us about your goals, specific requirements, and any questions..."
+                  />
+                  {errors.message && <span className="text-xs text-red-400">Message is required</span>}
+                </div>
+
+                <Button type="submit" size="lg" className="w-full gap-2 bg-success hover:bg-success/80 text-white">
+                  <MessageSquare className="w-5 h-5" />
+                  Chat on WhatsApp
+                </Button>
+              </form>
             </div>
           </m.div>
         </div>
