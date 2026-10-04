@@ -6,10 +6,11 @@ import { Menu, X, ArrowRight } from "lucide-react";
 import { Button } from "./ui/Button";
 
 const navLinks = [
-  { name: "Services", href: "#services" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "Contact", href: "#contact" },
+  { name: "Services", href: "/#services" },
+  { name: "Portfolio", href: "/#portfolio" },
+  { name: "Pricing", href: "/#pricing" },
+  { name: "FAQ", href: "/#faq" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -32,7 +33,7 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2 group">
+          <a href="/" className="flex items-center gap-2 group">
             <span className="font-display font-bold text-2xl tracking-tight text-white">
               Weblytic
             </span>
@@ -50,7 +51,7 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
-            <a href="#contact">
+            <a href="/#contact">
               <Button size="sm" className="gap-2 group">
                 Get a Quote
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -97,7 +98,7 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="mt-8">
-                <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>
+                <a href="/#contact" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button size="lg" className="w-full">
                     Get a Quote
                   </Button>
