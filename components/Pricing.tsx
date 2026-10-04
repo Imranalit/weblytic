@@ -45,6 +45,19 @@ const plans = [
       "Handled setup & configuration",
     ],
     note: "Prices subject to external providers (Hostinger, Namecheap, GoDaddy)."
+  },
+  {
+    name: "AI Bot Deployment",
+    description: "Custom WhatsApp & Website AI chatbots.",
+    price: "10k",
+    suffix: "PKR",
+    features: [
+      "Custom conversational AI",
+      "Trained on your business data",
+      "WhatsApp & Website integration",
+      "Automate customer support",
+    ],
+    note: "Setup fee. Recurring API usage costs may apply."
   }
 ];
 
@@ -78,7 +91,7 @@ export default function Pricing() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto"
         >
           {plans.map((plan, i) => (
             <m.div

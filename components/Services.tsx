@@ -1,7 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
-import { Code2, Globe, Server, HardDrive, ArrowRight } from "lucide-react";
+import { Code2, Globe, Server, HardDrive, ArrowRight, Bot } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const services = [
@@ -36,6 +36,14 @@ const services = [
     features: ["On-premise cPanel/WHM", "Automated backups", "Intranet & private cloud"],
     color: "from-orange-500/20 to-red-500/20",
     iconColor: "text-orange-400",
+  },
+  {
+    icon: <Bot className="w-8 h-8" />,
+    title: "AI Bot Deployment",
+    description: "Intelligent, conversational AI assistants trained on your specific business data.",
+    features: ["WhatsApp business bots", "Website AI chatbots", "Custom data training"],
+    color: "from-indigo-500/20 to-violet-500/20",
+    iconColor: "text-indigo-400",
   },
 ];
 
@@ -76,7 +84,7 @@ export default function Services() {
               key={index}
               variants={fadeUp}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card p-8 relative group overflow-hidden"
+              className={`glass-card p-8 relative group overflow-hidden ${index === 4 ? "md:col-span-2 lg:col-span-1 lg:col-start-2" : ""}`}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
               
