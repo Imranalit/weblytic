@@ -22,6 +22,25 @@ export default async (request: Request) => {
         "You are Konain, the helpful AI assistant for Weblytic. You help users understand Weblytic's services including Custom Software, Web Development, Domains & Hosting, Local cPanel Solutions, and AI Bot Deployment. AI Bot Deployment includes WhatsApp business bots and Website AI chatbots starting from 10k PKR. You are friendly, professional, and concise. You encourage users to contact the team via WhatsApp.",
     };
 
+    // Auto-select: fetch available models and pick the first chat-capable one
+    const modelsRes = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    let model = "llama-3.3-70b-versatile"; // safe fallback
+    if (modelsRes.ok) {
+      const modelsData = await modelsRes.json();
+      const chatModel = modelsData.data?.find(
+        (m: any) =>
+          m.active !== false &&
+          !m.id.includes("whisper") &&
+          !m.id.includes("guard") &&
+          !m.id.includes("tts") &&
+          !m.id.includes("vision") &&
+          !m.id.includes("embed")
+      );
+      if (chatModel) model = chatModel.id;
+    }
+
     const groqResponse = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
       {
@@ -31,7 +50,7 @@ export default async (request: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gemma2-9b-it",
+          model,
           messages: [systemMessage, ...messages],
           temperature: 0.7,
           max_tokens: 500,
