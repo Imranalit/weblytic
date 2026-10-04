@@ -37,16 +37,40 @@ export default function Footer() {
               <p>📱 <a href="https://wa.me/923000219721" className="hover:text-primary transition-colors">+92 300 0219721</a></p>
             </div>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors">
+              <a 
+                href="https://twitter.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Weblytic on Twitter"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors">
+              <a 
+                href="https://linkedin.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Connect with Weblytic on LinkedIn"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors">
+              <a 
+                href="https://github.com/Imranalit" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View Weblytic open-source projects on GitHub"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
                 <Github className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors">
+              <a 
+                href="https://instagram.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Weblytic on Instagram"
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
+              >
                 <Instagram className="w-4 h-4" />
               </a>
             </div>
@@ -92,6 +116,7 @@ export default function Footer() {
               />
               <button 
                 type="submit"
+                aria-label="Submit newsletter subscription"
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white hover:bg-primary-end transition-colors"
               >
                 <ArrowRight className="w-4 h-4" />

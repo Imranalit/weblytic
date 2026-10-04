@@ -1,16 +1,25 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { allFaqs } from "@/lib/faqs";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
+export const viewport: Viewport = {
+  themeColor: "#05060A",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://weblytic.cc"),
-  title: "Weblytic — Custom Software, Offline POS, Websites, Hosting & AI Bots",
-  description: "Weblytic delivers custom offline POS software (no monthly fee), high-performance Next.js websites, local cPanel servers, and official WhatsApp AI chatbots across Pakistan.",
+  title: {
+    default: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
+    template: "%s | Weblytic",
+  },
+  description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
   keywords: [
     "offline POS software Pakistan",
     "retail POS system one time fee",
@@ -29,8 +38,8 @@ export const metadata: Metadata = {
     canonical: "https://weblytic.cc",
   },
   openGraph: {
-    title: "Weblytic — Custom Software, Offline POS, Websites, Hosting & AI Bots",
-    description: "Weblytic delivers custom offline POS software (no monthly fee), high-performance Next.js websites, local cPanel servers, and official WhatsApp AI chatbots across Pakistan.",
+    title: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
+    description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
     url: "https://weblytic.cc",
     siteName: "Weblytic",
     images: [
@@ -46,8 +55,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Weblytic — Custom Software, Offline POS, Websites, Hosting & AI Bots",
-    description: "Weblytic delivers custom offline POS software (no monthly fee), high-performance Next.js websites, local cPanel servers, and official WhatsApp AI chatbots across Pakistan.",
+    title: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
+    description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
     images: ["/og-image.jpg"],
   },
   icons: {
@@ -71,17 +80,14 @@ export const metadata: Metadata = {
   },
 };
 
-const faqSchema = {
+const websiteSchema = {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": allFaqs.map((faq) => ({
-    "@type": "Question",
-    "name": faq.question,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": faq.answer,
-    },
-  })),
+  "@type": "WebSite",
+  "name": "Weblytic",
+  "alternateName": "Weblytic Pakistan",
+  "url": "https://weblytic.cc",
+  "description": "Custom offline software, Next.js web development, local cPanel servers, and WhatsApp AI bot deployments in Pakistan.",
+  "inLanguage": "en-US",
 };
 
 const businessSchema = {
@@ -92,14 +98,35 @@ const businessSchema = {
   "url": "https://weblytic.cc",
   "telephone": "+923000219721",
   "email": "imranalit.freelance@gmail.com",
+  "priceRange": "PKR 5000 - PKR 80000",
+  "currenciesAccepted": "PKR",
+  "paymentAccepted": "Cash, Bank Transfer, EasyPaisa, JazzCash",
   "address": {
     "@type": "PostalAddress",
+    "streetAddress": "Khairpur Mirs'",
     "addressLocality": "Khairpur Mirs'",
     "addressRegion": "Sindh",
+    "postalCode": "66020",
     "addressCountry": "PK"
   },
-  "priceRange": "PKR 5000 - PKR 80000",
-  "description": "Custom offline software, high-performance Next.js websites, domains, hosting, local cPanel servers, and WhatsApp AI bot deployments."
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 27.5295,
+    "longitude": 68.7592
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    }
+  ],
+  "sameAs": [
+    "https://github.com/Imranalit",
+    "https://wa.me/923000219721"
+  ],
+  "description": "Weblytic delivers custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and official WhatsApp AI chatbots."
 };
 
 export default function RootLayout({
@@ -112,7 +139,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <script
           type="application/ld+json"

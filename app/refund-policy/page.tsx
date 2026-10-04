@@ -4,10 +4,17 @@ import { ArrowLeft, RefreshCw, Mail, Phone, MapPin } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Refund Policy — Weblytic",
-  description: "Official Refund Policy for Weblytic software development, web design, hosting, and AI chatbot services.",
+  title: "Refund & Project Cancellation Policy",
+  description: "Weblytic's official refund and cancellation policy for custom offline software, milestone website projects, domain registrations, and WhatsApp chatbot setups.",
   alternates: {
     canonical: "https://weblytic.cc/refund-policy",
+  },
+  openGraph: {
+    title: "Refund & Project Cancellation Policy — Weblytic",
+    description: "Weblytic's official refund policy for custom software, website design, domains, and AI chatbot setups.",
+    url: "https://weblytic.cc/refund-policy",
+    siteName: "Weblytic",
+    images: [{ url: "/og-image.jpg" }],
   },
 };
 

@@ -4,10 +4,17 @@ import { ArrowLeft, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Weblytic",
-  description: "Official Privacy Policy for Weblytic. Explains how we collect, use, and protect your information when using weblytic.cc and our services.",
+  title: "Privacy Policy & Client Data Protection",
+  description: "Official Privacy Policy for Weblytic. Explains how client data, project credentials, and WhatsApp AI bot information are securely protected and handled.",
   alternates: {
     canonical: "https://weblytic.cc/privacy",
+  },
+  openGraph: {
+    title: "Privacy Policy & Client Data Protection — Weblytic",
+    description: "Official Privacy Policy for Weblytic. Explains how client data, project credentials, and WhatsApp bot data are protected.",
+    url: "https://weblytic.cc/privacy",
+    siteName: "Weblytic",
+    images: [{ url: "/og-image.jpg" }],
   },
 };
 

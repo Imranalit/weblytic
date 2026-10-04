@@ -33,7 +33,7 @@ export default function Hero() {
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 text-center lg:text-left">
-            <m.div
+            <m.h1
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
@@ -48,7 +48,7 @@ export default function Hero() {
                   {word}
                 </m.span>
               ))}
-            </m.div>
+            </m.h1>
 
             <m.p
               variants={fadeUp}
@@ -56,7 +56,7 @@ export default function Hero() {
               animate="visible"
               className="text-lg md:text-xl text-text-muted mb-10 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed"
             >
-              End-to-end digital solutions for startups, SMBs, and creators. We engineer custom software, design high-performance websites, and manage your infrastructure.
+              End-to-end digital solutions for modern businesses. We engineer custom offline POS software, design high-speed Next.js websites, configure local cPanel servers, and deploy AI chatbots across Pakistan.
             </m.p>
 
             <m.div

@@ -4,10 +4,17 @@ import { ArrowLeft, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Weblytic",
-  description: "Terms of Service for Weblytic software development, web design, hosting, and AI chatbot services.",
+  title: "Terms of Service & Client Agreement",
+  description: "Read Weblytic's Terms of Service covering custom software development, milestone payments, Next.js web design, domain hosting, and WhatsApp bot deliverables.",
   alternates: {
     canonical: "https://weblytic.cc/terms",
+  },
+  openGraph: {
+    title: "Terms of Service & Client Agreement — Weblytic",
+    description: "Read Weblytic's Terms of Service covering custom software development, milestone payments, Next.js web design, and domain hosting.",
+    url: "https://weblytic.cc/terms",
+    siteName: "Weblytic",
+    images: [{ url: "/og-image.jpg" }],
   },
 };
 

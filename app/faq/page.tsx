@@ -3,8 +3,8 @@ import FAQClient from "./FAQClient";
 import { allFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions (FAQs) — Weblytic | Offline POS, WhatsApp AI & Web Dev",
-  description: "Comprehensive answers about Weblytic's offline POS systems (zero monthly fees), official WhatsApp AI chatbots, local cPanel servers, and high-performance Next.js web development in Pakistan.",
+  title: "Frequently Asked Questions (FAQs)",
+  description: "Clear answers on offline retail POS software, WhatsApp AI chatbots, on-premise cPanel servers, and Next.js web development in Pakistan.",
   keywords: [
     "offline POS software Pakistan",
     "retail POS software one-time fee",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Frequently Asked Questions (FAQs) — Weblytic",
-    description: "Get clear answers regarding offline retail POS, WhatsApp AI chatbots, local cPanel servers, and Next.js web development in Pakistan.",
+    description: "Clear answers regarding offline retail POS, WhatsApp AI chatbots, local cPanel servers, and Next.js web development in Pakistan.",
     url: "https://weblytic.cc/faq",
     siteName: "Weblytic",
     images: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Frequently Asked Questions (FAQs) — Weblytic",
+    title: "Frequently Asked Questions (FAQs) — Weblytic Pakistan",
     description: "Clear answers on offline POS software, WhatsApp AI bots, local cPanel servers, and web design.",
     images: ["/og-image.jpg"],
   },
