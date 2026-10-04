@@ -31,7 +31,7 @@ export default async (request: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
+          model: "gemma2-9b-it",
           messages: [systemMessage, ...messages],
           temperature: 0.7,
           max_tokens: 500,
