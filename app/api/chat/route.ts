@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge'; // Optional: Use edge runtime for faster responses
-
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
