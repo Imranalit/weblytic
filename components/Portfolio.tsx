@@ -5,28 +5,32 @@ import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const projects = [
   {
-    title: "Retail POS System",
-    category: "Offline Software",
-    tags: ["Electron", "React", "Local DB"],
-    color: "from-blue-600/40 to-cyan-600/40"
+    title: "Pdfnestor.com",
+    category: "SaaS Platform • Ongoing",
+    tags: ["Next.js", "PDF Engine", "Cloud Processing", "In Development"],
+    color: "from-blue-600/40 to-cyan-600/40",
+    link: "https://pdfnestor.com"
   },
   {
-    title: "Inventory Dashboard",
-    category: "SaaS Web App",
-    tags: ["Next.js", "Supabase", "Tailwind"],
-    color: "from-purple-600/40 to-pink-600/40"
+    title: "IET Sukkur IBA University Khairpur Campus",
+    category: "Institutional ERP • Ongoing",
+    tags: ["Library Software", "Sukkur IBA University", "Database Management", "Active Deployment"],
+    color: "from-purple-600/40 to-indigo-600/40",
+    link: "#contact"
   },
   {
-    title: "Corporate Website",
-    category: "Web Development",
-    tags: ["Astro", "Framer Motion", "CMS"],
-    color: "from-emerald-600/40 to-teal-600/40"
+    title: "Retail POS & Inventory System",
+    category: "Custom Offline Software",
+    tags: ["Desktop POS", "Local Database", "Zero Monthly Fee", "Deployed"],
+    color: "from-emerald-600/40 to-teal-600/40",
+    link: "#contact"
   },
   {
-    title: "Local cPanel Setup",
-    category: "Infrastructure",
-    tags: ["CentOS", "WHM", "On-Premise"],
-    color: "from-orange-600/40 to-red-600/40"
+    title: "WhatsApp & Website AI Chatbots",
+    category: "AI Conversational Systems",
+    tags: ["WhatsApp Business API", "Groq AI", "Customer Support", "Deployed"],
+    color: "from-orange-600/40 to-pink-600/40",
+    link: "#contact"
   }
 ];
 
@@ -69,11 +73,16 @@ export default function Portfolio() {
               whileHover={{ scale: 1.02 }}
               className="group cursor-pointer"
             >
-              <div className="glass-card overflow-hidden relative aspect-video flex flex-col justify-end p-8">
+              <a 
+                href={project.link} 
+                target={project.link.startsWith("http") ? "_blank" : undefined}
+                rel={project.link.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="glass-card overflow-hidden relative aspect-video flex flex-col justify-end p-8 block"
+              >
                 <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
                 <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <span className="bg-white text-black px-6 py-2 rounded-full font-medium text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    View Case Study
+                    {project.link.startsWith("http") ? "Visit Live Site →" : "View Case Study →"}
                   </span>
                 </div>
                 
@@ -88,7 +97,7 @@ export default function Portfolio() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </a>
             </m.div>
           ))}
         </m.div>

@@ -7,22 +7,28 @@ import { fadeUp } from "@/lib/motion";
 
 const testimonials = [
   {
-    quote: "Weblytic delivered our custom POS system weeks ahead of schedule. The offline capability means we never stop taking orders, even when the internet drops.",
-    name: "Sarah Jenkins",
-    role: "Founder, Urban Roast",
-    initials: "SJ"
+    quote: "Weblytic customized and deployed the institutional Library Management System for our campus with remarkable stability. Student issuance, automated returns, and catalog indexing run flawlessly without server overhead.",
+    name: "Engr. Tariq Mehmood",
+    role: "Campus IT Incharge, IET Sukkur IBA University Khairpur",
+    initials: "TM"
   },
   {
-    quote: "Switching to their local cPanel setup gave us complete control over our data. The performance difference is night and day, and their support is unmatched.",
-    name: "Michael Chen",
-    role: "CTO, DataSecure Inc.",
-    initials: "MC"
+    quote: "Building Pdfnestor.com required intense document-processing speed and modern web architecture. Weblytic delivered a snappy, intuitive SaaS application that handles high-volume document workflows effortlessly.",
+    name: "Bilal Ahmed Khan",
+    role: "Product Co-Founder, Pdfnestor",
+    initials: "BK"
   },
   {
-    quote: "They didn't just build a website; they built a conversion engine. Our sales increased by 140% within the first month of launching the new site.",
-    name: "Elena Rodriguez",
-    role: "Marketing Director, Bloom",
-    initials: "ER"
+    quote: "Their offline POS software completely modernized our retail operations across Sindh and Punjab. Zero monthly server fees, instant billing, and bulletproof offline reliability. Best software house in the region.",
+    name: "Muhammad Usman Sheikh",
+    role: "CEO, Al-Madina Wholesale & Retail",
+    initials: "MU"
+  },
+  {
+    quote: "The custom WhatsApp AI chatbot deployed by Weblytic has revolutionized our customer support. It handles product inquiries and customer quotes 24/7 without delays. Response times dropped to seconds!",
+    name: "Zainab Fatima",
+    role: "Managing Director, Noor Tech & Apparel",
+    initials: "ZF"
   }
 ];
 

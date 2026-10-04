@@ -29,8 +29,13 @@ export default function Footer() {
               <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1" />
             </a>
             <p className="text-text-muted text-sm leading-relaxed">
-              End-to-end digital solutions for modern businesses. We build, host, and scale your digital infrastructure.
+              End-to-end digital solutions for modern businesses. We build, host, and scale your digital infrastructure from Khairpur Mirs', Sindh to the world.
             </p>
+            <div className="text-xs text-text-muted space-y-1">
+              <p>📍 Khairpur Mirs', Sindh, Pakistan</p>
+              <p>✉️ <a href="mailto:imranalit.freelance@gmail.com" className="hover:text-primary transition-colors">imranalit.freelance@gmail.com</a></p>
+              <p>📱 <a href="https://wa.me/923000219721" className="hover:text-primary transition-colors">+92 300 0219721</a></p>
+            </div>
             <div className="flex items-center gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors">
                 <Twitter className="w-4 h-4" />

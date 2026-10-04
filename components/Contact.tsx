@@ -63,7 +63,9 @@ ${data.message}`;
                 </div>
                 <div>
                   <div className="font-medium text-white">Email Us</div>
-                  <div>hello@weblytic.cc</div>
+                  <a href="mailto:imranalit.freelance@gmail.com" className="hover:text-primary transition-colors">
+                    imranalit.freelance@gmail.com
+                  </a>
                 </div>
               </div>
               
@@ -73,7 +75,9 @@ ${data.message}`;
                 </div>
                 <div>
                   <div className="font-medium text-white">Call / WhatsApp</div>
-                  <div>+92 300 0219721</div>
+                  <a href="https://wa.me/923000219721" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
+                    +92 300 0219721
+                  </a>
                 </div>
               </div>
               
@@ -83,7 +87,7 @@ ${data.message}`;
                 </div>
                 <div>
                   <div className="font-medium text-white">Headquarters</div>
-                  <div>120 Innovation Drive, Tech City</div>
+                  <div>Khairpur Mirs', Sindh, Pakistan</div>
                 </div>
               </div>
             </div>
