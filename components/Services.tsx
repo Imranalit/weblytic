@@ -77,19 +77,19 @@ export default function Services() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center"
         >
           {services.map((service, index) => (
             <m.div
               key={index}
               variants={fadeUp}
               whileHover={{ y: -8, scale: 1.02 }}
-              className={`glass-card p-8 relative group overflow-hidden ${index === 4 ? "md:col-span-2 lg:col-span-1 lg:col-start-2" : ""}`}
+              className="glass-card p-8 relative group overflow-hidden flex flex-col"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
               
-              <div className="relative z-10">
-                <div className={`w-16 h-16 rounded-2xl bg-elevated border border-white/10 flex items-center justify-center mb-6 ${service.iconColor} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+              <div className="relative z-10 flex flex-col h-full">
+                <div className={`w-16 h-16 rounded-2xl bg-elevated border border-white/10 flex items-center justify-center mb-6 ${service.iconColor} group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0`}>
                   {service.icon}
                 </div>
                 
@@ -101,16 +101,16 @@ export default function Services() {
                   {service.description}
                 </p>
                 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-1">
                   {service.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-text-muted/90">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 
-                <a href="#contact" className="inline-flex items-center gap-2 text-primary font-medium group/link">
+                <a href="#contact" className="inline-flex items-center gap-2 text-primary font-medium group/link mt-auto">
                   Learn more
                   <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                 </a>
