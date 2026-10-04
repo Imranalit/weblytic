@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #05060A;
+    --foreground: #F8FAFC;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+  }
+  
+  ::selection {
+    background: #6366F1;
+    color: white;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-elevated/40 backdrop-blur-xl border border-white/5 rounded-2xl;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-end;
+  }
+}
