@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
             <span className="font-display font-bold text-2xl tracking-tight text-white">
               Weblytic
             </span>
-            <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1" />
+            <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1 animate-heartbeat" />
           </Link>
 
           <Link

@@ -22,11 +22,11 @@ export default function Footer() {
           
           {/* Brand */}
           <div className="space-y-6">
-            <a href="#" className="flex items-center gap-2">
+            <a href="/" className="flex items-center gap-2 group">
               <span className="font-display font-bold text-2xl tracking-tight text-white">
                 Weblytic
               </span>
-              <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1" />
+              <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1 animate-heartbeat" />
             </a>
             <p className="text-text-muted text-sm leading-relaxed">
               End-to-end digital solutions for modern businesses. We build, host, and scale your digital infrastructure from Khairpur Mirs', Sindh to the world.
@@ -56,10 +56,10 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-white mb-6">Services</h4>
             <ul className="space-y-4">
-              <li><a href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Custom Software</a></li>
-              <li><a href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Web Development</a></li>
-              <li><a href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Domains & Hosting</a></li>
-              <li><a href="#" className="text-sm text-text-muted hover:text-primary transition-colors">Local cPanel Setup</a></li>
+              <li><a href="/#services" className="text-sm text-text-muted hover:text-primary transition-colors">Custom Software</a></li>
+              <li><a href="/#services" className="text-sm text-text-muted hover:text-primary transition-colors">Web Development</a></li>
+              <li><a href="/#services" className="text-sm text-text-muted hover:text-primary transition-colors">Domains & Hosting</a></li>
+              <li><a href="/#services" className="text-sm text-text-muted hover:text-primary transition-colors">Local cPanel Setup</a></li>
             </ul>
           </div>
 
@@ -67,10 +67,11 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-white mb-6">Company</h4>
             <ul className="space-y-4">
-              <li><a href="#" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#portfolio" className="text-sm text-text-muted hover:text-white transition-colors">Portfolio</a></li>
-              <li><a href="#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#contact" className="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/#why-us" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
+              <li><a href="/#portfolio" className="text-sm text-text-muted hover:text-white transition-colors">Portfolio</a></li>
+              <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="/faq" className="text-sm text-text-muted hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="/#contact" className="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
 

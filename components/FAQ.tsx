@@ -152,6 +152,16 @@ export default function FAQ() {
             })
           )}
         </m.div>
+
+        <div className="mt-10 text-center">
+          <a
+            href="/faq"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-all group hover:border-primary/40 shadow-lg shadow-black/20"
+          >
+            <span>Browse Full Dedicated FAQ Hub & Search</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          </a>
+        </div>
       </div>
     </section>
   );

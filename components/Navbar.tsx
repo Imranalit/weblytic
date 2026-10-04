@@ -9,7 +9,7 @@ const navLinks = [
   { name: "Services", href: "/#services" },
   { name: "Portfolio", href: "/#portfolio" },
   { name: "Pricing", href: "/#pricing" },
-  { name: "FAQ", href: "/#faq" },
+  { name: "FAQ", href: "/faq" },
   { name: "Contact", href: "/#contact" },
 ];
 
@@ -37,7 +37,7 @@ export default function Navbar() {
             <span className="font-display font-bold text-2xl tracking-tight text-white">
               Weblytic
             </span>
-            <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1 group-hover:scale-150 transition-transform duration-300" />
+            <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1 animate-heartbeat" />
           </a>
 
           {/* Desktop Nav */}
