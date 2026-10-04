@@ -24,8 +24,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "h-14 px-8 text-lg",
     };
 
+    const MotionButton = m.button as any;
+
     return (
-      <m.button
+      <MotionButton
         ref={ref}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
@@ -38,7 +40,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {children}
-      </m.button>
+      </MotionButton>
     );
   }
 );
