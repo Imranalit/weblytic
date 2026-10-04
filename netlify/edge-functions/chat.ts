@@ -22,24 +22,29 @@ export default async (request: Request) => {
         "You are Konain, the helpful AI assistant for Weblytic. You help users understand Weblytic's services including Custom Software, Web Development, Domains & Hosting, Local cPanel Solutions, and AI Bot Deployment. AI Bot Deployment includes WhatsApp business bots and Website AI chatbots starting from 10k PKR. You are friendly, professional, and concise. You encourage users to contact the team via WhatsApp.",
     };
 
-    // Auto-select: fetch available models and pick the first chat-capable one
-    const modelsRes = await fetch("https://api.groq.com/openai/v1/models", {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    });
-    let model = "llama-3.3-70b-versatile"; // safe fallback
-    if (modelsRes.ok) {
-      const modelsData = await modelsRes.json();
-      const chatModel = modelsData.data?.find(
-        (m: any) =>
-          m.active !== false &&
-          !m.id.includes("whisper") &&
-          !m.id.includes("guard") &&
-          !m.id.includes("tts") &&
-          !m.id.includes("vision") &&
-          !m.id.includes("embed")
-      );
-      if (chatModel) model = chatModel.id;
-    }
+    // Priority list of known good chat models - tries each until one is available
+    const preferredModels = [
+      "llama-3.3-70b-versatile",
+      "llama-3.1-70b-versatile",
+      "llama-3.1-8b-instant",
+      "llama3-70b-8192",
+      "gemma2-9b-it",
+      "gemma-7b-it",
+      "mixtral-8x7b-32768",
+    ];
+
+    let model = "gemma2-9b-it"; // default fallback
+    try {
+      const modelsRes = await fetch("https://api.groq.com/openai/v1/models", {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+      if (modelsRes.ok) {
+        const modelsData = await modelsRes.json();
+        const available = new Set(modelsData.data.map((m: any) => m.id));
+        const found = preferredModels.find((m) => available.has(m));
+        if (found) model = found;
+      }
+    } catch (_) { /* keep default */ }
 
     const groqResponse = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
