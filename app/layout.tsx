@@ -16,8 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-import Chatbot from "@/components/Chatbot";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +25,6 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans antialiased selection:bg-primary/30 selection:text-white`}>
         {children}
-        <Chatbot />
       </body>
     </html>
   );
