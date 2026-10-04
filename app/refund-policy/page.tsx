@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, RefreshCw, ShieldAlert, CheckCircle2, Mail, Phone, MapPin, AlertCircle } from "lucide-react";
+import { ArrowLeft, RefreshCw, Mail, Phone, MapPin } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Refund Policy — Weblytic",
-  description: "Official refund and cancellation policy for Weblytic software development, web design, hosting, and AI chatbot services.",
+  description: "Official Refund Policy for Weblytic software development, web design, hosting, and AI chatbot services.",
   alternates: {
     canonical: "https://weblytic.cc/refund-policy",
   },
@@ -41,120 +41,118 @@ export default function RefundPolicyPage() {
           <div className="mb-12 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-4">
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Customer Satisfaction & Assurance</span>
+              <span>Assurance & Transparency</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-              Refund & Cancellation <span className="text-gradient">Policy</span>
+              Refund <span className="text-gradient">Policy</span>
             </h1>
-            <p className="text-text-muted text-sm">
-              Last updated: October 2026 • Transparent guidelines for client deposits, project milestones, and guarantees
+            <p className="text-text-muted text-sm font-medium">
+              Last updated: October 4, 2026
             </p>
           </div>
 
-          {/* Refund Content Body */}
+          {/* Policy Content Body */}
           <div className="glass-card p-8 md:p-12 space-y-10 border border-white/10 text-white/90 text-sm leading-relaxed">
             
-            {/* Overview */}
+            {/* Preamble */}
+            <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-text-muted leading-relaxed">
+              We want you to be happy with your project, and we also have to protect the time and resources spent on custom work. This policy explains when refunds are and are not available.
+            </div>
+
+            {/* Section 1 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">01.</span> Our Philosophy
+                <span className="text-primary font-mono text-base">1.</span> Before Work Begins
               </h2>
               <p className="text-text-muted">
-                At Weblytic, we believe in building long-term, trustworthy partnerships with business owners, retail shops, and organizations across Pakistan and abroad. Because software engineering, custom website creation, and AI model configurations require substantial technical investment and allocated engineering hours, our refund policy is designed to be fair, structured, and completely transparent.
+                If you cancel before we have started work, you will receive a full refund of any advance payment, minus any non-recoverable third-party costs already paid on your behalf (such as domain registration).
               </p>
             </section>
 
-            {/* Custom Software & Web Development */}
+            {/* Section 2 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">02.</span> Custom Software & Web Development Projects
-              </h2>
-              <div className="space-y-3 text-text-muted">
-                <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-1.5">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success" /> Pre-Commencement Phase (100% Refundable)
-                  </h3>
-                  <p className="text-xs">
-                    If you submit an advance deposit but choose to cancel your project within <strong>48 hours</strong>, prior to the commencement of wireframing, architecture planning, or repository creation, you will receive a full <strong>100% refund</strong> of your deposit with no questions asked.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-1.5">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary" /> Active Development Phase (Prorated Refund)
-                  </h3>
-                  <p className="text-xs">
-                    If a project is halted mid-development by the Client, you are only liable for milestones completed and approved up to that date. Any unspent balance or unstarted milestone prepayments will be promptly refunded to you.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-1.5">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-text-muted" /> Completed & Deployed Work (Non-Refundable)
-                  </h3>
-                  <p className="text-xs">
-                    Once the project reaches final client acceptance, source code is handed over, or software is deployed to your live server / local store computer, payments become strictly non-refundable. At that stage, our 30-day technical warranty takes effect to correct any defects free of charge.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Third-Party Expenses */}
-            <section className="space-y-3">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">03.</span> Domains & Third-Party Registry Costs
+                <span className="text-primary font-mono text-base">2.</span> After Work Has Started
               </h2>
               <p className="text-text-muted">
-                Domain registrations (.com, .pk, .org, .net), cPanel server license fees, and third-party API vouchers are provisioned instantly through international registries (ICANN, PKNIC) and cannot be un-registered or returned. Therefore, fees paid directly for domain acquisitions and non-recoverable third-party licenses are strictly <strong>non-refundable</strong>.
+                Because our services are custom-built, refunds are based on the progress made. If you cancel after work has started, we will keep an amount proportional to the work completed and the time spent, and refund the remainder of what you paid, if any. We will share a short summary of completed work with you when calculating this. The advance payment is non-refundable once substantial design or development work has begun.
               </p>
             </section>
 
-            {/* WhatsApp AI Bots */}
+            {/* Section 2a */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">04.</span> WhatsApp AI Chatbot Deployments
+                <span className="text-primary font-mono text-base">2a.</span> Delivered Projects
               </h2>
+              <p className="text-text-muted">
+                Once a project has been delivered and accepted (see Section 7 of the Terms), payments are non-refundable. If the delivered work does not match the agreed scope, we will first fix the issue at no extra cost. A refund is considered only if we are unable to correct a material failure to deliver the agreed scope within a reasonable time, and then only for the portion of the work affected.
+              </p>
+            </section>
+
+            {/* Section 3 */}
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-primary font-mono text-base">3.</span> Non-Refundable Items
+              </h2>
+              <p className="text-text-muted">
+                The following are not refundable once purchased or processed:
+              </p>
               <ul className="space-y-2 text-text-muted pl-4 list-disc">
-                <li>Weblytic's bot configuration fee is 100% refundable if requested before your business WhatsApp number is bound to the Meta Cloud API and model fine-tuning has started.</li>
-                <li>Once the AI bot is trained on your catalog and deployed live on your WhatsApp Business number, the setup fee is considered delivered and non-refundable.</li>
-                <li>Meta's own per-conversation charges (after their 1,000 free monthly tier) are billed directly by Meta and fall outside Weblytic's control.</li>
+                <li>Domain registrations and renewals</li>
+                <li>Hosting, SSL and business email plans purchased from third-party providers</li>
+                <li>WhatsApp Business API, AI model and other usage or subscription fees</li>
+                <li>Third-party licenses, themes, plugins or stock assets bought for your project</li>
+                <li>Maintenance, support or change requests that have already been carried out</li>
               </ul>
             </section>
 
-            {/* 30-Day Defect Guarantee */}
+            {/* Section 4 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">05.</span> 30-Day Technical Defect Guarantee
+                <span className="text-primary font-mono text-base">4.</span> Hosting and Recurring Services
               </h2>
               <p className="text-text-muted">
-                We stand behind our code. Every custom application, offline POS tool, and website built by Weblytic is backed by a <strong>30-day post-launch warranty</strong>. If you identify a reproducible defect, database anomaly, or functional breakdown that contradicts the agreed specification:
+                Any service we purchase from a third party on your behalf (including domains, hosting, SSL, business email, and API or platform subscriptions) cannot be refunded by Weblytic once it has been bought, because those fees are paid to the provider and are governed by the provider's own refund terms. Recurring services can be cancelled at any time to stop future renewals, but fees already paid for the current term are non-refundable.
               </p>
-              <ul className="space-y-2 text-text-muted pl-4 list-disc">
-                <li>We will inspect, debug, and patch the issue free of charge as our highest priority.</li>
-                <li>In the unlikely event that Weblytic is technically unable to deliver a fundamental core feature as contracted in the written project scope, an appropriate partial or full refund for that specific feature milestone will be issued immediately.</li>
-              </ul>
             </section>
 
-            {/* Refund Process */}
+            {/* Section 5 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">06.</span> How to Request a Refund
+                <span className="text-primary font-mono text-base">5.</span> Client-Caused Delays or Abandonment
               </h2>
               <p className="text-text-muted">
-                To submit a cancellation or refund inquiry:
+                If a project is paused for more than 30 days because of missing content, feedback or payment, or if the Client stops responding, we may treat the project as cancelled. Payments made will be treated under Section 2.
               </p>
-              <ol className="space-y-2 text-text-muted pl-4 list-decimal">
-                <li>Email us at <strong>imranalit.freelance@gmail.com</strong> or message our support team on WhatsApp at <strong>+92 300 0219721</strong>.</li>
-                <li>Include your Invoice Number, Organization Name, and a brief description of your request.</li>
-                <li>Our management will review the project status and process approved refunds within <strong>5 to 7 business days</strong> via original payment method (Bank Transfer, Raast ID, JazzCash, or EasyPaisa).</li>
-              </ol>
             </section>
 
-            {/* Contact */}
+            {/* Section 6 */}
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-primary font-mono text-base">6.</span> Our Right to Decline
+              </h2>
+              <p className="text-text-muted">
+                We do not offer refunds for a change of mind after delivery, for dissatisfaction with subjective design preferences that were approved during the process, or for results we did not guarantee (such as traffic, sales, or search rankings).
+              </p>
+            </section>
+
+            {/* Section 7 */}
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-primary font-mono text-base">7.</span> How to Request a Refund
+              </h2>
+              <p className="text-text-muted">
+                Email <strong>imranalit.freelance@gmail.com</strong> or message us on WhatsApp at <strong>+92 300 0219721</strong> with your name, project details, payment proof and the reason for your request. We will review it and respond within 7 business days. Approved refunds are returned using the original payment method where possible, within 7 to 14 business days of approval. Bank or wallet transfer charges may be deducted.
+              </p>
+            </section>
+
+            {/* Section 8 */}
             <section className="pt-6 border-t border-white/10 space-y-4">
-              <h2 className="text-xl font-bold text-white">Direct Support & Inquiries</h2>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-primary font-mono text-base">8.</span> Contact
+              </h2>
               <p className="text-text-muted">
-                Have questions or need assistance with an invoice? We are here to help:
+                For questions regarding cancellations, invoices, or refund inquiries, please contact us:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
