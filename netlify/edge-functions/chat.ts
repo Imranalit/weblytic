@@ -6,7 +6,7 @@ export default async (request: Request) => {
   try {
     const { messages } = await request.json();
 
-    // Edge Functions can read Netlify Secret env vars via Netlify.env.get()
+    // Edge Functions read Netlify Secret env vars via Netlify.env.get()
     const apiKey = Netlify.env.get("GROQ_API_KEY");
 
     if (!apiKey) {
@@ -19,66 +19,67 @@ export default async (request: Request) => {
     const systemMessage = {
       role: "system",
       content:
-        "You are Konain, the helpful AI assistant for Weblytic. You help users understand Weblytic's services including Custom Software, Web Development, Domains & Hosting, Local cPanel Solutions, and AI Bot Deployment. AI Bot Deployment includes WhatsApp business bots and Website AI chatbots starting from 10k PKR. You are friendly, professional, and concise. You encourage users to contact the team via WhatsApp.",
+        "You are Konain, the helpful AI assistant for Weblytic. You help users understand Weblytic's services including Custom Software (offline POS/ERP tools, desktop and web apps), Web Development, Domains & Hosting, Local cPanel Solutions, and AI Bot Deployment (WhatsApp business bots & website chatbots starting from 10k PKR). You are friendly, professional, concise, and encourage users to contact the team via WhatsApp (+923000219721)."
     };
 
-    // Priority list of known good chat models - tries each until one is available
-    const preferredModels = [
-      "llama-3.3-70b-versatile",
-      "llama-3.1-70b-versatile",
-      "llama-3.1-8b-instant",
-      "llama3-70b-8192",
-      "gemma2-9b-it",
-      "gemma-7b-it",
-      "mixtral-8x7b-32768",
+    // Failover pool: If a model hits rate limits (429), maintenance, or errors out,
+    // the system automatically falls over to the next available model in real time!
+    const modelPool = [
+      "openai/gpt-oss-120b", // Flagship 120B model - top tier responses (~500 t/s)
+      "openai/gpt-oss-20b",  // Ultra-fast 20B model (~1,000 t/s) - instant backup
+      "qwen/qwen3.8-27b",    // Strong 27B model - reliable third tier backup
     ];
 
-    let model = "gemma2-9b-it"; // default fallback
-    try {
-      const modelsRes = await fetch("https://api.groq.com/openai/v1/models", {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      if (modelsRes.ok) {
-        const modelsData = await modelsRes.json();
-        const available = new Set(modelsData.data.map((m: any) => m.id));
-        const found = preferredModels.find((m) => available.has(m));
-        if (found) model = found;
-      }
-    } catch (_) { /* keep default */ }
+    let lastError = "";
 
-    const groqResponse = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model,
-          messages: [systemMessage, ...messages],
-          temperature: 0.7,
-          max_tokens: 500,
-        }),
-      }
-    );
+    for (const model of modelPool) {
+      try {
+        const groqResponse = await fetch(
+          "https://api.groq.com/openai/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model,
+              messages: [systemMessage, ...messages],
+              temperature: 0.7,
+              max_tokens: 500,
+            }),
+          }
+        );
 
-    if (!groqResponse.ok) {
-      const errorText = await groqResponse.text();
-      return new Response(
-        JSON.stringify({ error: `Groq API Error: ${groqResponse.status} - ${errorText}` }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
+        if (groqResponse.ok) {
+          const data = await groqResponse.json();
+          const content = data.choices?.[0]?.message?.content;
+          if (content) {
+            return new Response(
+              JSON.stringify({
+                role: "assistant",
+                content,
+                modelUsed: model,
+              }),
+              { headers: { "Content-Type": "application/json" } }
+            );
+          }
+        }
+
+        const errorText = await groqResponse.text();
+        lastError = `[${model}] HTTP ${groqResponse.status}: ${errorText}`;
+        console.warn(`Model ${model} failed: ${lastError}. Failing over to next model...`);
+      } catch (err: any) {
+        lastError = `[${model}] Connection error: ${err.message || err}`;
+        console.warn(`Model ${model} connection error. Failing over to next model...`);
+      }
     }
-
-    const data = await groqResponse.json();
 
     return new Response(
       JSON.stringify({
-        role: "assistant",
-        content: data.choices[0].message.content,
+        error: `All models in the pool are temporarily unavailable. Last error: ${lastError}`,
       }),
-      { headers: { "Content-Type": "application/json" } }
+      { status: 502, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: any) {
     return new Response(
@@ -88,6 +89,6 @@ export default async (request: Request) => {
   }
 };
 
-export const config: Config = {
+export const config = {
   path: "/api/chat",
 };
