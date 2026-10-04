@@ -104,9 +104,10 @@ export default function Footer() {
           <div className="text-sm text-text-muted">
             © {new Date().getFullYear()} Weblytic. All rights reserved.
           </div>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-4 sm:gap-6">
+            <a href="/privacy" className="text-sm text-text-muted hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="text-sm text-text-muted hover:text-white transition-colors">Terms of Service</a>
             <a href="/refund-policy" className="text-sm text-text-muted hover:text-white transition-colors">Refund Policy</a>
-            <a href="/terms" className="text-sm text-text-muted hover:text-white transition-colors">Terms & Conditions</a>
           </div>
         </div>
       </div>

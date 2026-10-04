@@ -141,7 +141,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">8.</span> Intellectual Property
               </h2>
               <p className="text-text-muted">
-                Upon full payment, you own the final deliverables created specifically for you (such as your custom website design and the code written for your project), except for third-party components, frameworks, libraries, fonts, stock assets and open-source software, which remain under their own licenses. Until full payment is received, all rights remain with Weblytic. We keep the right to reuse general know-how, tools and non-confidential code snippets, and, unless you ask us not to in writing, to show the finished project in our portfolio.
+                Upon full payment, you own the final deliverables created specifically for you (such as your custom website design and the code written for your project), except for third-party components, frameworks, libraries, fonts, stock assets and open-source software, which remain under their own licenses. Until full payment is received, all rights remain with Weblytic. We keep the right to reuse general know-how, tools and non-confidential code snippets, and, unless you ask us not to in writing, to display your name, the name of your project, screenshots of the finished work, and a link to the live website in our portfolio. Any personal data visible in screenshots is blurred or removed first. We never publish other project details, such as internal data, documents or credentials, or your contact information.
               </p>
             </section>
 
