@@ -1,57 +1,54 @@
 "use client";
 
-import { useState } from "react";
 import { m } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import { Button } from "./ui/Button";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const plans = [
   {
-    name: "Starter",
-    description: "Perfect for single websites or small internal tools.",
-    monthlyPrice: 99,
-    oneTimePrice: 1999,
+    name: "Offline Software",
+    description: "Desktop tools requiring no server-base.",
+    price: "5k - 7k",
+    suffix: "PKR",
     features: [
-      "Custom 5-page website",
-      "Mobile responsive design",
-      "Basic SEO optimization",
-      "Standard support",
-      "Shared hosting included"
+      "Custom offline desktop applications",
+      "Perfect for POS or local inventory",
+      "No recurring server or hosting costs",
+      "One-time setup fee",
     ],
+    note: "Maintenance & changes incur additional charges after deployment."
   },
   {
-    name: "Growth",
+    name: "Static Websites",
     popular: true,
-    description: "Ideal for growing businesses needing web apps & solid hosting.",
-    monthlyPrice: 299,
-    oneTimePrice: 4999,
+    description: "Fast, responsive sites with free hosting.",
+    price: "10k - 12k",
+    suffix: "PKR",
     features: [
-      "Full web application (SaaS/Dashboard)",
-      "Database architecture",
-      "API integration",
-      "Priority 24/7 support",
-      "VPS hosting included"
+      "Custom static web pages",
+      "Mobile responsive & SEO optimized",
+      "Free hosting via Netlify or subdomains",
+      "Blazing fast performance",
     ],
+    note: "Maintenance & changes incur additional charges after deployment."
   },
   {
-    name: "Enterprise",
-    description: "Complete digital transformation with on-premise solutions.",
-    monthlyPrice: 899,
-    oneTimePrice: 14999,
+    name: "Domains & Hosting",
+    description: "Complete local hosting & domain setup.",
+    price: "8k - 10k",
+    suffix: "PKR / yr",
     features: [
-      "Complex custom software (ERP/POS)",
-      "Local cPanel/WHM setup",
-      "Dedicated account manager",
-      "Advanced security & backups",
-      "Custom SLA & infrastructure"
+      "Average local hosting package",
+      "Free domain registration included",
+      "Business email setup",
+      "Handled setup & configuration",
     ],
+    note: "Prices subject to external providers (Hostinger, Namecheap, GoDaddy)."
   }
 ];
 
 export default function Pricing() {
-  const [isAnnual, setIsAnnual] = useState(false);
-
   return (
     <section id="pricing" className="py-24 relative z-10 bg-elevated/30 border-y border-white/5">
       <div className="container mx-auto px-6 max-w-7xl">
@@ -65,27 +62,15 @@ export default function Pricing() {
           >
             Transparent <span className="text-gradient">Pricing</span>
           </m.h2>
-          
-          <m.div 
+          <m.p
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="flex items-center justify-center gap-4 mt-8"
+            className="text-lg text-text-muted max-w-2xl mx-auto"
           >
-            <span className={`text-sm font-medium ${!isAnnual ? 'text-white' : 'text-text-muted'}`}>One-time Build</span>
-            <button 
-              onClick={() => setIsAnnual(!isAnnual)}
-              className="w-14 h-8 rounded-full bg-white/10 p-1 relative transition-colors focus:outline-none"
-            >
-              <m.div 
-                className="w-6 h-6 rounded-full bg-primary"
-                animate={{ x: isAnnual ? 24 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
-            </button>
-            <span className={`text-sm font-medium ${isAnnual ? 'text-white' : 'text-text-muted'}`}>Monthly Retainer</span>
-          </m.div>
+            Clear, upfront costs tailored for the Pakistani market.
+          </m.p>
         </div>
 
         <m.div
@@ -104,7 +89,7 @@ export default function Pricing() {
               }`}
             >
               {plan.popular && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary-gradient text-white text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary-gradient text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
                   MOST POPULAR
                 </div>
               )}
@@ -112,16 +97,17 @@ export default function Pricing() {
               <h3 className="text-2xl font-display font-bold text-white mb-2">{plan.name}</h3>
               <p className="text-sm text-text-muted mb-6 min-h-[40px]">{plan.description}</p>
               
-              <div className="mb-8">
-                <span className="text-4xl font-display font-bold text-white">
-                  ${isAnnual ? plan.monthlyPrice : plan.oneTimePrice}
-                </span>
-                <span className="text-text-muted">
-                  {isAnnual ? "/mo" : " one-time"}
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1 text-white">
+                  <span className="text-sm font-bold opacity-60">Rs</span>
+                  <span className="text-4xl font-display font-bold">{plan.price}</span>
+                </div>
+                <span className="text-text-muted text-sm">
+                  {plan.suffix} (Starting from)
                 </span>
               </div>
               
-              <ul className="space-y-4 mb-8 flex-1">
+              <ul className="space-y-4 mb-6 flex-1">
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm text-text-muted">
                     <Check className="w-5 h-5 text-primary shrink-0" />
@@ -129,6 +115,13 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
+              
+              <div className="bg-background/50 border border-white/5 rounded-lg p-3 mb-8 flex gap-2 items-start">
+                <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-text-muted leading-relaxed">
+                  {plan.note}
+                </p>
+              </div>
               
               <a href="#contact" className="w-full mt-auto">
                 <Button 
