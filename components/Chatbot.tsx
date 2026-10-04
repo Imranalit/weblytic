@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { X, Send, Sparkles, MessageSquare } from "lucide-react";
+import { X, Send, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 type Message = {
@@ -123,77 +123,76 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="fixed top-28 right-4 sm:right-6 md:right-8 z-50">
-      {/* Calling-out speech bubble (prompts visitor to chat) */}
+    <>
+      {/* Floating Toggle Button with Hijabi Avatar (Visible when closed) */}
       <AnimatePresence>
         {!isOpen && (
           <m.div
-            initial={{ opacity: 0, x: 20, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 15, scale: 0.9 }}
-            transition={{ delay: 0.5, duration: 0.3 }}
-            onClick={() => setIsOpen(true)}
-            className="absolute right-16 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2.5 bg-elevated/95 backdrop-blur-xl border border-primary/30 py-2 px-3.5 rounded-2xl shadow-xl shadow-primary/10 cursor-pointer whitespace-nowrap hover:scale-105 transition-all duration-200 group"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-24 right-4 sm:right-6 md:right-8 z-50 flex items-center"
           >
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
-            </span>
-            <span className="text-xs font-medium text-white/90 group-hover:text-white flex items-center gap-1.5">
-              👋 Have questions? <strong className="text-primary font-semibold">Chat with Konain</strong>
-            </span>
-            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[6px] border-l-elevated/95" />
+            {/* Calling-out speech bubble (prompts visitor to chat) */}
+            <m.div
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              onClick={() => setIsOpen(true)}
+              className="hidden sm:flex items-center gap-2.5 bg-elevated/95 backdrop-blur-xl border border-primary/30 py-2 px-3.5 rounded-2xl shadow-xl shadow-primary/10 cursor-pointer whitespace-nowrap hover:scale-105 transition-all duration-200 group mr-3"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
+              </span>
+              <span className="text-xs font-medium text-white/90 group-hover:text-white flex items-center gap-1.5">
+                👋 Have questions? <strong className="text-primary font-semibold">Chat with Konain</strong>
+              </span>
+            </m.div>
+
+            {/* Floating Avatar Button */}
+            <m.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={() => setIsOpen(true)}
+              aria-label="Open chat with Konain"
+              className="relative w-14 h-14 rounded-full shadow-xl shadow-primary/30 focus:outline-none flex items-center justify-center transition-all p-0.5 bg-gradient-to-tr from-primary via-violet-500 to-cyan-400 animate-[pulse_3s_ease-in-out_infinite]"
+            >
+              <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-background">
+                <Image 
+                  src="/konain-avatar.jpg" 
+                  alt="Konain Avatar" 
+                  fill 
+                  className="object-cover" 
+                  sizes="56px"
+                  priority
+                />
+              </div>
+              {/* Online Green Indicator Dot */}
+              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-success border-2 border-background ring-2 ring-success/30" />
+              
+              {/* Floating Mini Sparkle Badge */}
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-white shadow-md">
+                <Sparkles size={11} />
+              </span>
+            </m.button>
           </m.div>
         )}
       </AnimatePresence>
 
-      {/* Floating Toggle Button with Hijabi Avatar */}
-      <m.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle chat with Konain"
-        className="relative w-14 h-14 rounded-full shadow-xl shadow-primary/25 focus:outline-none flex items-center justify-center transition-all"
-      >
-        {isOpen ? (
-          <div className="w-full h-full rounded-full bg-elevated border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-            <X size={24} />
-          </div>
-        ) : (
-          <div className="relative w-full h-full rounded-full p-0.5 bg-gradient-to-tr from-primary via-violet-500 to-cyan-400 animate-[pulse_3s_ease-in-out_infinite]">
-            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-background">
-              <Image 
-                src="/konain-avatar.jpg" 
-                alt="Konain Avatar" 
-                fill 
-                className="object-cover" 
-                sizes="56px"
-                priority
-              />
-            </div>
-            {/* Online Green Indicator Dot */}
-            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-success border-2 border-background ring-2 ring-success/30" />
-            
-            {/* Floating Mini Chat Badge */}
-            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-white shadow-md">
-              <Sparkles size={11} />
-            </span>
-          </div>
-        )}
-      </m.button>
-
-      {/* Chat Window: Made Wider (460px-480px) with Head-aligned Scrolling */}
+      {/* Chat Window: Anchored between navbar and bottom taskbar */}
       <AnimatePresence>
         {isOpen && (
           <m.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 0, y: -15, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-16 right-0 w-[calc(100vw-2rem)] sm:w-[460px] md:w-[480px] h-[550px] max-h-[calc(100vh-8.5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            exit={{ opacity: 0, y: -15, scale: 0.95 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed top-20 sm:top-24 right-3 sm:right-6 md:right-8 bottom-4 sm:bottom-6 w-[calc(100vw-1.5rem)] sm:w-[450px] md:w-[470px] max-h-[calc(100dvh-6.5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
           >
-            {/* Header with Konain Avatar */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
+            {/* Header with Konain Avatar & Single Clean Close Button */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <KonainAvatar size={36} className="ring-2 ring-primary/40" />
@@ -208,17 +207,17 @@ export default function Chatbot() {
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="text-text-muted hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
                 aria-label="Close chat"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Messages Area */}
+            {/* Messages Area with Auto-Scroll & Head Alignment */}
             <div 
               ref={scrollContainerRef}
-              className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scroll-smooth"
+              className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scroll-smooth min-h-0"
             >
               {messages.map((msg, idx) => {
                 const isLatest = idx === messages.length - 1;
@@ -258,8 +257,8 @@ export default function Chatbot() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
-            <div className="p-3 border-t border-white/10 bg-white/5">
+            {/* Input Area: Guaranteed visible, never hidden behind taskbar! */}
+            <div className="p-3 border-t border-white/10 bg-white/5 shrink-0">
               <form onSubmit={sendMessage} className="flex items-center gap-2">
                 <input
                   type="text"
@@ -281,6 +280,6 @@ export default function Chatbot() {
           </m.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

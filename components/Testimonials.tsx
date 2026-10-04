@@ -7,12 +7,6 @@ import { fadeUp } from "@/lib/motion";
 
 const testimonials = [
   {
-    quote: "Weblytic customized and deployed the institutional Library Management System for our campus with remarkable stability. Student issuance, automated returns, and catalog indexing run flawlessly without server overhead.",
-    name: "Engr. Tariq Mehmood",
-    role: "Campus IT Incharge, IET Sukkur IBA University Khairpur",
-    initials: "TM"
-  },
-  {
     quote: "Building Pdfnestor.com required intense document-processing speed and modern web architecture. Weblytic delivered a snappy, intuitive SaaS application that handles high-volume document workflows effortlessly.",
     name: "Bilal Ahmed Khan",
     role: "Product Co-Founder, Pdfnestor",
