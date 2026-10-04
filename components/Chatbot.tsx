@@ -58,14 +58,17 @@ export default function Chatbot() {
         }),
       });
 
-      if (!response.ok) throw new Error("API Error");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status} Error`);
+      }
 
       const data = await response.json();
       setMessages(prev => [...prev, data]);
-    } catch (error) {
+    } catch (error: any) {
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "Sorry, I'm having trouble connecting right now. Please try contacting us via WhatsApp!" 
+        content: `Error: ${error.message}. Please check your API key and Netlify logs.` 
       }]);
     } finally {
       setIsLoading(false);

@@ -38,8 +38,9 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Failed to fetch from Groq");
+      const errorText = await response.text();
+      console.error("Groq API Error:", errorText);
+      return NextResponse.json({ error: `Groq API Error: ${response.status} - ${errorText}` }, { status: 500 });
     }
 
     const data = await response.json();
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Chat API Error:", error);
     return NextResponse.json(
-      { error: "Failed to process chat request." },
+      { error: `Internal Server Error: ${error.message || error}` },
       { status: 500 }
     );
   }
