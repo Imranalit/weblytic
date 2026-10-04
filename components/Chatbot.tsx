@@ -23,6 +23,34 @@ const KonainAvatar = ({ size = 18 }: { size?: number }) => (
   </div>
 );
 
+const FormattedMessage = ({ content }: { content: string }) => {
+  const sanitized = content.replace(/<br\s*\/?>/gi, "\n");
+  const lines = sanitized.split("\n");
+
+  return (
+    <div className="space-y-1.5 whitespace-pre-wrap break-words">
+      {lines.map((line, lIdx) => {
+        if (!line.trim()) return <div key={lIdx} className="h-1" />;
+        const parts = line.split(/(\*\*[^*]+\*\*)/g);
+        return (
+          <p key={lIdx} className="leading-relaxed">
+            {parts.map((part, pIdx) => {
+              if (part.startsWith("**") && part.endsWith("**")) {
+                return (
+                  <strong key={pIdx} className="font-semibold text-white">
+                    {part.slice(2, -2)}
+                  </strong>
+                );
+              }
+              return part;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -119,13 +147,13 @@ export default function Chatbot() {
                   )}
                   
                   <div 
-                    className={`px-4 py-2 rounded-2xl max-w-[80%] text-sm leading-relaxed ${
+                    className={`px-4 py-2.5 rounded-2xl max-w-[85%] text-sm leading-relaxed ${
                       msg.role === "user" 
                         ? "bg-primary text-white rounded-tr-sm" 
-                        : "bg-white/10 text-white rounded-tl-sm"
+                        : "bg-white/10 text-white/95 rounded-tl-sm border border-white/5"
                     }`}
                   >
-                    {msg.content}
+                    <FormattedMessage content={msg.content} />
                   </div>
                 </div>
               ))}
