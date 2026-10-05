@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://weblytic.cc";
-  const currentDate = new Date().toISOString();
+  const currentDate = "2024-10-04T00:00:00.000Z";
 
   return [
     {
