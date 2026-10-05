@@ -6,11 +6,33 @@ import { Github, Twitter, Linkedin, Instagram, ArrowRight } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEmail("");
-    alert("Subscribed successfully!");
+    setStatus("loading");
+
+    const formData = new FormData();
+    formData.append("form-name", "newsletter");
+    formData.append("email", email);
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
+      });
+
+      if (response.ok) {
+        setStatus("success");
+        setEmail("");
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      setStatus("error");
+    }
   };
 
   return (
@@ -105,23 +127,47 @@ export default function Footer() {
             <p className="text-sm text-text-muted mb-4">
               Subscribe to our newsletter for the latest tech news and agency updates.
             </p>
-            <form onSubmit={handleSubscribe} className="relative">
+            <form 
+              name="newsletter"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+              onSubmit={handleSubscribe} 
+              className="relative"
+            >
+              {/* Hidden inputs for Netlify */}
+              <input type="hidden" name="form-name" value="newsletter" />
+              <div className="hidden">
+                <label>Don’t fill this out: <input name="bot-field" /></label>
+              </div>
+
               <input
                 type="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={status === "success" ? "Thanks for subscribing!" : "Enter your email"}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                disabled={status === "loading" || status === "success"}
+                className={`w-full bg-white/5 border rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors disabled:opacity-50 ${
+                  status === "error" ? "border-red-500/50" : "border-white/10"
+                }`}
               />
               <button 
                 type="submit"
+                disabled={status === "loading" || status === "success"}
                 aria-label="Submit newsletter subscription"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white hover:bg-primary-end transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white hover:bg-primary-end transition-colors disabled:opacity-50 disabled:hover:bg-primary"
               >
-                <ArrowRight className="w-4 h-4" />
+                {status === "loading" ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <ArrowRight className="w-4 h-4" />
+                )}
               </button>
             </form>
+            {status === "error" && (
+              <p className="text-red-400 text-xs mt-2 absolute">Oops! Something went wrong. Try again.</p>
+            )}
           </div>
           
         </div>

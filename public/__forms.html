@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Netlify Hidden Forms</title>
+</head>
+<body>
+  <!-- 
+    This file exists purely for Netlify's build bots to parse. 
+    It registers the forms used in the React/Next.js app so Netlify 
+    knows to intercept POST requests for them.
+  -->
+  <form name="newsletter" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="text" name="bot-field" />
+    <input type="email" name="email" />
+  </form>
+</body>
+</html>
