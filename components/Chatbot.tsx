@@ -115,7 +115,7 @@ export default function Chatbot() {
     } catch (error: any) {
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: `Sorry, I ran into an issue: ${error.message}. Please reach out to our team on WhatsApp at +923000219721!` 
+        content: `Sorry, I ran into an issue: ${error.message}. Please reach out to our team on WhatsApp at +923131398796!` 
       }]);
     } finally {
       setIsLoading(false);

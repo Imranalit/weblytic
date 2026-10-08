@@ -96,7 +96,7 @@ const businessSchema = {
   "name": "Weblytic",
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
-  "telephone": "+923000219721",
+  "telephone": "+923131398796",
   "email": "imranalit.freelance@gmail.com",
   "priceRange": "PKR 5000 - PKR 80000",
   "currenciesAccepted": "PKR",
@@ -123,8 +123,9 @@ const businessSchema = {
     }
   ],
   "sameAs": [
-    "https://github.com/Imranalit",
-    "https://wa.me/923000219721"
+    "https://facebook.com/weblytic.cc",
+    "https://instagram.com/weblytic.cc",
+    "https://wa.me/923131398796"
   ],
   "description": "Weblytic delivers custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and official WhatsApp AI chatbots."
 };

@@ -18,7 +18,7 @@ export default function Contact() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = (data: FormData) => {
-    const phoneNumber = "923000219721";
+    const phoneNumber = "923131398796";
     
     // Construct the WhatsApp message text
     const text = `*New Quote Request!*
@@ -75,8 +75,8 @@ ${data.message}`;
                 </div>
                 <div>
                   <div className="font-medium text-white">Call / WhatsApp</div>
-                  <a href="https://wa.me/923000219721" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
-                    +92 300 0219721
+                  <a href="https://wa.me/923131398796" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
+                    +92 313 1398796
                   </a>
                 </div>
               </div>

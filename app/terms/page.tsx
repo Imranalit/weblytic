@@ -257,7 +257,7 @@ export default function TermsPage() {
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <Phone className="w-4 h-4 text-secondary shrink-0" />
-                  <span className="text-xs">+92 300 0219721</span>
+                  <span className="text-xs">+92 313 1398796</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <MapPin className="w-4 h-4 text-success shrink-0" />

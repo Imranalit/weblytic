@@ -189,7 +189,7 @@ export default function FAQClient() {
                   We could not find any FAQ matching "{searchQuery}". You can speak with our founder directly on WhatsApp right now.
                 </p>
                 <a
-                  href="https://wa.me/923000219721?text=Hello%20Weblytic,%20I%20have%20a%20question%20regarding%20your%20services"
+                  href="https://wa.me/923131398796?text=Hello%20Weblytic,%20I%20have%20a%20question%20regarding%20your%20services"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-emerald-900/30"
@@ -258,13 +258,13 @@ export default function FAQClient() {
               </p>
               <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
                 <a
-                  href="https://wa.me/923000219721?text=Hi%20Weblytic,%20I%20have%20a%20project%20inquiry"
+                  href="https://wa.me/923131398796?text=Hi%20Weblytic,%20I%20have%20a%20project%20inquiry"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-900/30"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  Chat on WhatsApp (+92 300 0219721)
+                  Chat on WhatsApp (+92 313 1398796)
                 </a>
                 <a
                   href="mailto:imranalit.freelance@gmail.com"

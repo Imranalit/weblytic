@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
-import { Github, Twitter, Linkedin, Instagram, ArrowRight } from "lucide-react";
+import { Github, Twitter, Linkedin, Instagram, Facebook, ArrowRight } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -56,7 +56,7 @@ export default function Footer() {
             <div className="text-xs text-text-muted space-y-1">
               <p>📍 Khairpur Mirs', Sindh, Pakistan</p>
               <p>✉️ <a href="mailto:imranalit.freelance@gmail.com" className="hover:text-primary transition-colors">imranalit.freelance@gmail.com</a></p>
-              <p>📱 <a href="https://wa.me/923000219721" className="hover:text-primary transition-colors">+92 300 0219721</a></p>
+              <p>📱 <a href="https://wa.me/923131398796" className="hover:text-primary transition-colors">+92 313 1398796</a></p>
             </div>
             <div className="flex items-center gap-4">
               <a 
@@ -78,16 +78,16 @@ export default function Footer() {
                 <Linkedin className="w-4 h-4" />
               </a>
               <a 
-                href="https://github.com/Imranalit" 
+                href="https://facebook.com/weblytic.cc" 
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="View Weblytic open-source projects on GitHub"
+                aria-label="Follow Weblytic on Facebook"
                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
               >
-                <Github className="w-4 h-4" />
+                <Facebook className="w-4 h-4" />
               </a>
               <a 
-                href="https://instagram.com" 
+                href="https://instagram.com/weblytic.cc" 
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow Weblytic on Instagram"

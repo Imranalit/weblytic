@@ -30,7 +30,7 @@ STRICT SCOPE & TOPIC GUARDRAILS (CRITICAL):
 COMPANY CONTACT & LOCATION:
 - Location / Address: Khairpur Mirs', Sindh, Pakistan
 - Official Email: imranalit.freelance@gmail.com
-- Direct WhatsApp / Phone: +92 300 0219721
+- Direct WhatsApp / Phone: +92 313 1398796
 
 ONGOING FEATURED PROJECTS:
 1. Pdfnestor.com: A high-performance cloud SaaS for fast PDF processing and document workflows.
@@ -50,7 +50,7 @@ COMMUNICATION & FORMATTING RULES:
 - NEVER generate markdown tables (do NOT use pipes |).
 - NEVER output raw HTML tags like <br>.
 - Use simple bullets (-) and bold highlights (**text**) for readability.
-- Be polite, professional, and warmly guide clients to message on WhatsApp (+923000219721) for quick custom quotes.`
+- Be polite, professional, and warmly guide clients to message on WhatsApp (+923131398796) for quick custom quotes.`
     };
 
     // Failover pool: If a model hits rate limits (429), maintenance, or errors out,
