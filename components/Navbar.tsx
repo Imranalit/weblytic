@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { m, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { Button } from "./ui/Button";
+import { Button, ButtonLink } from "./ui/Button";
 
 const navLinks = [
   { name: "Services", href: "/#services" },
@@ -63,12 +63,10 @@ export default function Navbar() {
                 )}
               </a>
             ))}
-            <a href="/#contact">
-              <Button size="sm" className="gap-2 group">
-                Get a Quote
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </a>
+            <ButtonLink href="/#contact" size="sm" className="gap-2 group">
+              Get a Quote
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </ButtonLink>
           </nav>
 
           {/* Mobile Toggle */}
@@ -122,11 +120,9 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="mt-8">
-                <a href="/#contact" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button size="lg" className="w-full">
-                    Get a Quote
-                  </Button>
-                </a>
+                <ButtonLink href="/#contact" size="lg" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                  Get a Quote
+                </ButtonLink>
               </div>
             </nav>
           </m.div>

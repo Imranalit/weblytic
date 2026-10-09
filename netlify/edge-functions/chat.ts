@@ -4,14 +4,16 @@ export default async (request: Request) => {
   }
 
   try {
-    const { messages } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const messages = Array.isArray(body.messages) ? body.messages : [];
 
     // Edge Functions read Netlify Secret env vars via Netlify.env.get()
     const apiKey = Netlify.env.get("GROQ_API_KEY");
 
     if (!apiKey) {
+      console.error("GROQ_API_KEY is not set.");
       return new Response(
-        JSON.stringify({ error: "GROQ_API_KEY is not set in environment variables." }),
+        JSON.stringify({ error: "Service configuration error. Please try again later." }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
@@ -59,12 +61,11 @@ COMMUNICATION & FORMATTING RULES:
 - Be polite, professional, and warmly guide clients to message on WhatsApp (+923131398796) for quick custom quotes.`
     };
 
-    // Failover pool: If a model hits rate limits (429), maintenance, or errors out,
-    // the system automatically falls over to the next available model in real time!
+    // Failover pool
     const modelPool = [
-      "openai/gpt-oss-120b", // Flagship 120B model - top tier responses (~500 t/s)
-      "openai/gpt-oss-20b",  // Ultra-fast 20B model (~1,000 t/s) - instant backup
-      "qwen/qwen3.8-27b",    // Strong 27B model - reliable third tier backup
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "qwen/qwen3.8-27b",
     ];
 
     let lastError = "";
@@ -96,7 +97,7 @@ COMMUNICATION & FORMATTING RULES:
               JSON.stringify({
                 role: "assistant",
                 content,
-                modelUsed: model,
+                // do not leak model internally used to the client
               }),
               { headers: { "Content-Type": "application/json" } }
             );
@@ -104,23 +105,25 @@ COMMUNICATION & FORMATTING RULES:
         }
 
         const errorText = await groqResponse.text();
-        lastError = `[${model}] HTTP ${groqResponse.status}: ${errorText}`;
-        console.warn(`Model ${model} failed: ${lastError}. Failing over to next model...`);
+        lastError = `[${model}] HTTP ${groqResponse.status}`;
+        console.warn(`Model ${model} failed: ${errorText}. Failing over...`);
       } catch (err: any) {
-        lastError = `[${model}] Connection error: ${err.message || err}`;
-        console.warn(`Model ${model} connection error. Failing over to next model...`);
+        lastError = `[${model}] Connection error`;
+        console.warn(`Model ${model} connection error: ${err.message || err}. Failing over...`);
       }
     }
 
+    console.error(`All models in the pool failed. Last error: ${lastError}`);
     return new Response(
       JSON.stringify({
-        error: `All models in the pool are temporarily unavailable. Last error: ${lastError}`,
+        error: "Chat service is temporarily unavailable. Please try again later.",
       }),
       { status: 502, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: any) {
+    console.error("Internal Server Error:", error.message || error);
     return new Response(
-      JSON.stringify({ error: `Internal Server Error: ${error.message || error}` }),
+      JSON.stringify({ error: "Internal Server Error. Please try again later." }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }

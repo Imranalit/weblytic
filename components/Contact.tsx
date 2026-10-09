@@ -8,22 +8,43 @@ import { fadeUp, slideInRight } from "@/lib/motion";
 
 type FormData = {
   name: string;
+  email: string;
   organization: string;
   teamSize: string;
   package: string;
   message: string;
+  "bot-field"?: string;
 };
 
 export default function Contact() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    const phoneNumber = "923131398796";
+  const onSubmit = async (data: FormData, e?: React.BaseSyntheticEvent) => {
+    e?.preventDefault(); // explicitly prevent default
     
-    // Construct the WhatsApp message text
+    // 1. Submit to Netlify to capture the lead on the server
+    try {
+      const formData = new URLSearchParams();
+      formData.append("form-name", "quote");
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
+      
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      });
+    } catch (err) {
+      console.error("Failed to submit to server", err);
+    }
+
+    // 2. Open WhatsApp for instant chat
+    const phoneNumber = "923131398796";
     const text = `*New Quote Request!*
     
 *Name:* ${data.name}
+*Email:* ${data.email}
 *Organization:* ${data.organization || "N/A"}
 *Team Size:* ${data.teamSize}
 *Package:* ${data.package}
@@ -31,10 +52,7 @@ export default function Contact() {
 *Message:*
 ${data.message}`;
 
-    // Encode the text for the URL
     const encodedText = encodeURIComponent(text);
-    
-    // Open WhatsApp in a new tab
     window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, "_blank");
   };
 
@@ -101,12 +119,18 @@ ${data.message}`;
             className="flex-1"
           >
             <div className="glass-card p-8 md:p-10 relative">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                
+              <form name="quote" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <input type="hidden" name="form-name" value="quote" />
+                <p className="hidden">
+                  <label htmlFor="quote-bot-field">Don’t fill this out if you're human:</label>
+                  <input id="quote-bot-field" {...register("bot-field")} />
+                </p>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Full Name</label>
+                    <label htmlFor="quote-name" className="text-sm font-medium text-white">Full Name</label>
                     <input
+                      id="quote-name"
                       {...register("name", { required: true })}
                       className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                       placeholder="John Doe"
@@ -115,32 +139,33 @@ ${data.message}`;
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Organization Name</label>
+                    <label htmlFor="quote-email" className="text-sm font-medium text-white">Email Address</label>
                     <input
-                      {...register("organization")}
+                      id="quote-email"
+                      type="email"
+                      {...register("email", { required: true })}
                       className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
-                      placeholder="Your Company LLC"
+                      placeholder="john@example.com"
                     />
+                    {errors.email && <span className="text-xs text-red-400">Email is required</span>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Package Needed</label>
-                    <select
-                      {...register("package")}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
-                    >
-                      <option value="Offline Software">Offline Software</option>
-                      <option value="Server-Based Software">Server-Based Software</option>
-                      <option value="Website with Free Hosting">Website with Free Hosting</option>
-                      <option value="Website with Hosting & Domain">Website with Hosting & Domain</option>
-                    </select>
+                    <label htmlFor="quote-organization" className="text-sm font-medium text-white">Organization Name</label>
+                    <input
+                      id="quote-organization"
+                      {...register("organization")}
+                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                      placeholder="Your Company LLC"
+                    />
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Working Team Size</label>
+                    <label htmlFor="quote-teamSize" className="text-sm font-medium text-white">Working Team Size</label>
                     <select
+                      id="quote-teamSize"
                       {...register("teamSize")}
                       className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
                     >
@@ -154,8 +179,23 @@ ${data.message}`;
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Project Details / Message</label>
+                  <label htmlFor="quote-package" className="text-sm font-medium text-white">Package Needed</label>
+                  <select
+                    id="quote-package"
+                    {...register("package")}
+                    className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
+                  >
+                    <option value="Offline Software">Offline Software</option>
+                    <option value="Server-Based Software">Server-Based Software</option>
+                    <option value="Website with Free Hosting">Website with Free Hosting</option>
+                    <option value="Website with Hosting & Domain">Website with Hosting & Domain</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="quote-message" className="text-sm font-medium text-white">Project Details / Message</label>
                   <textarea
+                    id="quote-message"
                     {...register("message", { required: true })}
                     rows={4}
                     className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"

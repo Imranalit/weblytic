@@ -70,13 +70,14 @@ export default function Testimonials() {
           </div>
           
           <div className="flex items-center gap-4 mt-8 pt-8 border-t border-white/10">
-            <button onClick={prev} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
+            <button onClick={prev} aria-label="Previous testimonial" className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex gap-2">
               {testimonials.map((_, i) => (
                 <button
                   key={i}
+                  aria-label={`Go to testimonial ${i + 1}`}
                   onClick={() => setCurrentIndex(i)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     i === currentIndex ? "w-6 bg-primary" : "bg-white/20"
@@ -84,7 +85,7 @@ export default function Testimonials() {
                 />
               ))}
             </div>
-            <button onClick={next} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
+            <button onClick={next} aria-label="Next testimonial" className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

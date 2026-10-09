@@ -24,20 +24,24 @@ const features = [
 ];
 
 const Counter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(value);
 
   useEffect(() => {
     let start = 0;
     const end = parseInt(String(value).substring(0, 3));
     if (start === end) return;
     
+    setCount(start);
     let totalMilSecDur = 2000;
     let incrementTime = (totalMilSecDur / end) * 2;
     
     let timer = setInterval(() => {
       start += 1;
       setCount(start);
-      if (start === end) clearInterval(timer);
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      }
     }, incrementTime);
     
     return () => clearInterval(timer);
@@ -68,27 +72,21 @@ export default function WhyUs() {
           ))}
         </m.div>
 
-        <m.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8"
-        >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { label: "Projects Delivered", value: 50, suffix: "+" },
             { label: "Uptime SLA", value: 99, suffix: ".9%" },
             { label: "Support Response", value: 24, suffix: "h" },
             { label: "Client Satisfaction", value: 100, suffix: "%" }
           ].map((stat, i) => (
-            <m.div key={i} variants={fadeUp} className="text-center p-6 glass-card">
+            <div key={i} className="text-center p-6 glass-card">
               <div className="text-4xl md:text-5xl font-display font-bold text-gradient mb-2">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
               <div className="text-sm text-text-muted font-medium">{stat.label}</div>
-            </m.div>
+            </div>
           ))}
-        </m.div>
+        </div>
       </div>
     </section>
   );

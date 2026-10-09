@@ -1,7 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
-import { Button } from "./ui/Button";
+import { Button, ButtonLink } from "./ui/Button";
 import { ArrowRight, Code, Layout, Server, HardDrive } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
@@ -65,17 +65,13 @@ export default function Hero() {
               animate="visible"
               className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
             >
-              <a href="#contact">
-                <Button size="lg" className="w-full sm:w-auto gap-2 group">
-                  Start a Project
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </a>
-              <a href="#services">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Explore Services
-                </Button>
-              </a>
+              <ButtonLink href="#contact" size="lg" className="w-full sm:w-auto gap-2 group">
+                Start a Project
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </ButtonLink>
+              <ButtonLink href="#services" variant="outline" size="lg" className="w-full sm:w-auto">
+                Explore Services
+              </ButtonLink>
             </m.div>
 
             {/* Trust Bar */}
@@ -86,13 +82,12 @@ export default function Hero() {
               className="mt-16 pt-8 border-t border-white/5"
             >
               <p className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-6">
-                Trusted by 50+ innovative businesses
+                Trusted by innovative businesses & institutions
               </p>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-8 opacity-50 grayscale">
-                <div className="font-display font-bold text-xl">Acme Corp</div>
-                <div className="font-display font-bold text-xl">Nexus</div>
-                <div className="font-display font-bold text-xl">Vertex</div>
-                <div className="font-display font-bold text-xl">Quantum</div>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-8 opacity-60">
+                <div className="font-display font-bold text-xl">Pdfnestor</div>
+                <div className="font-display font-bold text-xl">Sukkur IBA University</div>
+                <div className="font-display font-bold text-xl">Retail POS Clients</div>
               </div>
             </m.div>
           </div>

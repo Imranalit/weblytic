@@ -138,10 +138,13 @@ export default function Footer() {
               {/* Hidden inputs for Netlify */}
               <input type="hidden" name="form-name" value="newsletter" />
               <div className="hidden">
-                <label>Don’t fill this out: <input name="bot-field" /></label>
+                <label htmlFor="bot-field">Don’t fill this out:</label>
+                <input id="bot-field" name="bot-field" />
               </div>
 
+              <label htmlFor="newsletter-email" className="sr-only">Email Address</label>
               <input
+                id="newsletter-email"
                 type="email"
                 name="email"
                 value={email}

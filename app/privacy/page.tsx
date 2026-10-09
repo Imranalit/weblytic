@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
             
             {/* Preamble */}
             <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-text-muted leading-relaxed">
-              This Privacy Policy explains how Weblytic ("Weblytic", "we", "us", "our"), based in Khairpur Mirs', Sindh, Pakistan, collects, uses and protects information when you visit <strong className="text-white">weblytic.cc</strong> (the "Website"), contact us, or use our services. By using the Website, you agree to the practices described here.
+              This Privacy Policy explains how Weblytic ("Weblytic", "we", "us", "our"), based in Khairpur Mirs', Sindh, Pakistan, collects, uses and protects information when you visit <strong className="text-white">weblytic.cc</strong> (the "Website"), contact us, or use our services. For the purposes of the General Data Protection Regulation (GDPR) and the UK GDPR, Weblytic acts as the <strong>Data Controller</strong> for the personal data collected through this Website. By using the Website, you agree to the practices described here.
             </div>
 
             {/* Section 1 */}
@@ -82,19 +82,24 @@ export default function PrivacyPolicyPage() {
                 <p>
                   <strong className="text-white">Cookies.</strong> Weblytic does not use cookies on the Website, and we do not plan to. We do not use cookies or similar tracking technologies to follow you around the Website or the internet.
                 </p>
-                <p>
-                  We do not knowingly collect personal information from children under 13, and our services are intended for businesses and adults.
-                </p>
               </div>
             </section>
 
             {/* Section 2 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">2.</span> How We Use Your Information
+                <span className="text-primary font-mono text-base">2.</span> How We Use Your Information & Lawful Basis
               </h2>
               <p className="text-text-muted">
-                We use your information to respond to your enquiries and prepare quotes, to provide and manage the services you request, to process payments and keep business records, to communicate with you about your project, support and updates, to send newsletters if you subscribed (you can unsubscribe at any time), and to protect the Website against misuse. Client data is used only to work on the client's project. We do not use any information for personal purposes or for anything unrelated to the work, and we do not sell your personal information.
+                Under the GDPR, we must have a lawful basis for processing your data. We rely on the following bases:
+              </p>
+              <ul className="list-disc pl-5 space-y-2 text-text-muted">
+                <li><strong>Contractual Necessity:</strong> To respond to your enquiries, prepare quotes, provide and manage services, and process payments.</li>
+                <li><strong>Legitimate Interests:</strong> To protect the Website against misuse, keep business records, and improve our services.</li>
+                <li><strong>Consent:</strong> To send newsletters (if you subscribed). You can withdraw this consent at any time.</li>
+              </ul>
+              <p className="text-text-muted">
+                Client data is used strictly to execute the project. We do not sell your personal information or use it for unrelated marketing.
               </p>
             </section>
 
@@ -104,7 +109,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">3.</span> Third-Party Services
               </h2>
               <p className="text-text-muted">
-                We rely on trusted third parties to run our business, and they may process your information on our behalf or under their own policies. These can include Netlify, which hosts this Website, messaging platforms (WhatsApp), email providers, domain registrars and hosting companies (for example Hostinger, Namecheap, GoDaddy) when we set up services for you, and Groq, the AI provider we use to power AI chatbots. Netlify may collect technical data about visitors to the Website, such as IP addresses and request logs, and Groq may collect and process the messages and data sent to the AI models. We share only what is reasonably necessary for these providers to perform their function, and their collection and handling of data is governed by their own privacy policies, which we encourage you to read. Weblytic does not control how they handle that data. The Website may also link to external sites, such as client project sites, which we do not control and are not responsible for.
+                We rely on trusted third parties to run our business, acting as Data Processors. These include Netlify (hosting), WhatsApp (messaging), email providers, domain registrars, and Groq (AI provider for chatbots). We share only what is strictly necessary. We have executed Data Processing Agreements (DPAs) or rely on standard contractual clauses where applicable to ensure they protect your data. Weblytic does not control external links or third-party client project sites.
               </p>
             </section>
 
@@ -114,7 +119,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">4.</span> Client Data and AI Bots
               </h2>
               <p className="text-text-muted">
-                If we build software, websites, or AI chatbots for you, the data you provide for the project (such as business documents used to train a bot) is used only to deliver and support that project. You are responsible for having the right to share that data with us, and for the privacy practices of the final product you operate, including notifying your own users where required. Conversations with an AI chatbot are processed by our AI provider, Groq, which may collect that data under its own policies, so please avoid putting highly sensitive information into a chatbot.
+                When we build software or AI chatbots for you, the data you provide is used solely to deliver the project. You are responsible for securing the right to share that data with us, acting as the Data Controller for your end-users. Conversations with our Website AI chatbot are processed securely by Groq. Please avoid entering highly sensitive personal data into the chatbot.
               </p>
             </section>
 
@@ -124,14 +129,8 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">5.</span> When We Share Information
               </h2>
               <p className="text-text-muted">
-                Apart from the service providers above, we may disclose information if required by law, court order, or a lawful request from authorities, to protect our rights, safety or property or those of others, or in connection with a sale or transfer of the business. We will not share your information for third-party marketing.
+                Apart from service providers, we may disclose information if required by law, court order, or to protect our legal rights. Client names and project screenshots may be used in our portfolio only with implied or explicit consent. Any personal data in screenshots is blurred before publication. We never share credentials or contact information publicly.
               </p>
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-2">
-                <h3 className="font-semibold text-white">Client names and portfolio</h3>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  Client information is kept private. What we may choose to show publicly in our portfolio is limited to the name of a client, the name of their project, screenshots of the finished work, and a link to the live website, and we may or may not do so depending on the project and the client's wishes. Any personal data that appears in a screenshot is blurred or removed before it is published. We never publish any other project details, such as internal data, documents or credentials, and we never share a client's contact information.
-                </p>
-              </div>
             </section>
 
             {/* Section 6 */}
@@ -140,8 +139,13 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">6.</span> Data Retention
               </h2>
               <p className="text-text-muted">
-                We keep personal information only as long as needed for the purposes described here, including to deliver services, resolve disputes, and meet legal, accounting and record-keeping obligations. Enquiry details are generally kept for as long as the conversation or project is active and for a reasonable period afterwards. Newsletter data is kept until you unsubscribe.
+                We retain personal data only for as long as necessary. Specifically:
               </p>
+              <ul className="list-disc pl-5 space-y-2 text-text-muted">
+                <li><strong>Enquiries:</strong> Deleted 12 months after the last communication if no project is initiated.</li>
+                <li><strong>Client Records & Billing:</strong> Kept for up to 7 years to comply with tax and accounting laws.</li>
+                <li><strong>Newsletters:</strong> Kept until you unsubscribe, at which point your email is permanently deleted from the active list.</li>
+              </ul>
             </section>
 
             {/* Section 7 */}
@@ -150,27 +154,37 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">7.</span> Data Security
               </h2>
               <p className="text-text-muted">
-                We use reasonable technical and organizational measures to protect your information, such as access controls and trusted providers. No method of transmission or storage over the internet is completely secure, so we cannot guarantee absolute security. Please avoid sending sensitive passwords or financial details through open channels when a safer method is available, and let us know how we can help share them securely.
+                We implement strict technical and organizational measures to protect your data, including TLS/SSL encryption in transit, strict access controls, and secure credentials management. While we strive for absolute security, no internet transmission is 100% secure.
               </p>
             </section>
 
             {/* Section 8 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">8.</span> Your Choices and Rights
+                <span className="text-primary font-mono text-base">8.</span> Your Rights (GDPR & UK GDPR)
               </h2>
               <p className="text-text-muted">
-                You may ask us to access the personal information we hold about you, to correct it, or to delete it, subject to any legal or record-keeping obligations we must follow. You can unsubscribe from our newsletter at any time using the link in the email or by contacting us. To make a request, contact us using the details below, and we will respond within a reasonable time.
+                If you are located in the EEA or the UK, you have the right to:
+              </p>
+              <ul className="list-disc pl-5 space-y-2 text-text-muted">
+                <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
+                <li><strong>Rectification:</strong> Request correction of inaccurate data.</li>
+                <li><strong>Erasure:</strong> Request deletion of your data (the "right to be forgotten").</li>
+                <li><strong>Restriction & Objection:</strong> Restrict or object to our processing of your data.</li>
+                <li><strong>Portability:</strong> Request transfer of your data to another organization.</li>
+              </ul>
+              <p className="text-text-muted">
+                To exercise these rights, contact us at weblytic.cc@gmail.com. You also have the right to lodge a complaint with your local supervisory authority.
               </p>
             </section>
 
             {/* Section 9 */}
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-primary font-mono text-base">9.</span> International Visitors
+                <span className="text-primary font-mono text-base">9.</span> International Data Transfers
               </h2>
               <p className="text-text-muted">
-                Our business operates from Pakistan, and information may be processed in other countries where our service providers operate. By using the Website, you understand your information may be transferred and stored outside your own country.
+                Weblytic operates in Pakistan. When you interact with our Website, your data is processed outside the EEA/UK. We ensure that such transfers are protected by appropriate safeguards, including standard contractual clauses (SCCs) with our hosting and AI infrastructure partners located in the US and EU, guaranteeing a level of protection equivalent to the GDPR.
               </p>
             </section>
 
@@ -180,7 +194,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">10.</span> Changes to This Policy
               </h2>
               <p className="text-text-muted">
-                We may update this Privacy Policy from time to time. The latest version will always be posted on this page with an updated "Last updated" date. Continuing to use the Website after changes means you accept the updated policy.
+                We may update this Privacy Policy from time to time. The latest version will always be posted on this page with an updated "Last updated" date.
               </p>
             </section>
 

@@ -2,7 +2,7 @@
 
 import { m } from "framer-motion";
 import { Check, Info } from "lucide-react";
-import { Button } from "./ui/Button";
+import { Button, ButtonLink } from "./ui/Button";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const plans = [
@@ -136,14 +136,13 @@ export default function Pricing() {
                 </p>
               </div>
               
-              <a href="#contact" className="w-full mt-auto">
-                <Button 
-                  variant={plan.popular ? "primary" : "secondary"} 
-                  className="w-full"
-                >
-                  Get Started
-                </Button>
-              </a>
+              <ButtonLink 
+                href="#contact"
+                variant={plan.popular ? "primary" : "secondary"} 
+                className="w-full mt-auto"
+              >
+                Get Started
+              </ButtonLink>
             </m.div>
           ))}
         </m.div>
