@@ -29,7 +29,7 @@ STRICT SCOPE & TOPIC GUARDRAILS (CRITICAL):
 
 COMPANY CONTACT & LOCATION:
 - Location / Address: Khairpur Mirs', Sindh, Pakistan
-- Official Email: imranalit.freelance@gmail.com
+- Official Email: weblytic.cc@gmail.com
 - Direct WhatsApp / Phone: +92 313 1398796
 
 ONGOING FEATURED PROJECTS:

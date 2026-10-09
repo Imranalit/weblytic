@@ -63,8 +63,8 @@ ${data.message}`;
                 </div>
                 <div>
                   <div className="font-medium text-white">Email Us</div>
-                  <a href="mailto:imranalit.freelance@gmail.com" className="hover:text-primary transition-colors">
-                    imranalit.freelance@gmail.com
+                  <a href="mailto:weblytic.cc@gmail.com" className="hover:text-primary transition-colors">
+                    weblytic.cc@gmail.com
                   </a>
                 </div>
               </div>

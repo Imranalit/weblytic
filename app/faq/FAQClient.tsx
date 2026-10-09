@@ -267,7 +267,7 @@ export default function FAQClient() {
                   Chat on WhatsApp (+92 313 1398796)
                 </a>
                 <a
-                  href="mailto:imranalit.freelance@gmail.com"
+                  href="mailto:weblytic.cc@gmail.com"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm font-semibold border border-white/10 transition-all"
                 >
                   <Mail className="w-4 h-4" />

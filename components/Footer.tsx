@@ -55,7 +55,7 @@ export default function Footer() {
             </p>
             <div className="text-xs text-text-muted space-y-1">
               <p>📍 Khairpur Mirs', Sindh, Pakistan</p>
-              <p>✉️ <a href="mailto:imranalit.freelance@gmail.com" className="hover:text-primary transition-colors">imranalit.freelance@gmail.com</a></p>
+              <p>✉️ <a href="mailto:weblytic.cc@gmail.com" className="hover:text-primary transition-colors">weblytic.cc@gmail.com</a></p>
               <p>📱 <a href="https://wa.me/923131398796" className="hover:text-primary transition-colors">+92 313 1398796</a></p>
             </div>
             <div className="flex items-center gap-4">
@@ -114,6 +114,7 @@ export default function Footer() {
             <h4 className="font-display font-bold text-white mb-6">Company</h4>
             <ul className="space-y-4">
               <li><a href="/about" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
+              <li><a href="/careers" className="text-sm text-text-muted hover:text-white transition-colors">Careers <span className="ml-1 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">We're Hiring</span></a></li>
               <li><a href="/#portfolio" className="text-sm text-text-muted hover:text-white transition-colors">Portfolio</a></li>
               <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/faq" className="text-sm text-text-muted hover:text-white transition-colors">FAQ</a></li>

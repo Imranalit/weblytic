@@ -97,7 +97,7 @@ const businessSchema = {
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
   "telephone": "+923131398796",
-  "email": "imranalit.freelance@gmail.com",
+  "email": "weblytic.cc@gmail.com",
   "priceRange": "PKR 5000 - PKR 80000",
   "currenciesAccepted": "PKR",
   "paymentAccepted": "Cash, Bank Transfer, EasyPaisa, JazzCash",

@@ -149,7 +149,7 @@ export default function RefundPolicyPage() {
                 <span className="text-primary font-mono text-base">7.</span> How to Request a Refund
               </h2>
               <p className="text-text-muted">
-                Email <strong>imranalit.freelance@gmail.com</strong> or message us on WhatsApp at <strong>+92 313 1398796</strong> with your name, project details, payment proof and the reason for your request. We will review it and respond within 7 business days. Approved refunds are returned using the original payment method where possible, within 7 to 14 business days of approval. Bank or wallet transfer charges may be deducted.
+                Email <strong>weblytic.cc@gmail.com</strong> or message us on WhatsApp at <strong>+92 313 1398796</strong> with your name, project details, payment proof and the reason for your request. We will review it and respond within 7 business days. Approved refunds are returned using the original payment method where possible, within 7 to 14 business days of approval. Bank or wallet transfer charges may be deducted.
               </p>
             </section>
 
@@ -164,7 +164,7 @@ export default function RefundPolicyPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <Mail className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-xs break-all">imranalit.freelance@gmail.com</span>
+                  <span className="text-xs break-all">weblytic.cc@gmail.com</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <Phone className="w-4 h-4 text-secondary shrink-0" />
