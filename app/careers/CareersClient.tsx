@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
+
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Briefcase, MapPin, DollarSign, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function CareersClient() {
+  const [showForm, setShowForm] = useState(false);
   return (
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-background flex flex-col">
@@ -145,27 +148,52 @@ export default function CareersClient() {
                 {/* Apply CTA */}
                 <div className="pt-8 border-t border-white/10 mt-10">
                   <h3 className="text-xl font-bold text-white mb-4">Ready to Apply?</h3>
-                  <p className="mb-6">
-                    If you are driven, confident, and ready to close deals, we want to hear from you. 
-                    Send us your resume along with a brief message explaining why you'd be a great fit.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <a 
-                      href="mailto:weblytic.cc@gmail.com?subject=Application:%20Lead%20Conversion%20Specialist"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors"
+                  
+                  {!showForm ? (
+                    <>
+                      <p className="mb-6">
+                        If you are driven, confident, and ready to close deals, we want to hear from you. 
+                        Click below to fill out our quick online application form.
+                      </p>
+                      <div className="flex flex-wrap gap-4">
+                        <button 
+                          onClick={() => setShowForm(true)}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors"
+                        >
+                          Apply Online
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <a 
+                          href="https://wa.me/923131398796?text=Hi%20Weblytic,%20I%20am%20interested%20in%20the%20Lead%20Conversion%20Specialist%20role."
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl border border-white/10 transition-colors"
+                        >
+                          Message on WhatsApp
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <m.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="w-full mt-4 bg-white/95 rounded-2xl overflow-hidden shadow-2xl"
                     >
-                      Apply via Email
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
-                    <a 
-                      href="https://wa.me/923131398796?text=Hi%20Weblytic,%20I%20am%20interested%20in%20the%20Lead%20Conversion%20Specialist%20role."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl border border-white/10 transition-colors"
-                    >
-                      Message on WhatsApp
-                    </a>
-                  </div>
+                      {/* We use a white background container because Google Forms is light-themed by default */}
+                      <iframe 
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSeGvSi8sbeogsN3YAIZwB6mK7bUnVU-CJDYGxjASVdVYO5Z5Q/viewform?embedded=true" 
+                        width="100%" 
+                        height="900" 
+                        frameBorder="0" 
+                        marginHeight={0} 
+                        marginWidth={0}
+                        title="Weblytic Job Application Form"
+                        className="w-full"
+                      >
+                        Loading form...
+                      </iframe>
+                    </m.div>
+                  )}
                 </div>
 
               </div>
