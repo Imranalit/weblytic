@@ -10,9 +10,21 @@
     It registers the forms used in the React/Next.js app so Netlify 
     knows to intercept POST requests for them.
   -->
+  <!-- Newsletter Form -->
   <form name="newsletter" data-netlify="true" netlify-honeypot="bot-field" hidden>
     <input type="text" name="bot-field" />
     <input type="email" name="email" />
+  </form>
+
+  <!-- Job Application Form -->
+  <form name="job_application" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="text" name="bot-field" />
+    <input type="text" name="role" />
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="tel" name="phone" />
+    <input type="url" name="linkedin" />
+    <textarea name="cover_letter"></textarea>
   </form>
 </body>
 </html>

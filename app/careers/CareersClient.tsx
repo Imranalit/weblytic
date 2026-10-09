@@ -53,7 +53,7 @@ export default function CareersClient() {
                 <div className="flex flex-wrap gap-4 mt-6">
                   <div className="flex items-center gap-2 text-sm text-text-muted bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
                     <MapPin className="w-4 h-4 text-secondary" />
-                    <span>Remote / Khairpur Mirs’ (Hybrid)</span>
+                    <span>Remote</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-text-muted bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
                     <Clock className="w-4 h-4 text-success" />
@@ -153,45 +153,95 @@ export default function CareersClient() {
                     <>
                       <p className="mb-6">
                         If you are driven, confident, and ready to close deals, we want to hear from you. 
-                        Click below to fill out our quick online application form.
+                        Click below to fill out our quick online application.
                       </p>
-                      <div className="flex flex-wrap gap-4">
-                        <button 
-                          onClick={() => setShowForm(true)}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors"
-                        >
-                          Apply Online
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                        <a 
-                          href="https://wa.me/923131398796?text=Hi%20Weblytic,%20I%20am%20interested%20in%20the%20Lead%20Conversion%20Specialist%20role."
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl border border-white/10 transition-colors"
-                        >
-                          Message on WhatsApp
-                        </a>
-                      </div>
+                      <button 
+                        onClick={() => setShowForm(true)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors"
+                      >
+                        Apply Online
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </>
                   ) : (
                     <m.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="w-full mt-4 bg-white/95 rounded-2xl overflow-hidden shadow-2xl"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl"
                     >
-                      {/* We use a white background container because Google Forms is light-themed by default */}
-                      <iframe 
-                        src="https://docs.google.com/forms/d/e/1FAIpQLSeGvSi8sbeogsN3YAIZwB6mK7bUnVU-CJDYGxjASVdVYO5Z5Q/viewform?embedded=true" 
-                        width="100%" 
-                        height="900" 
-                        frameBorder="0" 
-                        marginHeight={0} 
-                        marginWidth={0}
-                        title="Weblytic Job Application Form"
-                        className="w-full"
+                      <h4 className="text-lg font-bold text-white mb-6">Application Form</h4>
+                      <form 
+                        name="job_application" 
+                        data-netlify="true" 
+                        netlify-honeypot="bot-field"
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const form = e.target as HTMLFormElement;
+                          const formData = new FormData(form);
+                          const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                          submitBtn.disabled = true;
+                          submitBtn.textContent = "Submitting...";
+                          
+                          try {
+                            const response = await fetch("/", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                              body: new URLSearchParams(formData as any).toString(),
+                            });
+                            
+                            if (response.ok) {
+                              form.innerHTML = "<div class='text-center py-8 text-success'><p class='text-xl font-bold mb-2'>Application Submitted!</p><p class='text-text-muted'>Thank you for applying. We will review your profile and get back to you soon.</p></div>";
+                            } else {
+                              throw new Error("Failed");
+                            }
+                          } catch (error) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "Error! Try Again";
+                          }
+                        }}
+                        className="space-y-4"
                       >
-                        Loading form...
-                      </iframe>
+                        <input type="hidden" name="form-name" value="job_application" />
+                        <input type="hidden" name="role" value="Lead Conversion Specialist" />
+                        
+                        <p className="hidden">
+                          <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">Full Name *</label>
+                            <input required type="text" name="name" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="John Doe" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">Email Address *</label>
+                            <input required type="email" name="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com" />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">WhatsApp / Phone Number *</label>
+                            <input required type="tel" name="phone" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="+92 XXX XXXXXXX" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">LinkedIn Profile or Portfolio Link</label>
+                            <input type="url" name="linkedin" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="https://linkedin.com/in/..." />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm text-text-muted">Why are you a good fit for this role? *</label>
+                          <textarea required name="cover_letter" rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Tell us about your sales experience..."></textarea>
+                        </div>
+
+                        <button 
+                          type="submit"
+                          className="w-full mt-2 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                        >
+                          Submit Application
+                        </button>
+                      </form>
                     </m.div>
                   )}
                 </div>
