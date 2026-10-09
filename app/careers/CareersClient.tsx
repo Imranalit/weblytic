@@ -171,73 +171,120 @@ export default function CareersClient() {
                     >
                       <h4 className="text-lg font-bold text-white mb-6">Application Form</h4>
                       <form 
-                        name="job_application" 
-                        data-netlify="true" 
-                        netlify-honeypot="bot-field"
                         onSubmit={async (e) => {
                           e.preventDefault();
                           const form = e.target as HTMLFormElement;
                           const formData = new FormData(form);
+                          
+                          const email = formData.get("entry.2096700581") as string;
+                          if (localStorage.getItem("applied_" + email)) {
+                            alert("You have already applied with this email address!");
+                            return;
+                          }
+
                           const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
                           submitBtn.disabled = true;
                           submitBtn.textContent = "Submitting...";
                           
                           try {
-                            const response = await fetch("/", {
+                            // Submit to Google Forms via no-cors fetch
+                            await fetch("https://docs.google.com/forms/d/e/1FAIpQLSeGvSi8sbeogsN3YAIZwB6mK7bUnVU-CJDYGxjASVdVYO5Z5Q/formResponse", {
                               method: "POST",
-                              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                              body: new URLSearchParams(formData as any).toString(),
+                              mode: "no-cors",
+                              body: formData,
                             });
                             
-                            if (response.ok) {
-                              form.innerHTML = "<div class='text-center py-8 text-success'><p class='text-xl font-bold mb-2'>Application Submitted!</p><p class='text-text-muted'>Thank you for applying. We will review your profile and get back to you soon.</p></div>";
-                            } else {
-                              throw new Error("Failed");
-                            }
+                            // Google Forms no-cors fetch always succeeds if network is up
+                            localStorage.setItem("applied_" + email, "true");
+                            form.innerHTML = "<div class='text-center py-8 text-success'><p class='text-xl font-bold mb-2'>Application Submitted!</p><p class='text-text-muted'>Thank you for applying. We will review your profile and get back to you soon.</p></div>";
+                            
+                            // Optional confirmation popup
+                            alert("Your application has been submitted successfully!");
                           } catch (error) {
                             submitBtn.disabled = false;
                             submitBtn.textContent = "Error! Try Again";
+                            alert("Network error. Please try again.");
                           }
                         }}
                         className="space-y-4"
                       >
-                        <input type="hidden" name="form-name" value="job_application" />
-                        <input type="hidden" name="role" value="Lead Conversion Specialist" />
-                        
-                        <p className="hidden">
-                          <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
-                        </p>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <label className="text-sm text-text-muted">Full Name *</label>
-                            <input required type="text" name="name" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="John Doe" />
+                            <input required type="text" name="entry.722460608" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="John Doe" />
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-sm text-text-muted">Email Address *</label>
-                            <input required type="email" name="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com" />
+                            <input required type="email" name="entry.2096700581" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com" />
                           </div>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <label className="text-sm text-text-muted">WhatsApp / Phone Number *</label>
-                            <input required type="tel" name="phone" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="+92 XXX XXXXXXX" />
+                            <input required type="tel" name="entry.2037704989" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="+92 XXX XXXXXXX" />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">LinkedIn Profile or Portfolio Link</label>
-                            <input type="url" name="linkedin" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="https://linkedin.com/in/..." />
+                            <label className="text-sm text-text-muted">City / Current Location *</label>
+                            <input required type="text" name="entry.1476683466" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="e.g. Karachi" />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">Current Status *</label>
+                            <select required name="entry.946518524" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
+                              <option value="">Select...</option>
+                              <option value="Student">Student</option>
+                              <option value="Fresh Graduate">Fresh Graduate</option>
+                              <option value="Freelancer">Freelancer</option>
+                              <option value="Marketing Professional">Marketing Professional</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">Prior sales experience? *</label>
+                            <select required name="entry.663302489" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
+                              <option value="">Select...</option>
+                              <option value="Yes (Please elaborate below)">Yes</option>
+                              <option value="No (Fresher / No prior experience required)">No (Fresher)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">How would you prefer to work? *</label>
+                            <select required name="entry.1564172592" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
+                              <option value="">Select...</option>
+                              <option value="Remotely">Remotely</option>
+                              <option value="Visiting clients in my area">Visiting clients in my area</option>
+                              <option value="Both">Both</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-sm text-text-muted">Hours per week? *</label>
+                            <select required name="entry.341830738" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
+                              <option value="">Select...</option>
+                              <option value="Part-time (Flexible hours)">Part-time (Flexible hours)</option>
+                              <option value="Full-time">Full-time</option>
+                            </select>
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-sm text-text-muted">Why are you a good fit for this role? *</label>
-                          <textarea required name="cover_letter" rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Tell us about your sales experience..."></textarea>
+                          <label className="text-sm text-text-muted">LinkedIn / Portfolio / Resume Link (Optional)</label>
+                          <input type="url" name="entry.2029976506" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="https://..." />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm text-text-muted">Why do you want to join Weblytic? (Optional)</label>
+                          <textarea name="entry.827722151" rows={3} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Tell us about yourself..."></textarea>
                         </div>
 
                         <button 
                           type="submit"
-                          className="w-full mt-2 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
+                          className="w-full mt-4 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
                         >
                           Submit Application
                         </button>

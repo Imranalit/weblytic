@@ -48,9 +48,19 @@ export default function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-text-muted hover:text-white transition-colors text-sm font-medium"
+                className={`text-sm font-medium transition-colors relative ${
+                  link.name === "Careers" 
+                    ? "text-primary hover:text-primary-end animate-pulse font-bold" 
+                    : "text-text-muted hover:text-white"
+                }`}
               >
                 {link.name}
+                {link.name === "Careers" && (
+                  <span className="absolute -top-1.5 -right-3 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                )}
               </a>
             ))}
             <a href="/#contact">
@@ -96,9 +106,19 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-4xl font-display font-bold text-white hover:text-primary transition-colors"
+                  className={`text-4xl font-display font-bold transition-colors relative inline-block w-fit ${
+                    link.name === "Careers"
+                      ? "text-primary animate-pulse"
+                      : "text-white hover:text-primary"
+                  }`}
                 >
                   {link.name}
+                  {link.name === "Careers" && (
+                    <span className="absolute top-0 -right-6 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                    </span>
+                  )}
                 </a>
               ))}
               <div className="mt-8">
