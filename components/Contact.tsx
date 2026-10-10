@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { m } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Mail, MapPin, Phone, MessageSquare } from "lucide-react";
+import { Mail, MapPin, Phone, MessageSquare, AlertCircle } from "lucide-react";
 import { Button } from "./ui/Button";
 import { fadeUp, slideInRight } from "@/lib/motion";
 
@@ -18,11 +19,12 @@ type FormData = {
 
 export default function Contact() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const onSubmit = async (data: FormData, e?: React.BaseSyntheticEvent) => {
-    e?.preventDefault(); // explicitly prevent default
+    e?.preventDefault();
+    setStatus("sending");
     
-    // 1. Submit to Netlify to capture the lead on the server
     try {
       const formData = new URLSearchParams();
       formData.append("form-name", "quote");
@@ -30,30 +32,24 @@ export default function Contact() {
         if (value) formData.append(key, value);
       });
       
-      await fetch("/", {
+      const res = await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
       });
+
+      if (!res.ok) throw new Error(`Netlify form POST failed: ${res.status}`);
+
+      setStatus("sent");
+      
+      const phoneNumber = "923131398796";
+      const text = `*New Quote Request!*\n\n*Name:* ${data.name}\n*Email:* ${data.email}\n*Organization:* ${data.organization || "N/A"}\n*Team Size:* ${data.teamSize}\n*Package:* ${data.package}\n\n*Message:*\n${data.message}`;
+      
+      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
     } catch (err) {
-      console.error("Failed to submit to server", err);
+      console.error(err);
+      setStatus("error");
     }
-
-    // 2. Open WhatsApp for instant chat
-    const phoneNumber = "923131398796";
-    const text = `*New Quote Request!*
-    
-*Name:* ${data.name}
-*Email:* ${data.email}
-*Organization:* ${data.organization || "N/A"}
-*Team Size:* ${data.teamSize}
-*Package:* ${data.package}
-
-*Message:*
-${data.message}`;
-
-    const encodedText = encodeURIComponent(text);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, "_blank");
   };
 
   return (
@@ -204,10 +200,26 @@ ${data.message}`;
                   {errors.message && <span className="text-xs text-red-400">Message is required</span>}
                 </div>
 
-                <Button type="submit" size="lg" className="w-full gap-2 bg-success hover:bg-success/80 text-white">
-                  <MessageSquare className="w-5 h-5" />
-                  Chat on WhatsApp
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  disabled={status === "sending" || status === "sent"}
+                  className="w-full gap-2 bg-success hover:bg-success/80 text-white disabled:opacity-50"
+                >
+                  {status === "sending" ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <MessageSquare className="w-5 h-5" />
+                  )}
+                  {status === "sending" ? "Processing..." : status === "sent" ? "Opening WhatsApp..." : "Chat on WhatsApp"}
                 </Button>
+                
+                {status === "error" && (
+                  <div className="flex items-center gap-2 text-sm text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-400/20">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <p>There was an error saving your request. Please try again or contact us directly.</p>
+                  </div>
+                )}
               </form>
             </div>
           </m.div>
