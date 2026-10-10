@@ -4,7 +4,7 @@ import path from "path";
 
 const baseUrl = "https://weblytic.cc";
 const mtime = (rel: string) =>
-  new Date(fs.statSync(path.join(process.cwd(), rel)).mtime);
+  new Date(fs.statSync(path.join(process.cwd(), rel)).mtime).toISOString().split(".")[0] + "Z";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
