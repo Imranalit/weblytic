@@ -2,8 +2,9 @@
 
 import { m } from "framer-motion";
 import { Button, ButtonLink } from "./ui/Button";
-import { ArrowRight, Code, Layout, Server, HardDrive } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
+import HeroAnimation from "./HeroAnimation";
 
 export default function Hero() {
   const headlineWords = "Build. Host. Scale. — All in One Place.".split(" ");
@@ -92,57 +93,16 @@ export default function Hero() {
             </m.div>
           </div>
 
-          {/* Floating UI Mockup */}
+          {/* Floating UI Animation Mockup */}
           <div className="flex-1 w-full max-w-lg lg:max-w-none perspective-1000 hidden md:block">
             <m.div
               initial={{ opacity: 0, rotateY: 20, rotateX: 10, scale: 0.9 }}
-              animate={{ opacity: 1, rotateY: -5, rotateX: 5, scale: 1 }}
+              animate={{ opacity: 1, rotateY: -4, rotateX: 4, scale: 1 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
               whileHover={{ rotateY: 0, rotateX: 0, scale: 1.02 }}
-              className="glass-card p-4 relative"
+              className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-2xl pointer-events-none" />
-              <div className="flex items-center gap-2 mb-4 px-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              </div>
-              
-              <div className="bg-background/80 rounded-lg p-6 border border-white/5 space-y-6">
-                <div className="flex justify-between items-center">
-                  <div className="w-32 h-6 bg-white/10 rounded animate-pulse" />
-                  <div className="w-10 h-10 rounded-full bg-white/10" />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
-                    <Code className="text-primary w-6 h-6 mb-2" />
-                    <div className="w-20 h-4 bg-white/10 rounded mb-2" />
-                    <div className="w-12 h-6 bg-white/20 rounded" />
-                  </div>
-                  <div className="bg-secondary/10 rounded-xl p-4 border border-secondary/20">
-                    <Layout className="text-secondary w-6 h-6 mb-2" />
-                    <div className="w-24 h-4 bg-white/10 rounded mb-2" />
-                    <div className="w-16 h-6 bg-white/20 rounded" />
-                  </div>
-                  <div className="bg-success/10 rounded-xl p-4 border border-success/20">
-                    <Server className="text-success w-6 h-6 mb-2" />
-                    <div className="w-16 h-4 bg-white/10 rounded mb-2" />
-                    <div className="w-12 h-6 bg-white/20 rounded" />
-                  </div>
-                  <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/20">
-                    <HardDrive className="text-purple-400 w-6 h-6 mb-2" />
-                    <div className="w-20 h-4 bg-white/10 rounded mb-2" />
-                    <div className="w-14 h-6 bg-white/20 rounded" />
-                  </div>
-                </div>
-                
-                <div className="h-24 bg-white/5 rounded-xl border border-white/5 p-4 flex items-end gap-2">
-                  {[40, 70, 45, 90, 65, 85, 100].map((h, i) => (
-                    <div key={i} className="flex-1 bg-primary/40 rounded-t" style={{ height: `${h}%` }} />
-                  ))}
-                </div>
-              </div>
+              <HeroAnimation />
             </m.div>
           </div>
         </div>
