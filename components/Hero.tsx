@@ -93,14 +93,14 @@ export default function Hero() {
             </m.div>
           </div>
 
-          {/* Floating UI Animation Mockup */}
-          <div className="flex-1 w-full max-w-lg lg:max-w-none perspective-1000 hidden md:block">
+          {/* Floating UI Animation Mockup (Responsive for Mobile & Desktop) */}
+          <div className="flex-1 w-full max-w-lg lg:max-w-none perspective-1000 block mt-8 lg:mt-0">
             <m.div
-              initial={{ opacity: 0, rotateY: 20, rotateX: 10, scale: 0.9 }}
-              animate={{ opacity: 1, rotateY: -4, rotateX: 4, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, rotateY: -3, rotateX: 3, scale: 1 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
               whileHover={{ rotateY: 0, rotateX: 0, scale: 1.02 }}
-              className="relative"
+              className="relative w-full"
             >
               <HeroAnimation />
             </m.div>

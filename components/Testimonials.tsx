@@ -35,6 +35,7 @@ export default function Testimonials() {
   return (
     <section className="py-24 relative z-10">
       <div className="container mx-auto px-6 max-w-4xl">
+        <h2 className="sr-only">Client Testimonials & Reviews</h2>
         <m.div
           initial="hidden"
           whileInView="visible"

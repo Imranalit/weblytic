@@ -88,12 +88,18 @@ const websiteSchema = {
   "url": "https://weblytic.cc",
   "description": "Custom offline software, Next.js web development, local cPanel servers, and WhatsApp AI bot deployments in Pakistan.",
   "inLanguage": "en-US",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://weblytic.cc/faq?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
 };
 
 const businessSchema = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "Weblytic",
+  "logo": "https://weblytic.cc/weblytic-logo.png",
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
   "telephone": "+923131398796",
@@ -113,6 +119,44 @@ const businessSchema = {
     "@type": "GeoCoordinates",
     "latitude": 27.5295,
     "longitude": 68.7592
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Weblytic Digital Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Custom Offline POS & ERP Software",
+          "description": "Tailored retail and wholesale POS software requiring zero monthly cloud or license fees."
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Next.js Web Development",
+          "description": "High-performance, mobile-first websites optimized for sub-second load times and 100/100 PageSpeed SEO."
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Local cPanel & Domain Hosting",
+          "description": "High-speed NVMe hosting, automated backups, and private intranet server setups in Pakistan."
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "WhatsApp & Website AI Chatbots",
+          "description": "Conversational AI assistants fine-tuned on company business documentation for 24/7 lead automation."
+        }
+      }
+    ]
   },
   "openingHoursSpecification": [
     {

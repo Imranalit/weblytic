@@ -54,6 +54,7 @@ export default function WhyUs() {
   return (
     <section className="py-24 bg-elevated/30 relative z-10 border-y border-white/5">
       <div className="container mx-auto px-6 max-w-7xl">
+        <h2 className="sr-only">Why Choose Weblytic for Custom Software & Web Development</h2>
         <m.div
           variants={staggerContainer}
           initial="hidden"
