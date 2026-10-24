@@ -7,69 +7,66 @@ import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const plans = [
   {
-    prefix: "offline",
-    name: "Offline Software",
-    description: "Desktop tools requiring no server-base.",
-    price: "5k - 7k",
-    suffix: "PKR",
+    name: "Custom Desktop Tool",
+    description: "Lightweight offline software for inventory or local data management.",
+    price: "$150+",
+    suffix: "USD",
     features: [
-      "Custom offline desktop applications",
-      "Perfect for POS or local inventory",
-      "No recurring server or hosting costs",
-      "One-time setup fee",
+      "Single-user desktop application",
+      "Local database storage (SQLite / JSON)",
+      "One-time build — no recurring server fees",
+      "Includes basic UI and export to CSV",
     ],
-    note: "Maintenance & changes incur additional charges after deployment.",
+    note: "Complex multi-user ERP features require custom scope.",
     guarantee: "30-Day Bug-Free Guarantee",
-    offer: "Includes free offline installation & training",
+    offer: "Includes 1 hour of free post-launch support",
   },
   {
-    prefix: "static",
-    name: "Static Websites",
+    name: "Starter Landing Page",
     popular: true,
-    description: "Fast, responsive sites with free hosting.",
-    price: "10k - 12k",
-    suffix: "PKR",
+    description: "High-speed, single-page Next.js site with lifetime free Netlify hosting.",
+    price: "$100+",
+    suffix: "USD",
     features: [
-      "Custom static web pages",
-      "Mobile responsive & SEO optimized",
-      "Free hosting via Netlify or subdomains",
-      "Blazing fast performance",
+      "1-page Next.js / React application",
+      "Lifetime free Netlify cloud hosting",
+      "Mobile-responsive & deployed on Netlify",
+      "Basic on-page SEO and OpenGraph tags",
+      "1 round of design revisions",
     ],
-    note: "Maintenance & changes incur additional charges after deployment.",
-    guarantee: "100% Satisfaction Guarantee",
-    offer: "Includes 1 year free hosting & domain",
+    note: "Multi-page sites and CMS integrations start at $400.",
+    guarantee: "100% Money-Back Guarantee",
+    offer: "Launch Offer: Free Domain (1 Yr) & Lifetime Free Netlify Hosting",
   },
   {
-    prefix: "hosting",
-    name: "Domains & Hosting",
-    description: "Complete local hosting & domain setup.",
-    price: "8k - 10k",
-    suffix: "PKR / yr",
+    name: "Managed Infrastructure",
+    description: "Domain, hosting, and professional email setup.",
+    price: "$50",
+    suffix: "USD / yr",
     features: [
-      "Average local hosting package",
-      "Free domain registration included",
-      "Business email setup",
-      "Handled setup & configuration",
+      "Custom domain registration",
+      "Shared cPanel hosting (1GB storage)",
+      "Business email setup (@yourdomain.com)",
+      "Free SSL certificate",
     ],
-    note: "Prices subject to external providers (Hostinger, Namecheap, GoDaddy).",
+    note: "Premium VPS or Vercel Pro hosting billed separately.",
     guarantee: "99.9% Uptime Guarantee",
-    offer: "Free cPanel & business email setup",
+    offer: "Free migration from your current host",
   },
   {
-    prefix: "ai",
-    name: "AI Bot Deployment",
-    description: "Custom WhatsApp & Website AI chatbots.",
-    price: "10k",
-    suffix: "PKR",
+    name: "Basic AI Assistant",
+    description: "A simple chatbot trained on your FAQs to handle basic inquiries.",
+    price: "$150+",
+    suffix: "USD",
     features: [
-      "Custom conversational AI",
-      "Trained on your business data",
-      "WhatsApp & Website integration",
-      "Automate customer support",
+      "Web or WhatsApp integration",
+      "Trained on up to 10 pages of your text data",
+      "Basic handoff to human support",
+      "Setup fee included",
     ],
-    note: "Setup fee. Recurring API usage costs may apply.",
+    note: "Custom API integrations and advanced automations start at $600.",
     guarantee: "14-Day Performance Guarantee",
-    offer: "Includes 1,000 free Meta WhatsApp conversations",
+    offer: "Limited: 2 setup slots left this month",
   },
 ];
 
@@ -94,7 +91,7 @@ export default function Pricing() {
             variants={fadeUp}
             className="text-lg text-text-muted max-w-2xl mx-auto"
           >
-            Clear, upfront costs tailored for the Pakistani market.
+            Predictable, upfront investment with zero recurring surprises.
           </m.p>
         </div>
 
@@ -119,21 +116,20 @@ export default function Pricing() {
                 </div>
               )}
               
-              <h3 data-localize={`${plan.prefix}-title`} className="text-2xl font-display font-bold text-white mb-2">
+              <h3 className="text-2xl font-display font-bold text-white mb-2">
                 {plan.name}
               </h3>
-              <p data-localize={`${plan.prefix}-desc`} className="text-sm text-text-muted mb-6 min-h-[40px]">
+              <p className="text-sm text-text-muted mb-6 min-h-[40px]">
                 {plan.description}
               </p>
               
               <div className="mb-6">
                 <div className="flex items-baseline gap-1 text-white">
-                  <span className="text-sm font-bold opacity-60">Rs</span>
-                  <span data-localize={`${plan.prefix}-price`} className="text-4xl font-display font-bold">
+                  <span className="text-4xl font-display font-bold">
                     {plan.price}
                   </span>
                 </div>
-                <span data-localize={`${plan.prefix}-price-sub`} className="text-text-muted text-sm">
+                <span className="text-text-muted text-sm">
                   {plan.suffix} (Starting from)
                 </span>
               </div>
@@ -142,26 +138,26 @@ export default function Pricing() {
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm text-text-muted">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span data-localize={`${plan.prefix}-feat-${idx + 1}`}>{feature}</span>
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               
               <div className="bg-background/50 border border-white/5 rounded-lg p-3 mb-4 flex gap-2 items-start">
                 <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p data-localize={`${plan.prefix}-footer`} className="text-xs text-text-muted leading-relaxed">
+                <p className="text-xs text-text-muted leading-relaxed">
                   {plan.note}
                 </p>
               </div>
 
-              {/* Add this right above the Get Started button */}
-              <div className="mt-4 space-y-2 border-t border-white/10 pt-4 mb-6">
-                <p className="text-sm font-semibold text-success flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 shrink-0" /> 
-                  <span data-localize={`${plan.prefix}-guarantee`}>{plan.guarantee}</span>
+              {/* Visual Guarantee & Offer Badges */}
+              <div className="mt-6 mb-6 space-y-2 border-t border-white/10 pt-4 text-left">
+                <p className="text-sm font-semibold text-[#10B981] flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>{plan.guarantee}</span>
                 </p>
                 <p className="text-xs text-amber-400 font-medium">
-                  <span data-localize={`${plan.prefix}-offer`}>{plan.offer}</span>
+                  <span>{plan.offer}</span>
                 </p>
               </div>
               

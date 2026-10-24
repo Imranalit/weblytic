@@ -55,7 +55,7 @@ export default function Footer() {
             </p>
             <div className="text-xs text-text-muted space-y-1">
               <p>📍 Khairpur Mirs', Sindh, Pakistan</p>
-              <p>✉️ Support: <a href="mailto:support@weblytic.cc" className="hover:text-primary transition-colors text-white/90">support@weblytic.cc</a></p>
+              <p>✉️ Contact: <a href="mailto:hello@weblytic.cc" className="hover:text-primary transition-colors text-white/90">hello@weblytic.cc</a></p>
               <p>✉️ Careers: <a href="mailto:careers@weblytic.cc" className="hover:text-primary transition-colors text-white/90">careers@weblytic.cc</a></p>
               <p>✉️ Admin: <a href="mailto:admin@weblytic.cc" className="hover:text-primary transition-colors text-white/90">admin@weblytic.cc</a></p>
               <p>📱 <a href="https://wa.me/923131398796" className="hover:text-primary transition-colors">+92 313 1398796</a></p>

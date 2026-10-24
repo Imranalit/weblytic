@@ -109,9 +109,9 @@ ${message}`;
                   <div className="font-medium text-white mb-0.5">Email Us</div>
                   <div className="flex flex-col gap-0.5 text-xs sm:text-sm">
                     <div>
-                      <span className="text-text-muted text-xs mr-1.5">Support:</span>
-                      <a href="mailto:support@weblytic.cc" className="hover:text-primary transition-colors text-white/90">
-                        support@weblytic.cc
+                      <span className="text-text-muted text-xs mr-1.5">Primary:</span>
+                      <a href="mailto:hello@weblytic.cc" className="hover:text-primary transition-colors text-white/90">
+                        hello@weblytic.cc
                       </a>
                     </div>
                     <div>

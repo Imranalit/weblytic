@@ -16,30 +16,28 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://weblytic.cc"),
   title: {
-    default: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
+    default: "Weblytic — Custom Software, Next.js Web Dev & AI Automation",
     template: "%s | Weblytic",
   },
-  description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
+  description: "Weblytic engineers high-performance custom software, fast Next.js websites, managed cloud infrastructure, and intelligent AI chatbots for modern businesses worldwide.",
   keywords: [
-    "offline POS software Pakistan",
-    "retail POS system one time fee",
-    "offline pharmacy software",
-    "WhatsApp AI chatbot Pakistan",
-    "WhatsApp business bot integration",
-    "local cPanel server setup",
-    "on-premise intranet server",
-    "Next.js web development Pakistan",
-    "website design Sukkur Khairpur Sindh",
-    "cPanel domain hosting Pakistan",
-    "Pdfnestor.com",
-    "Weblytic software house"
+    "custom software development",
+    "offline desktop tools",
+    "retail inventory POS software",
+    "Next.js web development",
+    "high speed web agency",
+    "WhatsApp AI chatbot",
+    "business AI automation",
+    "managed cloud hosting",
+    "cPanel domain setup",
+    "Weblytic digital agency"
   ],
   alternates: {
     canonical: "https://weblytic.cc",
   },
   openGraph: {
-    title: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
-    description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
+    title: "Weblytic — Custom Software, Next.js Web Dev & AI Automation",
+    description: "Weblytic engineers high-performance custom software, fast Next.js websites, managed cloud infrastructure, and intelligent AI chatbots for modern businesses worldwide.",
     url: "https://weblytic.cc",
     siteName: "Weblytic",
     images: [
@@ -48,7 +46,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/jpeg",
-        alt: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
+        alt: "Weblytic — Custom Software, Next.js Web Dev & AI Automation",
       },
     ],
     locale: "en_US",
@@ -56,8 +54,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
-    description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
+    title: "Weblytic — Custom Software, Next.js Web Dev & AI Automation",
+    description: "Weblytic engineers high-performance custom software, fast Next.js websites, managed cloud infrastructure, and intelligent AI chatbots for modern businesses worldwide.",
     images: ["https://weblytic.cc/og-image.jpg"],
   },
   icons: {
@@ -85,9 +83,8 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Weblytic",
-  "alternateName": "Weblytic Pakistan",
   "url": "https://weblytic.cc",
-  "description": "Custom offline software, Next.js web development, local cPanel servers, and WhatsApp AI bot deployments in Pakistan.",
+  "description": "High-performance custom software, Next.js web development, managed cloud infrastructure, and AI chatbot automation worldwide.",
   "inLanguage": "en-US",
   "potentialAction": {
     "@type": "SearchAction",
@@ -104,10 +101,10 @@ const businessSchema = {
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
   "telephone": "+923131398796",
-  "email": "support@weblytic.cc",
-  "priceRange": "PKR 5000 - PKR 80000",
-  "currenciesAccepted": "PKR",
-  "paymentAccepted": "Cash, Bank Transfer, EasyPaisa, JazzCash",
+  "email": "hello@weblytic.cc",
+  "priceRange": "$50 - $1000+",
+  "currenciesAccepted": "USD",
+  "paymentAccepted": "Credit Card, Stripe, Bank Transfer, Online Payment",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Khairpur Mirs'",
@@ -129,8 +126,8 @@ const businessSchema = {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Service",
-          "name": "Custom Offline POS & ERP Software",
-          "description": "Tailored retail and wholesale POS software requiring zero monthly cloud or license fees."
+          "name": "Custom Desktop Software & Tools",
+          "description": "Lightweight offline tools for inventory and data management with zero recurring server fees."
         }
       },
       {
@@ -138,15 +135,15 @@ const businessSchema = {
         "itemOffered": {
           "@type": "Service",
           "name": "Next.js Web Development",
-          "description": "High-performance, mobile-first websites optimized for sub-second load times and 100/100 PageSpeed SEO."
+          "description": "High-performance, mobile-first websites optimized for conversion and 100/100 PageSpeed SEO."
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Service",
-          "name": "Local cPanel & Domain Hosting",
-          "description": "High-speed NVMe hosting, automated backups, and private intranet server setups in Pakistan."
+          "name": "Managed Infrastructure & Hosting",
+          "description": "Domain registration, professional email setup, SSL certificates, and managed cPanel hosting."
         }
       },
       {
@@ -172,7 +169,7 @@ const businessSchema = {
     "https://instagram.com/weblytic.cc",
     "https://wa.me/923131398796"
   ],
-  "description": "Weblytic delivers custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and official WhatsApp AI chatbots."
+  "description": "Weblytic engineers high-performance custom software, fast Next.js websites, managed cloud infrastructure, and intelligent AI chatbots for modern businesses worldwide."
 };
 
 export default function RootLayout({
