@@ -104,7 +104,7 @@ const businessSchema = {
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
   "telephone": "+923131398796",
-  "email": "weblytic.cc@gmail.com",
+  "email": "support@weblytic.cc",
   "priceRange": "PKR 5000 - PKR 80000",
   "currenciesAccepted": "PKR",
   "paymentAccepted": "Cash, Bank Transfer, EasyPaisa, JazzCash",

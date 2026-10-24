@@ -35,7 +35,7 @@ USE THE REDIRECT BELOW ONLY WHEN:
 
 COMPANY CONTACT & LOCATION:
 - Location / Address: Khairpur Mirs', Sindh, Pakistan
-- Official Email: weblytic.cc@gmail.com
+- Official Support: support@weblytic.cc\n- Official Careers: careers@weblytic.cc\n- Official Admin: admin@weblytic.cc
 - Direct WhatsApp / Phone: +92 313 1398796
 
 ONGOING FEATURED PROJECTS:

@@ -174,7 +174,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Portability:</strong> Request transfer of your data to another organization.</li>
               </ul>
               <p className="text-text-muted">
-                To exercise these rights, contact us at weblytic.cc@gmail.com. You also have the right to lodge a complaint with your local supervisory authority.
+                To exercise these rights, contact us at admin@weblytic.cc. You also have the right to lodge a complaint with your local supervisory authority.
               </p>
             </section>
 
@@ -209,7 +209,7 @@ export default function PrivacyPolicyPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <Mail className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-xs break-all">weblytic.cc@gmail.com</span>
+                  <span className="text-xs break-all">admin@weblytic.cc</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <Phone className="w-4 h-4 text-secondary shrink-0" />

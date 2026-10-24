@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { LazyMotion, domAnimation, m } from "framer-motion";
-import { Briefcase, MapPin, DollarSign, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Briefcase, MapPin, DollarSign, Clock, ArrowRight, CheckCircle2 , Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -148,18 +148,37 @@ export default function CareersClient() {
                 {/* Apply CTA */}
                 <div className="pt-8 border-t border-white/10 mt-10">
                   <h3 className="text-xl font-bold text-white mb-4">Ready to Apply?</h3>
+
+                  {/* Direct Email Application Banner */}
+                  <div className="mb-8 p-6 rounded-2xl bg-white/[0.03] border border-primary/20 backdrop-blur-sm space-y-3">
+                    <div className="flex items-center gap-2.5 text-white font-semibold text-lg">
+                      <Mail className="w-5 h-5 text-primary" />
+                      <h4>Send Your CV Directly</h4>
+                    </div>
+                    <p className="text-text-muted text-sm leading-relaxed">
+                      To apply, send your CV directly to <a href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive" className="text-primary hover:underline font-bold">careers@weblytic.cc</a> with your contact details and relevant experience, or use our quick online application form below.
+                    </p>
+                    <div className="pt-1">
+                      <a 
+                        href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-end text-white text-sm font-semibold rounded-xl transition-colors shadow-md shadow-primary/20"
+                      >
+                        <Mail className="w-4 h-4" />
+                        Send CV to careers@weblytic.cc
+                      </a>
+                    </div>
+                  </div>
                   
                   {!showForm ? (
                     <>
-                      <p className="mb-6">
-                        If you are driven, confident, and ready to close deals, we want to hear from you. 
-                        Click below to fill out our quick online application.
+                      <p className="mb-4 text-text-muted text-sm">
+                        Prefer our instant online form? Click below to apply in 60 seconds without an email client:
                       </p>
                       <button 
                         onClick={() => setShowForm(true)}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition-colors border border-white/10"
                       >
-                        Apply Online
+                        Fill Online Application Form
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     </>
