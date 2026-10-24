@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
-
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Briefcase, MapPin, DollarSign, Clock, ArrowRight, CheckCircle2 , Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function CareersClient() {
-  const [showForm, setShowForm] = useState(false);
   return (
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-background flex flex-col">
@@ -149,167 +146,25 @@ export default function CareersClient() {
                 <div className="pt-8 border-t border-white/10 mt-10">
                   <h3 className="text-xl font-bold text-white mb-4">Ready to Apply?</h3>
 
-                  {/* Direct Email Application Banner */}
-                  <div className="mb-8 p-6 rounded-2xl bg-white/[0.03] border border-primary/20 backdrop-blur-sm space-y-3">
+                  <div className="p-6 md:p-8 rounded-2xl bg-white/[0.03] border border-primary/20 backdrop-blur-sm space-y-4">
                     <div className="flex items-center gap-2.5 text-white font-semibold text-lg">
                       <Mail className="w-5 h-5 text-primary" />
                       <h4>Send Your CV Directly</h4>
                     </div>
-                    <p className="text-text-muted text-sm leading-relaxed">
-                      To apply, send your CV directly to <a href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive" className="text-primary hover:underline font-bold">careers@weblytic.cc</a> with your contact details and relevant experience, or use our quick online application form below.
+                    <p className="text-text-muted text-sm sm:text-base leading-relaxed">
+                      If you are driven, confident, and ready to close deals, we want to hear from you. To apply, send your CV directly to <a href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive" className="text-primary hover:underline font-bold">careers@weblytic.cc</a> with your contact details, current location, and any relevant experience or portfolio links.
                     </p>
-                    <div className="pt-1">
+                    <div className="pt-2">
                       <a 
                         href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-end text-white text-sm font-semibold rounded-xl transition-colors shadow-md shadow-primary/20"
+                        className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors shadow-lg shadow-primary/25"
                       >
-                        <Mail className="w-4 h-4" />
+                        <Mail className="w-5 h-5" />
                         Send CV to careers@weblytic.cc
+                        <ArrowRight className="w-4 h-4 ml-1" />
                       </a>
                     </div>
                   </div>
-                  
-                  {!showForm ? (
-                    <>
-                      <p className="mb-4 text-text-muted text-sm">
-                        Prefer our instant online form? Click below to apply in 60 seconds without an email client:
-                      </p>
-                      <button 
-                        onClick={() => setShowForm(true)}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition-colors border border-white/10"
-                      >
-                        Fill Online Application Form
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <m.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-6 bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl"
-                    >
-                      <h4 className="text-lg font-bold text-white mb-6">Application Form</h4>
-                      <form 
-                        onSubmit={async (e) => {
-                          e.preventDefault();
-                          const form = e.target as HTMLFormElement;
-                          const formData = new FormData(form);
-                          
-                          const email = formData.get("entry.2096700581") as string;
-                          if (localStorage.getItem("applied_" + email)) {
-                            alert("You have already applied with this email address!");
-                            return;
-                          }
-
-                          const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-                          submitBtn.disabled = true;
-                          submitBtn.textContent = "Submitting...";
-                          
-                          try {
-                            // Submit to Google Forms via no-cors fetch
-                            await fetch("https://docs.google.com/forms/d/e/1FAIpQLSeGvSi8sbeogsN3YAIZwB6mK7bUnVU-CJDYGxjASVdVYO5Z5Q/formResponse", {
-                              method: "POST",
-                              mode: "no-cors",
-                              body: formData,
-                            });
-                            
-                            // Google Forms no-cors fetch always succeeds if network is up
-                            localStorage.setItem("applied_" + email, "true");
-                            form.innerHTML = "<div class='text-center py-8 text-success'><p class='text-xl font-bold mb-2'>Application Submitted!</p><p class='text-text-muted'>Thank you for applying. We will review your profile and get back to you soon.</p></div>";
-                            
-                            // Optional confirmation popup
-                            alert("Your application has been submitted successfully!");
-                          } catch (error) {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = "Error! Try Again";
-                            alert("Network error. Please try again.");
-                          }
-                        }}
-                        className="space-y-4"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">Full Name *</label>
-                            <input required type="text" name="entry.722460608" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="John Doe" />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">Email Address *</label>
-                            <input required type="email" name="entry.2096700581" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com" />
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">WhatsApp / Phone Number *</label>
-                            <input required type="tel" name="entry.2037704989" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="+92 XXX XXXXXXX" />
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">City / Current Location *</label>
-                            <input required type="text" name="entry.1476683466" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="e.g. Karachi" />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">Current Status *</label>
-                            <select required name="entry.946518524" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
-                              <option value="">Select...</option>
-                              <option value="Student">Student</option>
-                              <option value="Fresh Graduate">Fresh Graduate</option>
-                              <option value="Freelancer">Freelancer</option>
-                              <option value="Marketing Professional">Marketing Professional</option>
-                              <option value="Other">Other</option>
-                            </select>
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">Prior sales experience? *</label>
-                            <select required name="entry.663302489" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
-                              <option value="">Select...</option>
-                              <option value="Yes (Please elaborate below)">Yes</option>
-                              <option value="No (Fresher / No prior experience required)">No (Fresher)</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">How would you prefer to work? *</label>
-                            <select required name="entry.1564172592" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
-                              <option value="">Select...</option>
-                              <option value="Remotely">Remotely</option>
-                              <option value="Visiting clients in my area">Visiting clients in my area</option>
-                              <option value="Both">Both</option>
-                            </select>
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-sm text-text-muted">Hours per week? *</label>
-                            <select required name="entry.341830738" className="w-full bg-[#1a1b26] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors appearance-none">
-                              <option value="">Select...</option>
-                              <option value="Part-time (Flexible hours)">Part-time (Flexible hours)</option>
-                              <option value="Full-time">Full-time</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-sm text-text-muted">LinkedIn / Portfolio / Resume Link (Optional)</label>
-                          <input type="url" name="entry.2029976506" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors" placeholder="https://..." />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-sm text-text-muted">Why do you want to join Weblytic? (Optional)</label>
-                          <textarea name="entry.827722151" rows={3} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Tell us about yourself..."></textarea>
-                        </div>
-
-                        <button 
-                          type="submit"
-                          className="w-full mt-4 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-end text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
-                        >
-                          Submit Application
-                        </button>
-                      </form>
-                    </m.div>
-                  )}
                 </div>
 
               </div>
