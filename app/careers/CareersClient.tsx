@@ -152,7 +152,7 @@ export default function CareersClient() {
                       <h4>Send Your CV Directly</h4>
                     </div>
                     <p className="text-text-muted text-sm sm:text-base leading-relaxed">
-                      If you are driven, confident, and ready to close deals, we want to hear from you. To apply, send your CV directly to <a href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive" className="text-primary hover:underline font-bold">careers@weblytic.cc</a> with your contact details, current location, and any relevant experience or portfolio links.
+                      If you are driven, confident, and ready to close deals, we want to hear from you. To apply, send your CV directly to <a href="mailto:careers@weblytic.cc?subject=Job%20Application%20-%20Business%20Development%20Executive" className="text-primary hover:underline font-bold">careers@weblytic.cc</a> with your contact details, current location, and any relevant experience or work samples.
                     </p>
                     <div className="pt-2">
                       <a 

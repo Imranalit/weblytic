@@ -2,54 +2,84 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { Mail, MapPin, Phone, MessageSquare, AlertCircle } from "lucide-react";
-import { Button } from "./ui/Button";
+import { Mail, MapPin, Phone, MessageSquare, Send } from "lucide-react";
 import { fadeUp, slideInRight } from "@/lib/motion";
 
-type FormData = {
-  name: string;
-  email: string;
-  organization: string;
-  teamSize: string;
-  package: string;
-  message: string;
-  "bot-field"?: string;
-};
-
 export default function Contact() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [teamSize, setTeamSize] = useState("1-10");
+  const [packageNeeded, setPackageNeeded] = useState("Offline Software");
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; message?: string }>({});
 
-  const onSubmit = async (data: FormData, e?: React.BaseSyntheticEvent) => {
-    e?.preventDefault();
-    setStatus("sending");
-    
+  const validate = () => {
+    const newErrors: { fullName?: string; email?: string; message?: string } = {};
+    if (!fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (!message.trim()) newErrors.message = "Project details/message is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const submitToNetlify = () => {
     try {
       const formData = new URLSearchParams();
       formData.append("form-name", "quote");
-      Object.entries(data).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
-      
-      const res = await fetch("/", {
+      formData.append("fullName", fullName);
+      formData.append("email", email);
+      if (organization) formData.append("organization", organization);
+      formData.append("teamSize", teamSize);
+      formData.append("packageNeeded", packageNeeded);
+      formData.append("message", message);
+
+      fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
-      });
-
-      if (!res.ok) throw new Error(`Netlify form POST failed: ${res.status}`);
-
-      setStatus("sent");
-      
-      const phoneNumber = "923131398796";
-      const text = `*New Quote Request!*\n\n*Name:* ${data.name}\n*Email:* ${data.email}\n*Organization:* ${data.organization || "N/A"}\n*Team Size:* ${data.teamSize}\n*Package:* ${data.package}\n\n*Message:*\n${data.message}`;
-      
-      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
-    } catch (err) {
-      console.error(err);
-      setStatus("error");
+      }).catch(() => {});
+    } catch {
+      // Ignore background submission failures
     }
+  };
+
+  const handleEmailSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    submitToNetlify();
+
+    const subject = `New Project Inquiry: ${packageNeeded} - ${fullName}`;
+    const body = `Name: ${fullName}
+Email: ${email}
+Organization: ${organization || "N/A"}
+Team Size: ${teamSize}
+Package: ${packageNeeded}
+
+Project Details:
+${message}`;
+
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(body);
+    window.location.href = `mailto:hello@weblytic.cc?subject=${encodedSubject}&body=${encodedBody}`;
+  };
+
+  const handleWhatsAppSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    submitToNetlify();
+
+    const whatsAppText = `*New Project Inquiry!*\n\n*Name:* ${fullName}\n*Email:* ${email}\n*Organization:* ${organization || "N/A"}\n*Team Size:* ${teamSize}\n*Package:* ${packageNeeded}\n\n*Project Details:*\n${message}`;
+
+    const encodedMessage = encodeURIComponent(whatsAppText);
+    window.open(`https://wa.me/923131398796?text=${encodedMessage}`, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -67,7 +97,7 @@ export default function Contact() {
               Let's build something <span className="text-gradient">amazing</span>
             </h2>
             <p className="text-lg text-text-muted mb-12 max-w-md">
-              Ready to scale your business? Fill out the details below and chat with our team directly on WhatsApp to get an instant quote.
+              Ready to scale your business? Fill out the details below to send us your project brief via email or chat with our team directly on WhatsApp.
             </p>
 
             <div className="space-y-6">
@@ -132,11 +162,18 @@ export default function Contact() {
             className="flex-1"
           >
             <div className="glass-card p-8 md:p-10 relative">
-              <form name="quote" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                name="quote"
+                method="POST"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+                onSubmit={(e) => e.preventDefault()}
+                className="space-y-6"
+              >
                 <input type="hidden" name="form-name" value="quote" />
                 <p className="hidden">
                   <label htmlFor="quote-bot-field">Don’t fill this out if you're human:</label>
-                  <input id="quote-bot-field" {...register("bot-field")} />
+                  <input id="quote-bot-field" name="bot-field" />
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -144,23 +181,33 @@ export default function Contact() {
                     <label htmlFor="quote-name" className="text-sm font-medium text-white">Full Name</label>
                     <input
                       id="quote-name"
-                      {...register("name", { required: true })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                      name="fullName"
+                      value={fullName}
+                      onChange={(e) => {
+                        setFullName(e.target.value);
+                        if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: undefined }));
+                      }}
+                      className={`w-full bg-background border ${errors.fullName ? "border-red-500" : "border-white/10"} rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors`}
                       placeholder="John Doe"
                     />
-                    {errors.name && <span className="text-xs text-red-400">Name is required</span>}
+                    {errors.fullName && <span className="text-xs text-red-400">{errors.fullName}</span>}
                   </div>
                   
                   <div className="space-y-2">
                     <label htmlFor="quote-email" className="text-sm font-medium text-white">Email Address</label>
                     <input
                       id="quote-email"
+                      name="email"
                       type="email"
-                      {...register("email", { required: true })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                      }}
+                      className={`w-full bg-background border ${errors.email ? "border-red-500" : "border-white/10"} rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors`}
                       placeholder="john@example.com"
                     />
-                    {errors.email && <span className="text-xs text-red-400">Email is required</span>}
+                    {errors.email && <span className="text-xs text-red-400">{errors.email}</span>}
                   </div>
                 </div>
 
@@ -169,7 +216,9 @@ export default function Contact() {
                     <label htmlFor="quote-organization" className="text-sm font-medium text-white">Organization Name</label>
                     <input
                       id="quote-organization"
-                      {...register("organization")}
+                      name="organization"
+                      value={organization}
+                      onChange={(e) => setOrganization(e.target.value)}
                       className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                       placeholder="Your Company LLC"
                     />
@@ -179,7 +228,9 @@ export default function Contact() {
                     <label htmlFor="quote-teamSize" className="text-sm font-medium text-white">Working Team Size</label>
                     <select
                       id="quote-teamSize"
-                      {...register("teamSize")}
+                      name="teamSize"
+                      value={teamSize}
+                      onChange={(e) => setTeamSize(e.target.value)}
                       className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
                     >
                       <option value="1-10">1 - 10</option>
@@ -195,7 +246,9 @@ export default function Contact() {
                   <label htmlFor="quote-package" className="text-sm font-medium text-white">Package Needed</label>
                   <select
                     id="quote-package"
-                    {...register("package")}
+                    name="packageNeeded"
+                    value={packageNeeded}
+                    onChange={(e) => setPackageNeeded(e.target.value)}
                     className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
                   >
                     <option value="Offline Software">Offline Software</option>
@@ -209,34 +262,37 @@ export default function Contact() {
                   <label htmlFor="quote-message" className="text-sm font-medium text-white">Project Details / Message</label>
                   <textarea
                     id="quote-message"
-                    {...register("message", { required: true })}
+                    name="message"
+                    value={message}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      if (errors.message) setErrors((prev) => ({ ...prev, message: undefined }));
+                    }}
                     rows={4}
-                    className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"
+                    className={`w-full bg-background border ${errors.message ? "border-red-500" : "border-white/10"} rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none`}
                     placeholder="Tell us about your goals, specific requirements, and any questions..."
                   />
-                  {errors.message && <span className="text-xs text-red-400">Message is required</span>}
+                  {errors.message && <span className="text-xs text-red-400">{errors.message}</span>}
                 </div>
 
-                <Button 
-                  type="submit" 
-                  size="lg" 
-                  disabled={status === "sending" || status === "sent"}
-                  className="w-full gap-2 bg-success hover:bg-success/80 text-white disabled:opacity-50"
-                >
-                  {status === "sending" ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
+                <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleEmailSubmit}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-primary-gradient hover:opacity-95 shadow-lg shadow-primary/25 transition-all duration-200 cursor-pointer text-sm sm:text-base"
+                  >
+                    <Send className="w-5 h-5" />
+                    <span>Send via Email</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppSubmit}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-success hover:bg-success/90 shadow-lg shadow-success/20 transition-all duration-200 cursor-pointer text-sm sm:text-base"
+                  >
                     <MessageSquare className="w-5 h-5" />
-                  )}
-                  {status === "sending" ? "Processing..." : status === "sent" ? "Opening WhatsApp..." : "Chat on WhatsApp"}
-                </Button>
-                
-                {status === "error" && (
-                  <div className="flex items-center gap-2 text-sm text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-400/20">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <p>There was an error saving your request. Please try again or contact us directly.</p>
-                  </div>
-                )}
+                    <span>Chat on WhatsApp</span>
+                  </button>
+                </div>
               </form>
             </div>
           </m.div>

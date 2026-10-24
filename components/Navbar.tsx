@@ -3,13 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { m, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, Sparkles } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { ButtonLink } from "./ui/Button";
 
 const navLinks = [
   { name: "Services", href: "/#services" },
   { name: "About", href: "/about" },
-  { name: "Portfolio", href: "/#portfolio" },
   { name: "Pricing", href: "/#pricing" },
   { name: "Careers", href: "/careers" },
   { name: "FAQ", href: "/faq" },

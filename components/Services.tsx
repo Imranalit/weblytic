@@ -17,7 +17,7 @@ const services = [
     icon: <Globe className="w-8 h-8" />,
     title: "Web Development",
     description: "High-performance, SEO-optimized websites designed to convert visitors into customers.",
-    features: ["Corporate websites", "E-commerce platforms", "Landing pages & portfolios"],
+    features: ["Corporate websites", "E-commerce platforms", "Landing pages & brand sites"],
     color: "from-purple-500/20 to-pink-500/20",
     iconColor: "text-pink-400",
   },

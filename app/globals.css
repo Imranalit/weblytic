@@ -76,3 +76,10 @@
   display: inline-block;
   transform-origin: center;
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}

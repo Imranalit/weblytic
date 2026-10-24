@@ -117,8 +117,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li><a href="/about" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
               <li><a href="/careers" className="text-sm text-text-muted hover:text-white transition-colors">Careers <span className="ml-1 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">We're Hiring</span></a></li>
-              <li><a href="/#portfolio" className="text-sm text-text-muted hover:text-white transition-colors">Portfolio</a></li>
-              <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
+                            <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/faq" className="text-sm text-text-muted hover:text-white transition-colors">FAQ</a></li>
               <li><a href="/#contact" className="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
             </ul>

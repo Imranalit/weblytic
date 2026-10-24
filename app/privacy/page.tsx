@@ -129,7 +129,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">5.</span> When We Share Information
               </h2>
               <p className="text-text-muted">
-                Apart from service providers, we may disclose information if required by law, court order, or to protect our legal rights. Client names and project screenshots may be used in our portfolio only with implied or explicit consent. Any personal data in screenshots is blurred before publication. We never share credentials or contact information publicly.
+                Apart from service providers, we may disclose information if required by law, court order, or to protect our legal rights. Client names and project screenshots may be used in our client showcase only with implied or explicit consent. Any personal data in screenshots is blurred before publication. We never share credentials or contact information publicly.
               </p>
             </section>
 

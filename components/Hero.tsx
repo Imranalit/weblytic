@@ -1,7 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
-import { Button, ButtonLink } from "./ui/Button";
+import { ButtonLink } from "./ui/Button";
 import { ArrowRight } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import HeroAnimation from "./HeroAnimation";
@@ -73,23 +73,6 @@ export default function Hero() {
               <ButtonLink href="#services" variant="outline" size="lg" className="w-full sm:w-auto">
                 Explore Services
               </ButtonLink>
-            </m.div>
-
-            {/* Trust Bar */}
-            <m.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              className="mt-16 pt-8 border-t border-white/5"
-            >
-              <p className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-6">
-                Trusted by innovative businesses & institutions
-              </p>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-8 opacity-60">
-                <div className="font-display font-bold text-xl">Pdfnestor</div>
-                <div className="font-display font-bold text-xl">Sukkur IBA University</div>
-                <div className="font-display font-bold text-xl">Retail POS Clients</div>
-              </div>
             </m.div>
           </div>
 

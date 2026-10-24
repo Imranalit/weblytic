@@ -1,12 +1,13 @@
 "use client";
 
 import { m } from "framer-motion";
-import { Check, Info } from "lucide-react";
-import { Button, ButtonLink } from "./ui/Button";
+import { Check, Info, ShieldCheck } from "lucide-react";
+import { ButtonLink } from "./ui/Button";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
 const plans = [
   {
+    prefix: "offline",
     name: "Offline Software",
     description: "Desktop tools requiring no server-base.",
     price: "5k - 7k",
@@ -17,9 +18,12 @@ const plans = [
       "No recurring server or hosting costs",
       "One-time setup fee",
     ],
-    note: "Maintenance & changes incur additional charges after deployment."
+    note: "Maintenance & changes incur additional charges after deployment.",
+    guarantee: "30-Day Bug-Free Guarantee",
+    offer: "Includes free offline installation & training",
   },
   {
+    prefix: "static",
     name: "Static Websites",
     popular: true,
     description: "Fast, responsive sites with free hosting.",
@@ -31,9 +35,12 @@ const plans = [
       "Free hosting via Netlify or subdomains",
       "Blazing fast performance",
     ],
-    note: "Maintenance & changes incur additional charges after deployment."
+    note: "Maintenance & changes incur additional charges after deployment.",
+    guarantee: "100% Satisfaction Guarantee",
+    offer: "Includes 1 year free hosting & domain",
   },
   {
+    prefix: "hosting",
     name: "Domains & Hosting",
     description: "Complete local hosting & domain setup.",
     price: "8k - 10k",
@@ -44,9 +51,12 @@ const plans = [
       "Business email setup",
       "Handled setup & configuration",
     ],
-    note: "Prices subject to external providers (Hostinger, Namecheap, GoDaddy)."
+    note: "Prices subject to external providers (Hostinger, Namecheap, GoDaddy).",
+    guarantee: "99.9% Uptime Guarantee",
+    offer: "Free cPanel & business email setup",
   },
   {
+    prefix: "ai",
     name: "AI Bot Deployment",
     description: "Custom WhatsApp & Website AI chatbots.",
     price: "10k",
@@ -57,8 +67,10 @@ const plans = [
       "WhatsApp & Website integration",
       "Automate customer support",
     ],
-    note: "Setup fee. Recurring API usage costs may apply."
-  }
+    note: "Setup fee. Recurring API usage costs may apply.",
+    guarantee: "14-Day Performance Guarantee",
+    offer: "Includes 1,000 free Meta WhatsApp conversations",
+  },
 ];
 
 export default function Pricing() {
@@ -107,15 +119,21 @@ export default function Pricing() {
                 </div>
               )}
               
-              <h3 className="text-2xl font-display font-bold text-white mb-2">{plan.name}</h3>
-              <p className="text-sm text-text-muted mb-6 min-h-[40px]">{plan.description}</p>
+              <h3 data-localize={`${plan.prefix}-title`} className="text-2xl font-display font-bold text-white mb-2">
+                {plan.name}
+              </h3>
+              <p data-localize={`${plan.prefix}-desc`} className="text-sm text-text-muted mb-6 min-h-[40px]">
+                {plan.description}
+              </p>
               
               <div className="mb-6">
                 <div className="flex items-baseline gap-1 text-white">
                   <span className="text-sm font-bold opacity-60">Rs</span>
-                  <span className="text-4xl font-display font-bold">{plan.price}</span>
+                  <span data-localize={`${plan.prefix}-price`} className="text-4xl font-display font-bold">
+                    {plan.price}
+                  </span>
                 </div>
-                <span className="text-text-muted text-sm">
+                <span data-localize={`${plan.prefix}-price-sub`} className="text-text-muted text-sm">
                   {plan.suffix} (Starting from)
                 </span>
               </div>
@@ -124,15 +142,26 @@ export default function Pricing() {
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm text-text-muted">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    {feature}
+                    <span data-localize={`${plan.prefix}-feat-${idx + 1}`}>{feature}</span>
                   </li>
                 ))}
               </ul>
               
-              <div className="bg-background/50 border border-white/5 rounded-lg p-3 mb-8 flex gap-2 items-start">
+              <div className="bg-background/50 border border-white/5 rounded-lg p-3 mb-4 flex gap-2 items-start">
                 <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-text-muted leading-relaxed">
+                <p data-localize={`${plan.prefix}-footer`} className="text-xs text-text-muted leading-relaxed">
                   {plan.note}
+                </p>
+              </div>
+
+              {/* Add this right above the Get Started button */}
+              <div className="mt-4 space-y-2 border-t border-white/10 pt-4 mb-6">
+                <p className="text-sm font-semibold text-success flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 shrink-0" /> 
+                  <span data-localize={`${plan.prefix}-guarantee`}>{plan.guarantee}</span>
+                </p>
+                <p className="text-xs text-amber-400 font-medium">
+                  <span data-localize={`${plan.prefix}-offer`}>{plan.offer}</span>
                 </p>
               </div>
               

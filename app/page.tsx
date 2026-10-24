@@ -3,10 +3,11 @@
 import { LazyMotion, domAnimation } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import ShutterHero from "@/components/ShutterHero";
 import Services from "@/components/Services";
 import WhyUs from "@/components/WhyUs";
 import Process from "@/components/Process";
-import Portfolio from "@/components/Portfolio";
+import TrustedBy from "@/components/TrustedBy";
 import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
@@ -20,11 +21,13 @@ export default function Home() {
       <Cursor />
       <Navbar />
       <main>
-        <Hero />
+        <ShutterHero>
+          <Hero />
+        </ShutterHero>
         <Services />
         <WhyUs />
         <Process />
-        <Portfolio />
+        <TrustedBy />
         <Pricing />
         <Testimonials />
         <Contact />
