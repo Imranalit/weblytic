@@ -45,7 +45,7 @@ export default function Navbar() {
             <a href="/" className="flex items-center gap-2.5 group">
               <div className="relative w-8 h-8 flex items-center justify-center">
                 <Image
-                  src="/weblytic-logo.png"
+                  src="/weblytic-logo.webp"
                   alt="Weblytic Logo"
                   width={32}
                   height={32}

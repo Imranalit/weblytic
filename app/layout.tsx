@@ -44,10 +44,11 @@ export const metadata: Metadata = {
     siteName: "Weblytic",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "https://weblytic.cc/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Weblytic - Digital Solutions Preview",
+        type: "image/jpeg",
+        alt: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
       },
     ],
     locale: "en_US",
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Weblytic — Custom Software, Offline POS & Web Dev Pakistan",
     description: "Weblytic builds custom offline POS software with zero monthly fees, high-speed Next.js websites, local cPanel servers, and WhatsApp AI bots in Pakistan.",
-    images: ["/og-image.jpg"],
+    images: ["https://weblytic.cc/og-image.jpg"],
   },
   icons: {
     icon: [
@@ -99,7 +100,7 @@ const businessSchema = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "Weblytic",
-  "logo": "https://weblytic.cc/weblytic-logo.png",
+  "logo": "https://weblytic.cc/og-image.png",
   "image": "https://weblytic.cc/og-image.jpg",
   "url": "https://weblytic.cc",
   "telephone": "+923131398796",

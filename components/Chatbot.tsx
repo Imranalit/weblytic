@@ -16,7 +16,7 @@ const KonainAvatar = ({ size = 28, className = "" }: { size?: number; className?
     style={{ width: size, height: size }}
   >
     <Image 
-      src="/konain-avatar.jpg" 
+      src="/konain-avatar.webp" 
       alt="Konain - Weblytic AI" 
       fill 
       className="object-cover" 
@@ -161,7 +161,7 @@ export default function Chatbot() {
             >
               <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-background">
                 <Image 
-                  src="/konain-avatar.jpg" 
+                  src="/konain-avatar.webp" 
                   alt="Konain Avatar" 
                   fill 
                   className="object-cover" 
