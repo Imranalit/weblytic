@@ -40,3 +40,8 @@ next-env.d.ts
 .agents/
 .claude/
 .cursor/
+
+# Private Excel Tracker
+*.xlsx
+*.xls
+.env*
