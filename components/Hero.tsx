@@ -57,7 +57,7 @@ export default function Hero() {
               animate="visible"
               className="text-lg md:text-xl text-text-muted mb-10 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed"
             >
-              End-to-end digital solutions for modern businesses. We engineer custom offline POS software, design high-speed Next.js websites, configure local cPanel servers, and deploy AI chatbots across Pakistan.
+              End-to-end digital engineering for ambitious brands worldwide. We architect resilient offline-first POS & ERP systems, high-velocity Next.js web apps, self-hosted cloud servers, and custom AI agents that scale without bloated monthly fees.
             </m.p>
 
             <m.div

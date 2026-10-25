@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { m } from "framer-motion";
 import { Mail, MapPin, Phone, MessageSquare, Send } from "lucide-react";
 import { fadeUp, slideInRight } from "@/lib/motion";
@@ -10,9 +10,52 @@ export default function Contact() {
   const [email, setEmail] = useState("");
   const [organization, setOrganization] = useState("");
   const [teamSize, setTeamSize] = useState("1-10");
-  const [packageNeeded, setPackageNeeded] = useState("Offline Software");
+  const [packageNeeded, setPackageNeeded] = useState("Starter Landing Page ($100+)");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<{ fullName?: string; email?: string; message?: string }>({});
+
+  useEffect(() => {
+    const handleUrlPackage = () => {
+      const hash = window.location.hash;
+      const search = window.location.search;
+      let rawPkg: string | null = null;
+
+      if (hash.includes("?")) {
+        const queryPart = hash.substring(hash.indexOf("?"));
+        rawPkg = new URLSearchParams(queryPart).get("package");
+      }
+      if (!rawPkg && search) {
+        rawPkg = new URLSearchParams(search).get("package");
+      }
+
+      if (rawPkg) {
+        const decoded = decodeURIComponent(rawPkg).trim().toLowerCase();
+        const availableOptions = [
+          "Starter Landing Page ($100+)",
+          "Multi-Page Next.js / SaaS Web App ($400+)",
+          "Custom Desktop / Offline POS Tool ($150+)",
+          "Basic AI Assistant / WhatsApp Bot ($150+)",
+          "Managed Infrastructure & Hosting ($50/yr)",
+          "Custom Enterprise ERP / Full-Stack Scope",
+        ];
+
+        const matched = availableOptions.find(
+          (opt) =>
+            opt.toLowerCase() === decoded ||
+            opt.toLowerCase().includes(decoded) ||
+            decoded.includes(opt.toLowerCase().slice(0, 10))
+        );
+
+        if (matched) {
+          setPackageNeeded(matched);
+        }
+      }
+    };
+
+    handleUrlPackage();
+    window.addEventListener("hashchange", handleUrlPackage);
+    return () => window.removeEventListener("hashchange", handleUrlPackage);
+  }, []);
 
   const validate = () => {
     const newErrors: { fullName?: string; email?: string; message?: string } = {};
@@ -101,54 +144,37 @@ ${message}`;
             </p>
 
             <div className="space-y-6">
-              <div className="flex items-center gap-4 text-text-muted">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-primary shrink-0">
-                  <Mail className="w-5 h-5" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="font-medium text-white mb-0.5">Email Us</div>
-                  <div className="flex flex-col gap-0.5 text-xs sm:text-sm">
-                    <div>
-                      <span className="text-text-muted text-xs mr-1.5">Primary:</span>
-                      <a href="mailto:hello@weblytic.cc" className="hover:text-primary transition-colors text-white/90">
-                        hello@weblytic.cc
-                      </a>
-                    </div>
-                    <div>
-                      <span className="text-text-muted text-xs mr-1.5">Careers:</span>
-                      <a href="mailto:careers@weblytic.cc" className="hover:text-primary transition-colors text-white/90">
-                        careers@weblytic.cc
-                      </a>
-                    </div>
-                    <div>
-                      <span className="text-text-muted text-xs mr-1.5">Admin:</span>
-                      <a href="mailto:admin@weblytic.cc" className="hover:text-primary transition-colors text-white/90">
-                        admin@weblytic.cc
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4 text-text-muted">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-secondary">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="font-medium text-white">Call / WhatsApp</div>
-                  <a href="https://wa.me/923131398796" target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">
-                    +92 313 1398796
+                  <div className="text-sm text-text-muted">Direct Email</div>
+                  <a href="mailto:hello@weblytic.cc" className="font-semibold text-white hover:text-primary transition-colors">
+                    hello@weblytic.cc
                   </a>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-4 text-text-muted">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-success">
-                  <MapPin className="w-5 h-5" />
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="font-medium text-white">Headquarters</div>
-                  <div>Khairpur Mirs', Sindh, Pakistan</div>
+                  <div className="text-sm text-text-muted">Location</div>
+                  <div className="font-semibold text-white">Khairpur Mirs', Sindh, Pakistan</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <Phone className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-sm text-text-muted">WhatsApp / Phone</div>
+                  <a href="https://wa.me/923131398796" className="font-semibold text-white hover:text-primary transition-colors">
+                    +92 313 1398796
+                  </a>
                 </div>
               </div>
             </div>
@@ -161,12 +187,12 @@ ${message}`;
             variants={slideInRight}
             className="flex-1"
           >
-            <div className="glass-card p-8 md:p-10 relative">
+            <div className="glass-panel p-8 md:p-10 rounded-2xl relative">
               <form
                 name="quote"
                 method="POST"
                 data-netlify="true"
-                netlify-honeypot="bot-field"
+                data-netlify-honeypot="bot-field"
                 onSubmit={(e) => e.preventDefault()}
                 className="space-y-6"
               >
@@ -251,10 +277,12 @@ ${message}`;
                     onChange={(e) => setPackageNeeded(e.target.value)}
                     className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none"
                   >
-                    <option value="Offline Software">Offline Software</option>
-                    <option value="Server-Based Software">Server-Based Software</option>
-                    <option value="Website with Free Hosting">Website with Free Hosting</option>
-                    <option value="Website with Hosting & Domain">Website with Hosting & Domain</option>
+                    <option value="Starter Landing Page ($100+)">Starter Landing Page ($100+)</option>
+                    <option value="Multi-Page Next.js / SaaS Web App ($400+)">Multi-Page Next.js / SaaS Web App ($400+)</option>
+                    <option value="Custom Desktop / Offline POS Tool ($150+)">Custom Desktop / Offline POS Tool ($150+)</option>
+                    <option value="Basic AI Assistant / WhatsApp Bot ($150+)">Basic AI Assistant / WhatsApp Bot ($150+)</option>
+                    <option value="Managed Infrastructure & Hosting ($50/yr)">Managed Infrastructure & Hosting ($50/yr)</option>
+                    <option value="Custom Enterprise ERP / Full-Stack Scope">Custom Enterprise ERP / Full-Stack Scope</option>
                   </select>
                 </div>
 

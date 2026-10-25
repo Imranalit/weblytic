@@ -69,9 +69,9 @@ export default function FAQClient() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-sm text-text-muted">
-            <Link href="/#services" className="hover:text-white transition-colors">Services</Link>
-            <Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
-                        <Link href="/#contact" className="hover:text-white transition-colors">Contact</Link>
+            <Link href="/#services" scroll={false} className="hover:text-white transition-colors">Services</Link>
+            <Link href="/#pricing" scroll={false} className="hover:text-white transition-colors">Pricing</Link>
+                        <Link href="/#contact" scroll={false} className="hover:text-white transition-colors">Contact</Link>
           </nav>
 
           <Link

@@ -89,7 +89,7 @@ export default function AboutClient() {
                 <p>
                   We believe that enterprise-grade technology shouldn't be restricted to massive corporations. 
                   By leveraging the latest in open-source and modern web architectures, we deliver scalable, 
-                  secure, and highly performant solutions to businesses of all sizes across Pakistan and beyond.
+                  secure, and highly performant solutions to businesses of all sizes worldwide.
                 </p>
               </div>
             </m.div>

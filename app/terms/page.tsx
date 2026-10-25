@@ -82,7 +82,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">2.</span> Quotes, Pricing and Payment
               </h2>
               <p className="text-text-muted">
-                Prices shown on the Website are starting prices in Pakistani Rupees (PKR) and are indicative only. The final price is the one in your confirmed quotation. Unless otherwise agreed in writing:
+                Prices shown on the Website are starting prices in USD and are indicative only. The final price is the one in your confirmed quotation. Unless otherwise agreed in writing:
               </p>
               <ul className="space-y-2 text-text-muted pl-4 list-disc">
                 <li>Work begins after we receive an advance payment, which will be stated in your quotation.</li>

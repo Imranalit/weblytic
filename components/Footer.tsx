@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
-import { Github, Twitter, Linkedin, Instagram, Facebook, ArrowRight } from "lucide-react";
+import { MessageCircle, Instagram, Facebook, ArrowRight } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -62,22 +62,13 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-4">
               <a 
-                href="https://twitter.com" 
+                href="https://wa.me/923131398796" 
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow Weblytic on Twitter"
+                aria-label="Chat with Weblytic on WhatsApp"
                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
               >
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a 
-                href="https://linkedin.com" 
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Connect with Weblytic on LinkedIn"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <Linkedin className="w-4 h-4" />
+                <MessageCircle className="w-4 h-4" />
               </a>
               <a 
                 href="https://facebook.com/weblytic.cc" 
@@ -117,7 +108,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li><a href="/about" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
               <li><a href="/careers" className="text-sm text-text-muted hover:text-white transition-colors">Careers <span className="ml-1 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">We're Hiring</span></a></li>
-                            <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/faq" className="text-sm text-text-muted hover:text-white transition-colors">FAQ</a></li>
               <li><a href="/#contact" className="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
             </ul>

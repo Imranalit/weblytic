@@ -69,10 +69,8 @@ export default function Process() {
         if (cards.length !== steps.length || circles.length !== steps.length) return;
 
         const totalSteps = steps.length;
-        // Distance one card travels per step = 100vw (each card is full viewport width)
         const stepWidth = window.innerWidth;
 
-        // Initial state: card 0 active, others dimmed. Track at 0.
         gsap.set(track, { x: 0 });
         cards.forEach((card, i) => {
           gsap.set(card, {
@@ -93,7 +91,6 @@ export default function Process() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            // 1 step of scroll per card + 1 viewport pause before releasing the pin
             end: `+=${totalSteps * 100 + 100}%`,
             pin: true,
             scrub: 0.8,
@@ -102,7 +99,6 @@ export default function Process() {
           },
         });
 
-        // Animate track horizontally across all steps
         tl.to(
           track,
           {
@@ -113,7 +109,6 @@ export default function Process() {
           0
         );
 
-        // Per step: fade current in, fade previous out
         steps.forEach((_, i) => {
           if (i === 0) return;
 
@@ -177,13 +172,10 @@ export default function Process() {
           );
         });
 
-        // Hold the last card on screen for ~25% of the pinned scroll
-        // before releasing the pin. Consumes timeline duration without visual change.
         tl.to({}, { duration: 1 }, totalSteps);
 
         counter.textContent = `01 / 0${totalSteps}`;
 
-        // Recompute stepWidth on resize
         ScrollTrigger.addEventListener("refreshInit", () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const st = (tl.scrollTrigger as any);
@@ -193,6 +185,17 @@ export default function Process() {
       }, sectionRef);
 
       ScrollTrigger.refresh();
+
+      // If user navigated to a hash (e.g. #contact, #pricing, #services), re-align scroll after ScrollTrigger pin spacer settles
+      if (typeof window !== "undefined" && window.location.hash) {
+        const hashId = window.location.hash.split("?")[0].replace("#", "");
+        const targetEl = document.getElementById(hashId);
+        if (targetEl) {
+          setTimeout(() => {
+            targetEl.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        }
+      }
     })();
 
     return () => {
@@ -204,9 +207,10 @@ export default function Process() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-10 h-screen overflow-hidden"
+      className="relative z-10 lg:h-screen lg:overflow-hidden"
     >
-      <div className="h-full flex flex-col justify-center">
+      {/* Desktop Pinned Horizontal Track (Only rendered/visible on lg+) */}
+      <div className="hidden lg:flex h-full flex-col justify-center">
         <div className="text-center mb-12 shrink-0">
           <m.h2
             initial="hidden"
@@ -218,14 +222,10 @@ export default function Process() {
             How We <span className="text-gradient">Work</span>
           </m.h2>
           <div className="mt-4 text-sm font-mono text-text-muted tracking-widest">
-            <span ref={counterRef} className="hidden lg:inline">
-              01 / 04
-            </span>
-            <span className="lg:hidden">01 / 04</span>
+            <span ref={counterRef}>01 / 04</span>
           </div>
         </div>
 
-        {/* Horizontal track — width = totalSteps * 100vw, translated by GSAP */}
         <div className="relative h-[60vh] flex items-center overflow-hidden">
           <div
             ref={trackRef}
@@ -265,25 +265,28 @@ export default function Process() {
         </div>
       </div>
 
-      {/* Mobile / reduced-motion fallback: original vertical timeline */}
-      <div className="lg:hidden absolute inset-0 bg-background overflow-y-auto py-24">
+      {/* Mobile & Tablet Natural Vertical Flow (No trapped inner scrollbar!) */}
+      <div className="lg:hidden py-24 bg-background">
         <div className="container mx-auto px-6 max-w-4xl">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-display font-bold mb-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-display font-bold mb-4">
               How We <span className="text-gradient">Work</span>
             </h2>
+            <p className="text-sm font-mono text-text-muted tracking-widest">
+              4-STEP ENGINEERING WORKFLOW
+            </p>
           </div>
-          <div className="space-y-12">
-            {steps.map((step, i) => (
+          <div className="space-y-8">
+            {steps.map((step) => (
               <div key={step.title} className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-background border-2 border-primary flex items-center justify-center text-primary">
+                <div className="w-14 h-14 rounded-full bg-background border-2 border-primary flex items-center justify-center text-primary shadow-lg shadow-primary/20">
                   {step.icon}
                 </div>
                 <div className="glass-card p-6 w-full text-center">
-                  <h3 className="text-2xl font-display font-bold text-white mb-3">
+                  <h3 className="text-2xl font-display font-bold text-white mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-text-muted">{step.description}</p>
+                  <p className="text-text-muted text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}

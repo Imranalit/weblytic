@@ -14,7 +14,7 @@ export const allFaqs: FAQItem[] = [
   {
     category: "pos",
     question: "Is there a retail POS software with a one-time fee and no monthly subscription?",
-    answer: "Yes. Unlike overseas SaaS tools charging $50 to $100 every month in foreign currency, Weblytic provides custom offline desktop software for a transparent one-time setup fee (starting from Rs 5,000–7,000 for standard retail setups) with zero monthly fees."
+    answer: "Yes. Unlike overseas SaaS tools charging recurring monthly fees, Weblytic provides custom offline desktop software for a transparent one-time build fee (starting from $150+ USD for standard retail setups) with zero recurring monthly fees."
   },
   {
     category: "pos",
@@ -23,8 +23,8 @@ export const allFaqs: FAQItem[] = [
   },
   {
     category: "pos",
-    question: "Cloud POS vs. Offline Desktop POS: Which is better for small retailers in Pakistan?",
-    answer: "For most Pakistani retail shops, pharmacies, and marts, offline desktop software is far more reliable: it eliminates internet downtime delays, avoids recurring dollar subscription fees, keeps confidential financial records on-premise, and prints receipts instantly."
+    question: "Cloud POS vs. Offline Desktop POS: Which is better for small retailers?",
+    answer: "For retail shops, pharmacies, and marts, offline desktop software is far more reliable: it eliminates internet downtime delays, avoids recurring subscription fees, keeps confidential financial records on-premise, and prints receipts instantly."
   },
   {
     category: "pos",
@@ -36,7 +36,7 @@ export const allFaqs: FAQItem[] = [
   {
     category: "whatsapp",
     question: "How much does a WhatsApp chatbot really cost for a small business?",
-    answer: "Costs comprise two transparent parts: (1) Meta's official conversation usage (Meta provides 1,000 free service conversations every month) and (2) Weblytic's one-time development & AI configuration starting from Rs 10,000. There are zero hidden server markups."
+    answer: "Costs comprise two transparent parts: (1) Meta's official conversation usage (Meta provides 1,000 free service conversations every month) and (2) Weblytic's one-time development & AI configuration starting from $150+ USD. There are zero hidden server markups."
   },
   {
     category: "whatsapp",
@@ -84,8 +84,8 @@ export const allFaqs: FAQItem[] = [
   // Cluster 4: Web Development & Free Hosting (Static vs. WordPress)
   {
     category: "web",
-    question: "How much does a professional business website cost in Pakistan in 2026?",
-    answer: "A high-performance modern business website typically starts from Rs 10,000–12,000 for standard static showcases. Larger custom web apps, e-commerce stores, and dynamic portals range from Rs 30,000 to Rs 80,000+ depending on database complexity."
+    question: "How much does a professional business website cost in 2026?",
+    answer: "A high-performance modern business website starts from $100+ USD for our Starter Landing Page with lifetime free cloud hosting. Larger multi-page Next.js web applications, e-commerce stores, and dynamic SaaS portals start from $400+ USD depending on scope."
   },
   {
     category: "web",

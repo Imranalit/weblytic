@@ -101,22 +101,24 @@ export default function Chatbot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({ role: m.role, content: m.content }))
-        }),
+          messages: [...messages, userMessage].map(m => ({
+            role: m.role,
+            content: m.content
+          }))
+        })
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status} Error`);
+        throw new Error("Failed to get response");
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, data]);
-    } catch (error: any) {
-      setMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: `Sorry, I ran into an issue: ${error.message}. Please reach out to our team on WhatsApp at +923131398796!` 
-      }]);
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: "I'm having a brief issue connecting right now. Feel free to contact our human engineering team directly at **hello@weblytic.cc** or WhatsApp **+92 313 1398796**!" }
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +134,7 @@ export default function Chatbot() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-24 right-4 sm:right-6 md:right-8 z-50 flex items-center"
+            className="fixed bottom-6 right-6 z-50 flex items-center"
           >
             {/* Calling-out speech bubble (prompts visitor to chat) */}
             <m.div
@@ -181,15 +183,15 @@ export default function Chatbot() {
         )}
       </AnimatePresence>
 
-      {/* Chat Window: Anchored between navbar and bottom taskbar */}
+      {/* Chat Window: Anchored at bottom right, expanding upwards */}
       <AnimatePresence>
         {isOpen && (
           <m.div
-            initial={{ opacity: 0, y: -15, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -15, scale: 0.95 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-20 sm:top-24 right-3 sm:right-6 md:right-8 bottom-4 sm:bottom-6 w-[calc(100vw-1.5rem)] sm:w-[450px] md:w-[470px] max-h-[calc(100dvh-6.5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+            className="fixed bottom-6 right-4 sm:right-6 md:right-8 w-[calc(100vw-2rem)] sm:w-[420px] md:w-[450px] h-[550px] max-h-[calc(100dvh-5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
           >
             {/* Header with Konain Avatar & Single Clean Close Button */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 shrink-0">
