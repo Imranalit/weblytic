@@ -13,7 +13,6 @@ export default function AuditClient() {
   const [agencyUrl, setAgencyUrl] = useState("weblytic.cc");
   const [primaryColor, setPrimaryColor] = useState("#1E3A8A");
   const [alertEmail, setAlertEmail] = useState("");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -36,33 +35,37 @@ export default function AuditClient() {
     };
   }, [apiUrl]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
     setIsLoading(true);
     setStatusMessage("Crawling target website & inspecting tags (10-15s)...");
 
-    const formData = new FormData();
-    formData.append("target_url", targetUrl);
-    formData.append("agency_name", agencyName);
-    formData.append("agency_url", agencyUrl);
-    formData.append("primary_color", primaryColor);
-    if (alertEmail) {
-      formData.append("alert_email", alertEmail);
-    }
-    if (logoFile) {
-      formData.append("logo", logoFile);
-    }
+    // Capture raw FormData from the form element — browser sets boundary automatically
+    const formData = new FormData(e.currentTarget);
 
     try {
       const response = await fetch(`${apiUrl}/api/instant-audit`, {
         method: "POST",
         body: formData,
+        // DO NOT set Content-Type header manually; browser provides multipart boundary
       });
 
       if (!response.ok) {
-        throw new Error(`Audit engine returned HTTP ${response.status}. Ensure URL is online and reachable.`);
+        let errDetail = `HTTP ${response.status}`;
+        try {
+          const errJson = await response.json();
+          if (errJson.error) {
+            errDetail = `${errJson.error}: ${errJson.traceback || ""}`;
+          } else if (errJson.detail) {
+            errDetail = typeof errJson.detail === "string" ? errJson.detail : JSON.stringify(errJson.detail);
+          }
+        } catch {
+          const text = await response.text();
+          if (text) errDetail = text;
+        }
+        throw new Error(errDetail);
       }
 
       setStatusMessage("Generating unbranded white-label PDF report...");
@@ -167,7 +170,7 @@ export default function AuditClient() {
                 <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
                 <div>
                   <h4 className="font-semibold text-sm">Audit Request Failed</h4>
-                  <p className="text-xs text-red-300/80 mt-1">{errorMessage}</p>
+                  <p className="text-xs text-red-300/80 mt-1 whitespace-pre-wrap font-mono">{errorMessage}</p>
                 </div>
               </m.div>
             )}
@@ -310,7 +313,6 @@ export default function AuditClient() {
                       type="file"
                       name="logo"
                       accept="image/png, image/jpeg"
-                      onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
                       className="w-full text-xs text-text-muted file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer cursor-pointer bg-background/80 border border-white/15 rounded-xl p-1"
                     />
                   </div>
