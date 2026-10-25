@@ -97,7 +97,7 @@ COMMUNICATION & FORMATTING RULES:
           const content = data.choices?.[0]?.message?.content;
           if (content) {
             return new Response(
-              JSON.stringify({ role: "assistant", content }),
+              JSON.stringify({ role: "assistant", content, reply: content }),
               { status: 200, headers: { "Content-Type": "application/json" } }
             );
           }
@@ -112,20 +112,24 @@ COMMUNICATION & FORMATTING RULES:
       }
     }
 
+    const fallbackMsg = "I'm having a temporary connection hiccup. Please reach out to our team directly on WhatsApp at **+92 313 1398796** or email **hello@weblytic.cc**!";
     return new Response(
       JSON.stringify({
         role: "assistant",
-        content: `I'm having a temporary connection hiccup. Please reach out to our team directly on WhatsApp at **+92 313 1398796** or email **hello@weblytic.cc**!`
+        content: fallbackMsg,
+        reply: fallbackMsg
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
 
   } catch (error: any) {
     console.error("Chat edge function unhandled error:", error);
+    const errText = "I'm having a temporary issue right now. Feel free to contact our team on WhatsApp at **+92 313 1398796** or email **hello@weblytic.cc**!";
     return new Response(
       JSON.stringify({
         role: "assistant",
-        content: "I'm having a temporary issue right now. Feel free to contact our team on WhatsApp at **+92 313 1398796** or email **hello@weblytic.cc**!"
+        content: errText,
+        reply: errText
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
