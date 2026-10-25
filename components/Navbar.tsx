@@ -36,8 +36,8 @@ export default function Navbar() {
           <div
             className={`transition-all duration-300 rounded-full px-6 py-3 flex items-center justify-between ${
               isScrolled
-                ? "glass-panel-glow border border-white/15 shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
-                : "bg-white/[0.04] backdrop-blur-md border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]"
+                ? "bg-[#0B0F19]/95 border border-white/15 shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
+                : "bg-[#0B0F19]/90 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]"
             }`}
           >
             {/* Logo & Brand with Original Heartbeat Dot */}
@@ -109,7 +109,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-x-4 top-20 z-40 md:hidden bg-slate-900/95 backdrop-blur-2xl p-6 rounded-2xl border border-white/15 shadow-2xl flex flex-col gap-4"
+            className="fixed inset-x-4 top-20 z-40 md:hidden bg-[#0B0F19]/98 p-6 rounded-2xl border border-white/15 shadow-2xl flex flex-col gap-4"
           >
             {navLinks.map((link) => (
               <a

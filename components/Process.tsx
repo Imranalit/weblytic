@@ -76,7 +76,6 @@ export default function Process() {
           gsap.set(card, {
             opacity: i === 0 ? 1 : 0.35,
             scale: i === 0 ? 1 : 0.92,
-            filter: i === 0 ? "blur(0px)" : "blur(3px)",
           });
         });
         circles.forEach((circle, i) => {
@@ -122,7 +121,6 @@ export default function Process() {
             {
               opacity: 0.35,
               scale: 0.92,
-              filter: "blur(3px)",
               ease: "power2.out",
               duration: 0.4,
             },
@@ -145,7 +143,6 @@ export default function Process() {
             {
               opacity: 1,
               scale: 1,
-              filter: "blur(0px)",
               ease: "power2.out",
               duration: 0.4,
             },
