@@ -26,8 +26,9 @@ const KonainAvatar = ({ size = 28, className = "" }: { size?: number; className?
   </div>
 );
 
-const FormattedMessage = ({ content }: { content: string }) => {
-  const sanitized = content.replace(/<br\s*\/?>/gi, "\n");
+const FormattedMessage = ({ content }: { content?: string }) => {
+  const safeContent = typeof content === "string" ? content : (content ? String(content) : "");
+  const sanitized = safeContent.replace(/<br\s*\/?>/gi, "\n");
   const lines = sanitized.split("\n");
 
   return (
@@ -113,7 +114,17 @@ export default function Chatbot() {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+      const replyText =
+        (typeof data?.content === "string" && data.content) ||
+        (typeof data?.reply === "string" && data.reply) ||
+        (typeof data?.message === "string" && data.message) ||
+        (typeof data === "string" ? data : "");
+
+      if (!replyText) {
+        throw new Error("Empty response received from chat API");
+      }
+
+      setMessages(prev => [...prev, { role: "assistant", content: replyText }]);
     } catch {
       setMessages(prev => [
         ...prev,
