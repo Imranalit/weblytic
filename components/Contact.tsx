@@ -137,7 +137,7 @@ ${message}`;
             className="flex-1"
           >
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
-              Let's build something <span className="text-gradient">amazing</span>
+              Let&apos;s build something <span className="text-gradient">amazing</span>
             </h2>
             <p className="text-lg text-text-muted mb-12 max-w-md">
               Ready to scale your business? Fill out the details below to send us your project brief via email or chat with our team directly on WhatsApp.
@@ -162,7 +162,7 @@ ${message}`;
                 </div>
                 <div>
                   <div className="text-sm text-text-muted">Location</div>
-                  <div className="font-semibold text-white">Khairpur Mirs', Sindh, Pakistan</div>
+                  <div className="font-semibold text-white">Khairpur Mirs&apos;, Sindh, Pakistan</div>
                 </div>
               </div>
 
@@ -198,7 +198,7 @@ ${message}`;
               >
                 <input type="hidden" name="form-name" value="quote" />
                 <p className="hidden">
-                  <label htmlFor="quote-bot-field">Don’t fill this out if you're human:</label>
+                  <label htmlFor="quote-bot-field">Don&apos;t fill this out if you&apos;re human:</label>
                   <input id="quote-bot-field" name="bot-field" />
                 </p>
 

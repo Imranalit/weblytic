@@ -173,7 +173,7 @@ export default function FAQClient() {
             </span>
             {searchQuery && (
               <span>
-                Search results for <span className="text-primary italic">"{searchQuery}"</span>
+                Search results for <span className="text-primary italic">&quot;{searchQuery}&quot;</span>
               </span>
             )}
           </div>
@@ -185,7 +185,7 @@ export default function FAQClient() {
                 <HelpCircle className="w-12 h-12 text-text-muted/40 mx-auto mb-3" />
                 <h3 className="text-lg font-bold text-white mb-2">No matching questions found</h3>
                 <p className="text-text-muted text-sm max-w-md mx-auto mb-6">
-                  We could not find any FAQ matching "{searchQuery}". You can speak with our founder directly on WhatsApp right now.
+                  We could not find any FAQ matching &quot;{searchQuery}&quot;. You can speak with our founder directly on WhatsApp right now.
                 </p>
                 <a
                   href="https://wa.me/923131398796?text=Hello%20Weblytic,%20I%20have%20a%20question%20regarding%20your%20services"

@@ -51,10 +51,10 @@ export default function Footer() {
               <span className="w-2 h-2 rounded-full bg-primary-gradient mt-1 animate-heartbeat" />
             </a>
             <p className="text-text-muted text-sm leading-relaxed">
-              End-to-end digital solutions for modern businesses. We build, host, and scale your digital infrastructure from Khairpur Mirs', Sindh to the world.
+              End-to-end digital solutions for modern businesses. We build, host, and scale your digital infrastructure from Khairpur Mirs&apos;, Sindh to the world.
             </p>
             <div className="text-xs text-text-muted space-y-1">
-              <p>📍 Khairpur Mirs', Sindh, Pakistan</p>
+              <p>📍 Khairpur Mirs&apos;, Sindh, Pakistan</p>
               <p>✉️ Contact: <a href="mailto:hello@weblytic.cc" className="hover:text-primary transition-colors text-white/90">hello@weblytic.cc</a></p>
               <p>✉️ Careers: <a href="mailto:careers@weblytic.cc" className="hover:text-primary transition-colors text-white/90">careers@weblytic.cc</a></p>
               <p>✉️ Admin: <a href="mailto:admin@weblytic.cc" className="hover:text-primary transition-colors text-white/90">admin@weblytic.cc</a></p>
@@ -107,7 +107,7 @@ export default function Footer() {
             <h4 className="font-display font-bold text-white mb-6">Company</h4>
             <ul className="space-y-4">
               <li><a href="/about" className="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
-              <li><a href="/careers" className="text-sm text-text-muted hover:text-white transition-colors">Careers <span className="ml-1 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">We're Hiring</span></a></li>
+              <li><a href="/careers" className="text-sm text-text-muted hover:text-white transition-colors">Careers <span className="ml-1 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">We&apos;re Hiring</span></a></li>
               <li><a href="/#pricing" className="text-sm text-text-muted hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/faq" className="text-sm text-text-muted hover:text-white transition-colors">FAQ</a></li>
               <li><a href="/#contact" className="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
