@@ -14,6 +14,9 @@ export interface PackageDetail {
   price: string;
   suffix: string;
   turnaround: string;
+  cardHighlights: string[];
+  guaranteeShort: string;
+  freeHighlightShort: string;
   freeHighlights: string[];
   deliverables: {
     category: string;
@@ -46,6 +49,9 @@ export const packagesData: Record<string, PackageDetail> = {
     price: "$150+",
     suffix: "USD (one-time)",
     turnaround: "5 – 7 Business Days",
+    cardHighlights: ["Native Windows / Mac app", "Local SQLite / JSON DB", "Zero recurring server fees"],
+    guaranteeShort: "30-Day Bug-Free Guarantee",
+    freeHighlightShort: "Zero Server Fees + 1 Hr Free",
     freeHighlights: [
       "FREE 1 Hour Post-Launch Support & Training",
       "ZERO Recurring Server or Cloud License Fees Forever",
@@ -124,6 +130,9 @@ export const packagesData: Record<string, PackageDetail> = {
     price: "$100+",
     suffix: "USD (one-time)",
     turnaround: "3 – 5 Business Days",
+    cardHighlights: ["Custom Next.js single-page", "Lifetime free Netlify hosting", "Free domain (1st year)"],
+    guaranteeShort: "100% Money-Back Guarantee",
+    freeHighlightShort: "Free Cloud Hosting For Life",
     freeHighlights: [
       "🔥 LIFETIME FREE Netlify Cloud Hosting ($0/mo Forever)",
       "FREE Custom Domain Registration Included (1st Year)",
@@ -202,6 +211,9 @@ export const packagesData: Record<string, PackageDetail> = {
     price: "$50",
     suffix: "USD / year",
     turnaround: "24 – 48 Hours",
+    cardHighlights: ["Custom domain + DNS", "cPanel or Cloud VPS", "Business @yourdomain.com email"],
+    guaranteeShort: "99.9% Cloud Uptime SLA",
+    freeHighlightShort: "Free SSL + Weekly Backups",
     freeHighlights: [
       "FREE Custom Domain Registration Included (1st Year)",
       "FREE Full Site & Email Migration from Your Old Host",
@@ -279,6 +291,9 @@ export const packagesData: Record<string, PackageDetail> = {
     price: "$150+",
     suffix: "USD (one-time)",
     turnaround: "4 – 6 Business Days",
+    cardHighlights: ["Web or WhatsApp widget", "Trained on your docs & FAQs", "Human handoff routing"],
+    guaranteeShort: "14-Day Performance Guarantee",
+    freeHighlightShort: "Free Setup & Integration",
     freeHighlights: [
       "FREE Multi-Platform Setup (Web Chat Widget & WhatsApp Connection)",
       "FREE Document Ingestion & Custom Prompt Engineering",
