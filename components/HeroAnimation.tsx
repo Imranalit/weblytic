@@ -242,7 +242,7 @@ export default function HeroAnimation() {
                 <span className="flex items-center gap-1.5 text-white/80">
                   <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-success" /> Production Ready
                 </span>
-                <span className="font-mono text-cyan-300 truncate">Khairpur Mirs' • Pakistan</span>
+                <span className="font-mono text-cyan-300 truncate">Khairpur Mirs&apos; • Pakistan</span>
               </div>
             </m.div>
           )}

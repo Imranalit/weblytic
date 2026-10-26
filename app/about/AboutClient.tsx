@@ -66,7 +66,7 @@ export default function AboutClient() {
                 About <span className="text-transparent bg-clip-text bg-primary-gradient">Weblytic</span>
               </h1>
               <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto">
-                We are a digital agency based in Khairpur Mirs', Sindh, dedicated to providing 
+                We are a digital agency based in Khairpur Mirs&apos;, Sindh, dedicated to providing 
                 cutting-edge web development, custom software, and infrastructure solutions.
               </p>
             </m.div>
@@ -87,7 +87,7 @@ export default function AboutClient() {
                   or a sophisticated AI chatbot for WhatsApp, our goal is to empower your business with tools that just work.
                 </p>
                 <p>
-                  We believe that enterprise-grade technology shouldn't be restricted to massive corporations. 
+                  We believe that enterprise-grade technology shouldn&apos;t be restricted to massive corporations. 
                   By leveraging the latest in open-source and modern web architectures, we deliver scalable, 
                   secure, and highly performant solutions to businesses of all sizes worldwide.
                 </p>

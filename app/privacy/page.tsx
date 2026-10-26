@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
             
             {/* Preamble */}
             <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-text-muted leading-relaxed">
-              This Privacy Policy explains how Weblytic ("Weblytic", "we", "us", "our"), based in Khairpur Mirs', Sindh, Pakistan, collects, uses and protects information when you visit <strong className="text-white">weblytic.cc</strong> (the "Website"), contact us, or use our services. For the purposes of the General Data Protection Regulation (GDPR) and the UK GDPR, Weblytic acts as the <strong>Data Controller</strong> for the personal data collected through this Website. By using the Website, you agree to the practices described here.
+              This Privacy Policy explains how Weblytic (&quot;Weblytic&quot;, &quot;we&quot;, &quot;us&quot;, &quot;our&quot;), based in Khairpur Mirs&apos;, Sindh, Pakistan, collects, uses and protects information when you visit <strong className="text-white">weblytic.cc</strong> (the &quot;Website&quot;), contact us, or use our services. For the purposes of the General Data Protection Regulation (GDPR) and the UK GDPR, Weblytic acts as the <strong>Data Controller</strong> for the personal data collected through this Website. By using the Website, you agree to the practices described here.
             </div>
 
             {/* Section 1 */}
@@ -169,7 +169,7 @@ export default function PrivacyPolicyPage() {
               <ul className="list-disc pl-5 space-y-2 text-text-muted">
                 <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
                 <li><strong>Rectification:</strong> Request correction of inaccurate data.</li>
-                <li><strong>Erasure:</strong> Request deletion of your data (the "right to be forgotten").</li>
+                <li><strong>Erasure:</strong> Request deletion of your data (the &quot;right to be forgotten&quot;).</li>
                 <li><strong>Restriction & Objection:</strong> Restrict or object to our processing of your data.</li>
                 <li><strong>Portability:</strong> Request transfer of your data to another organization.</li>
               </ul>
@@ -194,7 +194,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-primary font-mono text-base">10.</span> Changes to This Policy
               </h2>
               <p className="text-text-muted">
-                We may update this Privacy Policy from time to time. The latest version will always be posted on this page with an updated "Last updated" date.
+                We may update this Privacy Policy from time to time. The latest version will always be posted on this page with an updated &quot;Last updated&quot; date.
               </p>
             </section>
 
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <MapPin className="w-4 h-4 text-success shrink-0" />
-                  <span className="text-xs">Khairpur Mirs', Sindh, Pakistan</span>
+                  <span className="text-xs">Khairpur Mirs&apos;, Sindh, Pakistan</span>
                 </div>
               </div>
             </section>

@@ -119,7 +119,7 @@ export default function RefundPolicyPage() {
                 <span className="text-primary font-mono text-base">4.</span> Hosting and Recurring Services
               </h2>
               <p className="text-text-muted">
-                Any service we purchase from a third party on your behalf (including domains, hosting, SSL, business email, and API or platform subscriptions) cannot be refunded by Weblytic once it has been bought, because those fees are paid to the provider and are governed by the provider's own refund terms. Recurring services can be cancelled at any time to stop future renewals, but fees already paid for the current term are non-refundable.
+                Any service we purchase from a third party on your behalf (including domains, hosting, SSL, business email, and API or platform subscriptions) cannot be refunded by Weblytic once it has been bought, because those fees are paid to the provider and are governed by the provider&apos;s own refund terms. Recurring services can be cancelled at any time to stop future renewals, but fees already paid for the current term are non-refundable.
               </p>
             </section>
 
@@ -172,7 +172,7 @@ export default function RefundPolicyPage() {
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <MapPin className="w-4 h-4 text-success shrink-0" />
-                  <span className="text-xs">Khairpur Mirs', Sindh, Pakistan</span>
+                  <span className="text-xs">Khairpur Mirs&apos;, Sindh, Pakistan</span>
                 </div>
               </div>
             </section>

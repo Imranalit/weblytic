@@ -63,7 +63,7 @@ export default function TermsPage() {
             
             {/* Preamble */}
             <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-text-muted leading-relaxed">
-              These Terms of Service ("Terms") govern your use of <strong className="text-white">weblytic.cc</strong> (the "Website") and any services provided by Weblytic ("Weblytic", "we", "us", "our"), based in Khairpur Mirs', Sindh, Pakistan. By requesting a quote, paying for a service, or using the Website, you ("Client", "you") agree to these Terms. If you do not agree, please do not use our services.
+              These Terms of Service (&quot;Terms&quot;) govern your use of <strong className="text-white">weblytic.cc</strong> (the &quot;Website&quot;) and any services provided by Weblytic (&quot;Weblytic&quot;, &quot;we&quot;, &quot;us&quot;, &quot;our&quot;), based in Khairpur Mirs&apos;, Sindh, Pakistan. By requesting a quote, paying for a service, or using the Website, you (&quot;Client&quot;, &quot;you&quot;) agree to these Terms. If you do not agree, please do not use our services.
             </div>
 
             {/* Section 1 */}
@@ -88,7 +88,7 @@ export default function TermsPage() {
                 <li>Work begins after we receive an advance payment, which will be stated in your quotation.</li>
                 <li>The remaining balance is due on delivery or before final handover, deployment, or release of source files and credentials.</li>
                 <li>Late payment may pause work, delay delivery or suspend hosted services until the account is settled.</li>
-                <li>Payments are accepted by the methods we communicate to you at the time of quotation (such as bank transfer or mobile wallet). Any transfer fees are the Client's responsibility.</li>
+                <li>Payments are accepted by the methods we communicate to you at the time of quotation (such as bank transfer or mobile wallet). Any transfer fees are the Client&apos;s responsibility.</li>
               </ul>
             </section>
 
@@ -108,7 +108,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">4.</span> Client Responsibilities
               </h2>
               <p className="text-text-muted">
-                You agree to provide accurate information, content, images, logos, access credentials and timely feedback. Delays in providing these may extend the delivery timeline. You confirm that all materials you give us are yours to use or that you have permission to use them, and that they do not infringe anyone's rights or break any law.
+                You agree to provide accurate information, content, images, logos, access credentials and timely feedback. Delays in providing these may extend the delivery timeline. You confirm that all materials you give us are yours to use or that you have permission to use them, and that they do not infringe anyone&apos;s rights or break any law.
               </p>
             </section>
 
@@ -178,7 +178,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">11.</span> AI Bots
               </h2>
               <p className="text-text-muted">
-                AI chatbots generate responses using machine-learning models and may occasionally produce inaccurate or incomplete answers. You are responsible for reviewing the bot's behavior, for the data you provide to train it, and for complying with the policies of platforms such as WhatsApp. We are not liable for decisions made on the basis of a bot's responses.
+                AI chatbots generate responses using machine-learning models and may occasionally produce inaccurate or incomplete answers. You are responsible for reviewing the bot&apos;s behavior, for the data you provide to train it, and for complying with the policies of platforms such as WhatsApp. We are not liable for decisions made on the basis of a bot&apos;s responses.
               </p>
             </section>
 
@@ -188,7 +188,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">12.</span> Prohibited Use
               </h2>
               <p className="text-text-muted">
-                You may not use our services for unlawful, fraudulent, abusive, or harmful purposes, including illegal content, spam, malware, or infringement of others' rights. We may suspend or end services immediately if these Terms are breached.
+                You may not use our services for unlawful, fraudulent, abusive, or harmful purposes, including illegal content, spam, malware, or infringement of others&apos; rights. We may suspend or end services immediately if these Terms are breached.
               </p>
             </section>
 
@@ -198,7 +198,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">13.</span> Warranty Disclaimer
               </h2>
               <p className="text-text-muted">
-                Our services are provided on an "as is" and "as available" basis. We work carefully to deliver quality results, but we do not promise that software or websites will be error-free, uninterrupted, or achieve particular business, search ranking or revenue results.
+                Our services are provided on an &quot;as is&quot; and &quot;as available&quot; basis. We work carefully to deliver quality results, but we do not promise that software or websites will be error-free, uninterrupted, or achieve particular business, search ranking or revenue results.
               </p>
             </section>
 
@@ -238,7 +238,7 @@ export default function TermsPage() {
                 <span className="text-primary font-mono text-base">17.</span> Changes to These Terms
               </h2>
               <p className="text-text-muted">
-                We may update these Terms from time to time. The updated version will be posted on this page with a new "Last updated" date. Continued use of our services after changes means you accept them. Changes do not alter the terms of an already-confirmed quotation.
+                We may update these Terms from time to time. The updated version will be posted on this page with a new &quot;Last updated&quot; date. Continued use of our services after changes means you accept them. Changes do not alter the terms of an already-confirmed quotation.
               </p>
             </section>
 
@@ -261,7 +261,7 @@ export default function TermsPage() {
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                   <MapPin className="w-4 h-4 text-success shrink-0" />
-                  <span className="text-xs">Khairpur Mirs', Sindh, Pakistan</span>
+                  <span className="text-xs">Khairpur Mirs&apos;, Sindh, Pakistan</span>
                 </div>
               </div>
             </section>

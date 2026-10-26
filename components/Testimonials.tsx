@@ -55,7 +55,7 @@ export default function Testimonials() {
                 transition={{ duration: 0.3 }}
               >
                 <p className="text-xl md:text-2xl text-white font-medium leading-relaxed mb-8">
-                  "{testimonials[currentIndex].quote}"
+                  &ldquo;{testimonials[currentIndex].quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary-gradient flex items-center justify-center text-white font-bold text-lg shadow-lg">

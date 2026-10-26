@@ -106,7 +106,7 @@ export default function FAQ() {
         >
           {filteredFaqs.length === 0 ? (
             <div className="text-center py-12 text-text-muted text-sm">
-              No questions found matching "{searchQuery}". Ask Konain in the chat!
+              No questions found matching &quot;{searchQuery}&quot;. Ask Konain in the chat!
             </div>
           ) : (
             filteredFaqs.map((faq, i) => {
