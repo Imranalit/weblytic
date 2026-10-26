@@ -174,7 +174,7 @@ export default function Process() {
         counter.textContent = `01 / 0${totalSteps}`;
 
         ScrollTrigger.addEventListener("refreshInit", () => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
           const st = (tl.scrollTrigger as any);
           if (!st) return;
           st.vars.end = `+=${totalSteps * 100 + 100}%`;
