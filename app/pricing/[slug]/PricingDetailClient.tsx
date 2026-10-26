@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -295,6 +296,13 @@ export default function PricingDetailClient({ pkg }: { pkg: PackageDetail }) {
                   <ArrowRight className="w-4 h-4" />
                 </ButtonLink>
               </div>
+            </div>
+
+            <div className="mt-6 text-center">
+              <p className="text-xs text-text-muted mb-2">This package doesn&apos;t cover your needs?</p>
+              <Link href="/custom-quote" className="text-sm font-semibold text-primary hover:text-primary-end transition-colors">
+                Request a custom quote &rarr;
+              </Link>
             </div>
           </div>
         </main>
