@@ -4,7 +4,7 @@ import { m } from "framer-motion";
 import { ButtonLink } from "./ui/Button";
 import { ArrowRight } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
-import HeroAnimation from "./HeroAnimation";
+import FloatingPaper from "./FloatingPaper";
 
 export default function Hero() {
   const headlineWords = "Build. Host. Scale. — All in One Place.".split(" ");
@@ -32,7 +32,7 @@ export default function Hero() {
       </div>
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           <div className="flex-1 text-center lg:text-left">
             <m.h1
               variants={staggerContainer}
@@ -76,16 +76,15 @@ export default function Hero() {
             </m.div>
           </div>
 
-          {/* Floating UI Animation Mockup (Responsive for Mobile & Desktop) */}
-          <div className="flex-1 w-full max-w-lg lg:max-w-none perspective-1000 block mt-8 lg:mt-0">
+          {/* Floating Tactile 3D Paper (Seamless, No Container Box, No Dark Background) */}
+          <div className="flex-1 w-full max-w-md lg:max-w-none flex items-center justify-center mt-6 lg:mt-0">
             <m.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, rotateY: -3, rotateX: 3, scale: 1 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              whileHover={{ rotateY: 0, rotateX: 0, scale: 1.02 }}
-              className="relative w-full"
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 1.0, ease: "easeOut" }}
+              className="relative w-full flex items-center justify-center"
             >
-              <HeroAnimation />
+              <FloatingPaper />
             </m.div>
           </div>
         </div>
