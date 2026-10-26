@@ -36,7 +36,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative border-t border-white/10 bg-background pt-20 pb-10 z-10 overflow-hidden">
+    <footer className="relative border-t border-white/10 bg-background pt-20 pb-24 sm:pb-14 z-10 overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
       
       <div className="container mx-auto px-6 max-w-7xl">
@@ -168,7 +168,7 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 md:pr-24">
           <div className="text-sm text-text-muted">
             © {new Date().getFullYear()} Weblytic. All rights reserved.
           </div>
