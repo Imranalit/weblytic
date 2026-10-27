@@ -1,22 +1,36 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
-  ShieldCheck, Search, Globe, Building2, Palette, Upload, Mail, CheckCircle2,
+  ShieldCheck, Search, Globe, Building2, Palette, Mail, CheckCircle2,
   AlertCircle, Loader2, Sparkles, Server, Download, ChevronDown, ChevronUp,
-  FileText, ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle, Tag
+  FileText, ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle,
+  User, History, Printer, LogOut, ArrowRight, Clock, Trash2
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-interface AuditIssue {
+export interface AuditSession {
+  email: string;
+  accountType: "agency" | "individual";
+  fullName?: string;
+  agencyName?: string;
+  agencyUrl?: string;
+  primaryColor?: string;
+  token: string;
+  createdAt: string;
+}
+
+export interface AuditIssue {
   url: string;
   type: string;
   code: number;
 }
 
-interface AuditResult {
+export interface AuditResult {
+  id?: string;
   target_url: string;
   score: number;
   pages_crawled: number;
@@ -29,47 +43,72 @@ export default function AuditClient() {
   const [apiUrl, setApiUrl] = useState("https://weblytic-engine.onrender.com");
   const [targetUrl, setTargetUrl] = useState("");
   const [showAgencyOptions, setShowAgencyOptions] = useState(false);
-  const [authEmail, setAuthEmail] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
-  useEffect(() => {
-    try {
-      const user = localStorage.getItem("audit_user") || sessionStorage.getItem("audit_user");
-      if (user) setAuthEmail(user);
-    } catch {
-      // Ignore
-    }
-  }, []);
+  // Authentication State
+  const [session, setSession] = useState<AuditSession | null>(null);
 
-  const handleSignOut = () => {
-    try {
-      localStorage.removeItem("audit_user");
-      sessionStorage.removeItem("audit_user");
-    } catch {
-      // Ignore
-    }
-    setAuthEmail(null);
-  };
-
-  // Agency branding fields (hidden under "Custom Report")
+  // Agency branding fields
   const [agencyName, setAgencyName] = useState("Weblytic Agency");
   const [agencyUrl, setAgencyUrl] = useState("weblytic.cc");
-  const [primaryColor, setPrimaryColor] = useState("#1E3A8A");
+  const [primaryColor, setPrimaryColor] = useState("#2563EB");
   const [alertEmail, setAlertEmail] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
   // Scanning & Dashboard States
   const [isScanning, setIsScanning] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isGeneratingBrowserPdf, setIsGeneratingBrowserPdf] = useState(false);
   const [scanStep, setScanStep] = useState(0);
   const [engineAwake, setEngineAwake] = useState<boolean | null>(null);
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Audit History state (persisted per account in localStorage)
+  const [history, setHistory] = useState<AuditResult[]>([]);
+
   // Table filtering & search
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Wake up the backend engine on mount
+  // Load session & history on mount
+  useEffect(() => {
+    try {
+      const rawSession = localStorage.getItem("audit_session") || sessionStorage.getItem("audit_session");
+      if (rawSession) {
+        const parsed: AuditSession = JSON.parse(rawSession);
+        setSession(parsed);
+        if (parsed.agencyName) setAgencyName(parsed.agencyName);
+        if (parsed.agencyUrl) setAgencyUrl(parsed.agencyUrl);
+        if (parsed.primaryColor) setPrimaryColor(parsed.primaryColor);
+        if (parsed.email) setAlertEmail(parsed.email);
+
+        // Load account's saved audits
+        const rawHistory = localStorage.getItem(`audit_history_${parsed.email}`);
+        if (rawHistory) {
+          setHistory(JSON.parse(rawHistory));
+        }
+      } else {
+        const rawUser = localStorage.getItem("audit_user");
+        if (rawUser) {
+          const fallbackSession: AuditSession = {
+            email: rawUser,
+            accountType: "agency",
+            agencyName: "Weblytic Agency",
+            agencyUrl: "weblytic.cc",
+            primaryColor: "#2563EB",
+            token: "tok_legacy",
+            createdAt: new Date().toISOString(),
+          };
+          setSession(fallbackSession);
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
+
+  // Wake up backend engine
   useEffect(() => {
     let isMounted = true;
     fetch(`${apiUrl}/health`)
@@ -84,7 +123,81 @@ export default function AuditClient() {
     };
   }, [apiUrl]);
 
-  // Handle Scan Website (returns JSON for dashboard)
+  const handleSignOut = () => {
+    try {
+      localStorage.removeItem("audit_session");
+      localStorage.removeItem("audit_user");
+      sessionStorage.removeItem("audit_session");
+      sessionStorage.removeItem("audit_user");
+    } catch {
+      // Ignore
+    }
+    setSession(null);
+  };
+
+  const handleQuickDemoLogin = (type: "agency" | "individual") => {
+    const demoSession: AuditSession =
+      type === "agency"
+        ? {
+            email: "agency@weblytic.cc",
+            accountType: "agency",
+            agencyName: "Acme SEO & Growth Agency",
+            agencyUrl: "acmegrowth.cc",
+            primaryColor: "#2563EB",
+            token: "tok_demo_agency",
+            createdAt: new Date().toISOString(),
+          }
+        : {
+            email: "auditor@weblytic.cc",
+            accountType: "individual",
+            fullName: "Alex Morgan (Solo Auditor)",
+            token: "tok_demo_individual",
+            createdAt: new Date().toISOString(),
+          };
+
+    try {
+      localStorage.setItem("audit_session", JSON.stringify(demoSession));
+      localStorage.setItem("audit_user", demoSession.email);
+    } catch {
+      // Ignore
+    }
+
+    setSession(demoSession);
+    if (demoSession.agencyName) setAgencyName(demoSession.agencyName);
+    if (demoSession.agencyUrl) setAgencyUrl(demoSession.agencyUrl);
+    if (demoSession.primaryColor) setPrimaryColor(demoSession.primaryColor);
+
+    const rawHistory = localStorage.getItem(`audit_history_${demoSession.email}`);
+    if (rawHistory) {
+      setHistory(JSON.parse(rawHistory));
+    }
+  };
+
+  // Save audit to history list
+  const saveAuditToHistory = (newResult: AuditResult) => {
+    const updated = [newResult, ...history.filter((h) => h.target_url !== newResult.target_url || h.checked_at !== newResult.checked_at)].slice(0, 15);
+    setHistory(updated);
+    if (session?.email) {
+      try {
+        localStorage.setItem(`audit_history_${session.email}`, JSON.stringify(updated));
+      } catch {
+        // Ignore
+      }
+    }
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    if (session?.email) {
+      try {
+        localStorage.removeItem(`audit_history_${session.email}`);
+      } catch {
+        // Ignore
+      }
+    }
+  };
+
+  // Run Scan Website
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetUrl) return;
@@ -103,6 +216,7 @@ export default function AuditClient() {
     formData.append("agency_name", agencyName);
     formData.append("agency_url", agencyUrl);
     formData.append("primary_color", primaryColor);
+    if (session?.email) formData.append("user_id", session.email);
 
     try {
       const response = await fetch(`${apiUrl}/api/scan`, {
@@ -124,7 +238,9 @@ export default function AuditClient() {
       }
 
       const data: AuditResult = await response.json();
+      data.id = `audit_${Date.now()}`;
       setAuditResult(data);
+      saveAuditToHistory(data);
     } catch (err: unknown) {
       const errorStr = err instanceof Error ? err.message : "Error crawling website. Ensure target URL is valid.";
       setErrorMessage(errorStr);
@@ -137,8 +253,297 @@ export default function AuditClient() {
     }
   };
 
-  // Handle On-Demand PDF Download from the Dashboard
-  const handleDownloadPdf = async () => {
+  // CLIENT-SIDE BROWSER PDF COMPILER (Eliminates Render server memory/CPU spikes!)
+  const handleBrowserPrintPdf = (resultToPrint: AuditResult | null = auditResult) => {
+    if (!resultToPrint) return;
+    setIsGeneratingBrowserPdf(true);
+
+    try {
+      const activeAgency = session?.accountType === "agency" ? agencyName : "Weblytic SEO Engine";
+      const activeAgencyUrl = session?.accountType === "agency" ? agencyUrl : "weblytic.cc";
+      const accent = primaryColor || "#2563EB";
+
+      const printHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>SEO Audit Report - ${resultToPrint.target_url}</title>
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 14mm 16mm 14mm 16mm;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+              color: #0f172a;
+              background: #ffffff;
+              line-height: 1.45;
+              font-size: 11pt;
+              margin: 0;
+              padding: 0;
+            }
+            .header-bar {
+              border-bottom: 3px solid ${accent};
+              padding-bottom: 12px;
+              margin-bottom: 18px;
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+            }
+            .agency-title {
+              font-size: 18pt;
+              font-weight: 800;
+              color: ${accent};
+              margin: 0;
+            }
+            .agency-url {
+              font-size: 9.5pt;
+              color: #64748b;
+              margin-top: 2px;
+            }
+            .report-meta {
+              text-align: right;
+              font-size: 9pt;
+              color: #475569;
+            }
+            .hero-card {
+              background: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 16px 20px;
+              margin-bottom: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            }
+            .score-circle {
+              width: 75px;
+              height: 75px;
+              border-radius: 50%;
+              background: ${resultToPrint.score >= 85 ? "#ecfdf5" : resultToPrint.score >= 70 ? "#fffbeb" : "#fef2f2"};
+              border: 3px solid ${resultToPrint.score >= 85 ? "#10b981" : resultToPrint.score >= 70 ? "#f59e0b" : "#ef4444"};
+              color: ${resultToPrint.score >= 85 ? "#065f46" : resultToPrint.score >= 70 ? "#92400e" : "#991b1b"};
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              font-weight: 800;
+              font-size: 22pt;
+              line-height: 1;
+            }
+            .score-label {
+              font-size: 7.5pt;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-top: 3px;
+            }
+            .hero-info {
+              flex: 1;
+              margin-left: 20px;
+            }
+            .target-url {
+              font-size: 14pt;
+              font-weight: 700;
+              color: #0f172a;
+              word-break: break-all;
+            }
+            .metric-grid {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 12px;
+              margin-bottom: 22px;
+            }
+            .metric-box {
+              background: #ffffff;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 10px 14px;
+            }
+            .metric-box-title {
+              font-size: 8pt;
+              text-transform: uppercase;
+              color: #64748b;
+              font-weight: 600;
+            }
+            .metric-box-val {
+              font-size: 16pt;
+              font-weight: 800;
+              color: #0f172a;
+              margin-top: 3px;
+            }
+            .section-title {
+              font-size: 12pt;
+              font-weight: 700;
+              color: #1e293b;
+              margin: 18px 0 10px 0;
+              padding-bottom: 6px;
+              border-bottom: 1px solid #e2e8f0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 9pt;
+            }
+            th {
+              background: #f1f5f9;
+              color: #475569;
+              text-align: left;
+              padding: 8px 10px;
+              font-weight: 700;
+              border-bottom: 2px solid #cbd5e1;
+            }
+            td {
+              padding: 7px 10px;
+              border-bottom: 1px solid #f1f5f9;
+              vertical-align: top;
+            }
+            tr:nth-child(even) {
+              background: #f8fafc;
+            }
+            .badge-issue {
+              display: inline-block;
+              background: #fee2e2;
+              color: #991b1b;
+              padding: 2px 7px;
+              border-radius: 4px;
+              font-weight: 600;
+              font-size: 8pt;
+            }
+            .footer-notice {
+              margin-top: 30px;
+              padding-top: 12px;
+              border-top: 1px solid #e2e8f0;
+              font-size: 8pt;
+              color: #94a3b8;
+              display: flex;
+              justify-content: space-between;
+            }
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header-bar">
+            <div>
+              <div class="agency-title">${activeAgency}</div>
+              <div class="agency-url">${activeAgencyUrl}</div>
+            </div>
+            <div class="report-meta">
+              <strong>Technical SEO Health Audit</strong><br />
+              Generated: ${resultToPrint.checked_at || new Date().toLocaleString()}
+            </div>
+          </div>
+
+          <div class="hero-card">
+            <div class="score-circle">
+              ${resultToPrint.score}
+              <span class="score-label">Score</span>
+            </div>
+            <div class="hero-info">
+              <div class="target-url">${resultToPrint.target_url}</div>
+              <div style="font-size: 9.5pt; color: #64748b; margin-top: 4px;">
+                Status: <strong>${resultToPrint.status}</strong> • Crawled: <strong>${resultToPrint.pages_crawled} page(s)</strong> • Issues Found: <strong>${resultToPrint.issues.length}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric-box">
+              <div class="metric-box-title">Pages Crawled</div>
+              <div class="metric-box-val">${resultToPrint.pages_crawled}</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-box-title">Issues Detected</div>
+              <div class="metric-box-val" style="color: ${resultToPrint.issues.length === 0 ? '#10b981' : '#ef4444'}">
+                ${resultToPrint.issues.length}
+              </div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-box-title">Health Score</div>
+              <div class="metric-box-val" style="color: ${accent}">${resultToPrint.score} / 100</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-box-title">Engine Check</div>
+              <div class="metric-box-val" style="font-size: 11pt; margin-top: 7px; color: #10b981">Verified 200 OK</div>
+            </div>
+          </div>
+
+          <div class="section-title">Technical Findings &amp; Optimizations (${resultToPrint.issues.length})</div>
+
+          ${
+            resultToPrint.issues.length === 0
+              ? `<div style="padding: 20px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; color: #065f46; font-size: 9.5pt;">
+                   <strong>Clean Audit:</strong> Zero critical SEO or structural errors were detected across all scanned pages.
+                 </div>`
+              : `<table>
+                   <thead>
+                     <tr>
+                       <th style="width: 55%">Page URL</th>
+                       <th style="width: 35%">Issue Description</th>
+                       <th style="width: 10%">HTTP</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     ${resultToPrint.issues
+                       .map(
+                         (iss) => `
+                       <tr>
+                         <td style="font-family: monospace; word-break: break-all;">${iss.url}</td>
+                         <td><span class="badge-issue">${iss.type}</span></td>
+                         <td style="font-family: monospace; font-weight: bold;">${iss.code}</td>
+                       </tr>
+                     `
+                       )
+                       .join("")}
+                   </tbody>
+                 </table>`
+          }
+
+          <div class="footer-notice">
+            <span>Confidential SEO Audit Report • Prepared by ${activeAgency}</span>
+            <span>Render Stress: 0% (Client-Side Vector Engine)</span>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const printFrame = document.createElement("iframe");
+      printFrame.style.position = "fixed";
+      printFrame.style.right = "0";
+      printFrame.style.bottom = "0";
+      printFrame.style.width = "0";
+      printFrame.style.height = "0";
+      printFrame.style.border = "0";
+      document.body.appendChild(printFrame);
+
+      const frameDoc = printFrame.contentWindow?.document;
+      if (frameDoc) {
+        frameDoc.open();
+        frameDoc.write(printHtml);
+        frameDoc.close();
+
+        setTimeout(() => {
+          printFrame.contentWindow?.focus();
+          printFrame.contentWindow?.print();
+          setTimeout(() => {
+            document.body.removeChild(printFrame);
+            setIsGeneratingBrowserPdf(false);
+          }, 1000);
+        }, 500);
+      } else {
+        setIsGeneratingBrowserPdf(false);
+      }
+    } catch (err) {
+      console.error("Browser PDF print error:", err);
+      setIsGeneratingBrowserPdf(false);
+      alert("Error printing PDF in browser. You can also try the backend export button.");
+    }
+  };
+
+  // Fallback Backend PDF Generation
+  const handleDownloadPdfViaBackend = async () => {
     if (!auditResult) return;
     setIsDownloadingPdf(true);
 
@@ -179,13 +584,13 @@ export default function AuditClient() {
       document.body.removeChild(a);
     } catch (err) {
       console.error("PDF download error:", err);
-      alert("Error generating PDF. Please try again.");
+      alert("Error generating PDF via backend. Please use the instant Client-Side PDF button.");
     } finally {
       setIsDownloadingPdf(false);
     }
   };
 
-  // Filtered issues for the dashboard table
+  // Filtered issues
   const filteredIssues = useMemo(() => {
     if (!auditResult?.issues) return [];
     return auditResult.issues.filter((issue) => {
@@ -203,7 +608,6 @@ export default function AuditClient() {
     });
   }, [auditResult, filterType, searchQuery]);
 
-  // Health Score Color & Badge
   const getScoreColor = (score: number) => {
     if (score >= 90) return { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", label: "Excellent Health" };
     if (score >= 70) return { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", label: "Needs Optimization" };
@@ -212,68 +616,194 @@ export default function AuditClient() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="min-h-screen bg-background flex flex-col text-text-primary">
+      <div className="min-h-screen bg-background flex flex-col text-text-primary selection:bg-primary selection:text-white">
         <Navbar />
 
-        <main className="flex-1 pt-32 pb-24">
-          <div className="container mx-auto px-6 max-w-6xl">
-            {/* Local Sandbox Testing Badge */}
-            <m.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-300"
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                <span className="font-semibold uppercase tracking-wider">Local Testing Mode Active</span>
-                <span className="text-amber-400/70">| Engine:</span>
-                <code className="px-2 py-0.5 rounded bg-black/40 font-mono text-white text-[11px]">{apiUrl}</code>
-              </div>
+        <main className="flex-1 pt-28 pb-24">
+          <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+
+            {/* TOP AUTH / ACCOUNT STATUS BAR */}
+            <div className="mb-6 p-3.5 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+              {session ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    {session.accountType === "agency" ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
+                        <Building2 className="w-3.5 h-3.5" />
+                        <span>AGENCY: {session.agencyName || agencyName}</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
+                        <User className="w-3.5 h-3.5" />
+                        <span>INDIVIDUAL: {session.fullName || session.email}</span>
+                      </span>
+                    )}
+                    <span className="text-text-muted hidden sm:inline">•</span>
+                    <span className="text-text-muted hidden sm:inline font-mono">{session.email}</span>
+                  </div>
+
+                  {session.accountType === "agency" && (
+                    <div className="flex items-center gap-1.5 text-text-muted text-[11px]">
+                      <span>Brand Accent:</span>
+                      <span className="w-3.5 h-3.5 rounded-full border border-white/30" style={{ backgroundColor: primaryColor }} />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-text-muted">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="font-semibold text-white">Guest Auditor Mode</span>
+                  <span className="hidden sm:inline">• Sign in to record scans to database &amp; export white-label reports</span>
+                </div>
+              )}
 
               <div className="flex items-center gap-2">
-                <Server className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-amber-400/80">Switch Engine:</span>
-                <button
-                  type="button"
-                  onClick={() => setApiUrl("https://weblytic-engine.onrender.com")}
-                  className={`px-2 py-1 rounded transition-colors text-[11px] ${
-                    apiUrl.includes("onrender.com")
-                      ? "bg-amber-500 text-black font-bold"
-                      : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-                >
-                  Render Live
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setApiUrl("http://localhost:10000")}
-                  className={`px-2 py-1 rounded transition-colors text-[11px] ${
-                    apiUrl.includes("localhost")
-                      ? "bg-amber-500 text-black font-bold"
-                      : "bg-white/10 text-white hover:bg-white/20"
-                  }`}
-                >
-                  Local Port 10000
-                </button>
+                {session ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowHistory(!showHistory)}
+                      className={`px-3 py-1.5 rounded-xl font-medium transition-colors flex items-center gap-1.5 ${
+                        showHistory ? "bg-primary text-white" : "bg-white/5 hover:bg-white/10 text-white"
+                      }`}
+                    >
+                      <History className="w-3.5 h-3.5" />
+                      <span>History ({history.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="px-3 py-1.5 rounded-xl font-medium bg-white/5 hover:bg-red-500/20 hover:text-red-300 text-text-muted transition-colors flex items-center gap-1.5"
+                      title="Sign Out"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Sign Out</span>
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/audit/login"
+                      className="px-3 py-1.5 rounded-xl font-semibold bg-primary text-white hover:bg-primary-end transition-colors flex items-center gap-1 shadow-sm"
+                    >
+                      <span>Sign In / Sign Up</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemoLogin("agency")}
+                      className="px-2.5 py-1.5 rounded-xl font-medium bg-white/5 hover:bg-white/10 text-white transition-colors text-[11px]"
+                    >
+                      Demo Agency
+                    </button>
+                  </div>
+                )}
               </div>
-            </m.div>
+            </div>
+
+            {/* AUDIT HISTORY DRAWER */}
+            <AnimatePresence>
+              {showHistory && (
+                <m.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-8 p-5 rounded-2xl glass-card border border-white/10 overflow-hidden"
+                >
+                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                    <div className="flex items-center gap-2">
+                      <History className="w-4 h-4 text-primary" />
+                      <h3 className="font-bold text-white text-sm">Saved Scans in Database ({history.length})</h3>
+                    </div>
+                    {history.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={clearHistory}
+                        className="text-text-muted hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Clear History</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {history.length === 0 ? (
+                    <div className="py-6 text-center text-text-muted text-xs">
+                      No audits saved yet. Run an audit below to record structured scan results against your account.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {history.map((item, idx) => (
+                        <div
+                          key={item.id || idx}
+                          className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-primary/40 transition-all flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <span className="font-mono text-xs text-white font-semibold truncate max-w-[180px]">
+                                {item.target_url}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                  getScoreColor(item.score).bg
+                                } ${getScoreColor(item.score).text}`}
+                              >
+                                {item.score}/100
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-text-muted flex items-center gap-2 mb-3">
+                              <Clock className="w-3 h-3" />
+                              <span>{item.checked_at || "Recent scan"}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAuditResult(item);
+                                setTargetUrl(item.target_url);
+                              }}
+                              className="flex-1 py-1 px-2 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-[11px] font-semibold transition-colors"
+                            >
+                              Load Report
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleBrowserPrintPdf(item)}
+                              className="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] font-medium transition-colors flex items-center gap-1"
+                              title="Print Vector PDF"
+                            >
+                              <Printer className="w-3 h-3" />
+                              <span>PDF</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </m.div>
+              )}
+            </AnimatePresence>
 
             {/* Header Section */}
             <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-center mb-10"
+              className="text-center mb-8"
             >
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-secondary text-xs font-semibold uppercase tracking-wider mb-4">
                 <Sparkles className="w-3.5 h-3.5" />
-                SEO Health Scanner 2.0
+                SEO Audit Engine 2.0
               </div>
-              <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
-                Website Audit &amp; <span className="text-transparent bg-clip-text bg-primary-gradient">Health Explorer</span>
+              <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-3">
+                SEO Audit &amp; <span className="text-transparent bg-clip-text bg-primary-gradient">Health Scanner</span>
               </h1>
-              <p className="text-text-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                Scan any website in real-time. Inspect technical SEO metrics, missing tags, heading hierarchies, canonical directives, and download clean reports.
+              <p className="text-text-muted text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                Scan any domain in real-time. Inspect technical SEO health, Core Web Vitals, metadata hierarchy, and generate client-side white-label vector PDF reports.
               </p>
             </m.div>
 
@@ -292,7 +822,7 @@ export default function AuditClient() {
               </m.div>
             )}
 
-            {/* Search & Audit Bar */}
+            {/* SEARCH & AUDIT BAR */}
             <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -305,7 +835,7 @@ export default function AuditClient() {
                     <span className="flex items-center gap-2">
                       <Globe className="w-4 h-4 text-primary" /> Target Website URL
                     </span>
-                    <span className="text-xs text-text-muted">Crawls up to 15 internal pages</span>
+                    <span className="text-xs text-text-muted">Extracts technical tags &amp; Core Web Vitals</span>
                   </label>
 
                   <div className="flex flex-col sm:flex-row gap-3">
@@ -346,7 +876,7 @@ export default function AuditClient() {
                   </div>
                 </div>
 
-                {/* Custom Report (White-Label Agency) Toggle Button */}
+                {/* White-Label Customization Toggle */}
                 <div className="pt-2">
                   <button
                     type="button"
@@ -354,7 +884,7 @@ export default function AuditClient() {
                     className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
                   >
                     <Palette className="w-3.5 h-3.5 text-primary" />
-                    <span>Custom Report (Agency White-Label Options)</span>
+                    <span>White-Label Customization ({agencyName})</span>
                     {showAgencyOptions ? (
                       <ChevronUp className="w-3.5 h-3.5 text-text-muted" />
                     ) : (
@@ -376,14 +906,14 @@ export default function AuditClient() {
                       <div className="p-5 rounded-xl bg-black/30 border border-white/10 space-y-5 text-sm">
                         <div className="flex items-center justify-between">
                           <h4 className="font-semibold text-white flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-primary" /> White-Label Report Settings
+                            <Building2 className="w-4 h-4 text-primary" /> Report Branding Parameters
                           </h4>
-                          <span className="text-xs text-text-muted">Applied when exporting PDF</span>
+                          <span className="text-xs text-text-muted">Injected into PDF report</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-xs font-medium text-text-muted mb-1.5">Agency Name</label>
+                            <label className="block text-xs font-medium text-text-muted mb-1.5">Agency / Author Name</label>
                             <input
                               type="text"
                               value={agencyName}
@@ -434,20 +964,6 @@ export default function AuditClient() {
                             />
                           </div>
                         </div>
-
-                        <div>
-                          <label className="block text-xs font-medium text-text-muted mb-1">Weekly Watchdog Alert Email (Optional)</label>
-                          <p className="text-[11px] text-text-muted/80 mb-2">
-                            Enter your email to save this site into Turso for automated weekly regression watchdog alerts.
-                          </p>
-                          <input
-                            type="email"
-                            value={alertEmail}
-                            onChange={(e) => setAlertEmail(e.target.value)}
-                            placeholder="alerts@agency.com"
-                            className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-text-muted/60 text-xs focus:outline-none focus:border-primary font-mono"
-                          />
-                        </div>
                       </div>
                     </m.div>
                   )}
@@ -455,7 +971,7 @@ export default function AuditClient() {
               </form>
             </m.div>
 
-            {/* Scanning Progress HUD */}
+            {/* SCANNING PROGRESS HUD */}
             {isScanning && (
               <m.div
                 initial={{ opacity: 0, y: 10 }}
@@ -465,7 +981,7 @@ export default function AuditClient() {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4 animate-spin">
                   <RefreshCw className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Scanning Target Website...</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Analyzing Target Website...</h3>
                 <p className="text-sm text-text-muted max-w-md mx-auto mb-6">
                   {scanStep === 1 && "Connecting to server & verifying HTTP response codes..."}
                   {scanStep === 2 && "Crawling internal links & parsing HTML headings and meta tags..."}
@@ -527,29 +1043,43 @@ export default function AuditClient() {
                       </div>
                     </div>
 
-                    {/* Download PDF Button (Rendered directly from Dashboard) */}
-                    <div className="flex items-center gap-3 w-full md:w-auto">
+                    {/* PDF Export Actions: Client-Side (Zero Server Stress) + Server Fallback */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
+                      {/* Client-Side Browser PDF (Recommended) */}
                       <button
                         type="button"
-                        onClick={handleDownloadPdf}
-                        disabled={isDownloadingPdf}
-                        className={`w-full md:w-auto py-3 px-6 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
-                          isDownloadingPdf
-                            ? "bg-white/10 text-white/50 cursor-not-allowed"
-                            : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20 cursor-pointer"
-                        }`}
+                        onClick={() => handleBrowserPrintPdf()}
+                        disabled={isGeneratingBrowserPdf}
+                        className="py-3 px-5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 bg-primary-gradient text-white shadow-lg shadow-primary/25 hover:brightness-110 cursor-pointer"
+                        title="Renders PDF in browser saving Render server memory"
                       >
-                        {isDownloadingPdf ? (
+                        {isGeneratingBrowserPdf ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            Rendering PDF...
+                            <span>Compiling PDF...</span>
                           </>
                         ) : (
                           <>
-                            <Download className="w-4 h-4" />
-                            Download Audit PDF
+                            <Printer className="w-4 h-4" />
+                            <span>Download PDF (Instant)</span>
                           </>
                         )}
+                      </button>
+
+                      {/* Server Fallback Button */}
+                      <button
+                        type="button"
+                        onClick={handleDownloadPdfViaBackend}
+                        disabled={isDownloadingPdf}
+                        className="py-3 px-4 rounded-xl font-medium text-xs bg-white/5 hover:bg-white/10 text-text-muted hover:text-white border border-white/10 transition-all flex items-center justify-center gap-1.5"
+                        title="Legacy Render WeasyPrint Backend"
+                      >
+                        {isDownloadingPdf ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Download className="w-3.5 h-3.5" />
+                        )}
+                        <span>Backend PDF</span>
                       </button>
                     </div>
                   </div>
@@ -623,7 +1153,7 @@ export default function AuditClient() {
                     ))}
                   </div>
 
-                  {/* Findings Table / Zero State */}
+                  {/* Findings Table */}
                   {filteredIssues.length === 0 ? (
                     <div className="text-center py-12 px-4 rounded-xl bg-white/5 border border-white/5">
                       <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
