@@ -29,6 +29,26 @@ export default function AuditClient() {
   const [apiUrl, setApiUrl] = useState("https://weblytic-engine.onrender.com");
   const [targetUrl, setTargetUrl] = useState("");
   const [showAgencyOptions, setShowAgencyOptions] = useState(false);
+  const [authEmail, setAuthEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const user = localStorage.getItem("audit_user") || sessionStorage.getItem("audit_user");
+      if (user) setAuthEmail(user);
+    } catch {
+      // Ignore
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    try {
+      localStorage.removeItem("audit_user");
+      sessionStorage.removeItem("audit_user");
+    } catch {
+      // Ignore
+    }
+    setAuthEmail(null);
+  };
 
   // Agency branding fields (hidden under "Custom Report")
   const [agencyName, setAgencyName] = useState("Weblytic Agency");

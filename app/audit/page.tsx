@@ -2,14 +2,14 @@ import { Metadata } from "next";
 import AuditClient from "./AuditClient";
 
 export const metadata: Metadata = {
-  title: "White-Label SEO Audit & Health Scanner",
-  description: "Generate comprehensive white-label website health audits, broken link detection, and unbranded PDF reports for your clients with Weblytic.",
+  title: "SEO Audit — Technical Website Health Scanner & PDF Reports",
+  description: "Run deep technical SEO audits, inspect Core Web Vitals, discover broken links and missing meta tags, and generate white-label PDF audit reports with Weblytic SEO Audit.",
   alternates: {
     canonical: "https://weblytic.cc/audit",
   },
   openGraph: {
-    title: "White-Label SEO Audit & Health Scanner | Weblytic",
-    description: "Generate comprehensive white-label website health audits and unbranded PDF reports.",
+    title: "SEO Audit & Health Scanner | Weblytic",
+    description: "Run deep technical SEO audits, broken link detection, and unbranded PDF reports for digital agencies and businesses.",
     url: "https://weblytic.cc/audit",
     siteName: "Weblytic",
     locale: "en_US",
