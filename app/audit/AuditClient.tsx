@@ -9,7 +9,7 @@ import {
   AlertCircle, Loader2, Sparkles, Download, ChevronDown, ChevronUp,
   ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle,
   User, History, Printer, LogOut, ArrowRight, Clock, Trash2, Lock,
-  Calendar
+  Calendar, Upload, Image as ImageIcon, X
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -40,6 +40,7 @@ export interface AuditResult {
 
 const WEEKLY_AUDIT_LIMIT = 4;
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_LOGO_BYTES = 200 * 1024; // 200 KB strict limit
 
 export default function AuditClient() {
   const router = useRouter();
@@ -61,7 +62,11 @@ export default function AuditClient() {
   const [agencyUrl, setAgencyUrl] = useState("weblytic.cc");
   const [primaryColor, setPrimaryColor] = useState("#2563EB");
   const [alertEmail, setAlertEmail] = useState("");
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+
+  // Logo: Held in browser memory only (never uploaded to DB)
+  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
+  const [logoFileName, setLogoFileName] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
 
   // Scanning & Dashboard States
   const [isScanning, setIsScanning] = useState(false);
@@ -158,6 +163,48 @@ export default function AuditClient() {
     router.push("/audit/login");
   };
 
+  // Agency Logo Client-Side Validation (< 200KB, PNG or SVG only, held in memory)
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLogoError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 1. Format check: PNG or SVG only
+    const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
+    const isSvg = file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+
+    if (!isPng && !isSvg) {
+      setLogoError("Logo must be in PNG or SVG format.");
+      e.target.value = "";
+      return;
+    }
+
+    // 2. Size check: strictly < 200 KB
+    if (file.size > MAX_LOGO_BYTES) {
+      const kbSize = (file.size / 1024).toFixed(1);
+      setLogoError(`Logo exceeds 200 KB limit (selected file is ${kbSize} KB).`);
+      e.target.value = "";
+      return;
+    }
+
+    // 3. Read into memory for browser-side PDF rendering (never uploaded to DB)
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setLogoDataUrl(result);
+        setLogoFileName(file.name);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoDataUrl(null);
+    setLogoFileName(null);
+    setLogoError(null);
+  };
+
   // Save audit to history list
   const saveAuditToHistory = (newResult: AuditResult) => {
     const updated = [newResult, ...history.filter((h) => h.target_url !== newResult.target_url || h.checked_at !== newResult.checked_at)].slice(0, 15);
@@ -182,7 +229,7 @@ export default function AuditClient() {
     }
   };
 
-  // Run Scan Website
+  // Run Scan Website (Logo is NEVER sent to server/DB)
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetUrl || isWeeklyLimitReached) return;
@@ -249,7 +296,7 @@ export default function AuditClient() {
     }
   };
 
-  // CLIENT-SIDE BROWSER PDF COMPILER
+  // CLIENT-SIDE BROWSER PDF COMPILER (Embeds in-memory logo without server stress)
   const handleBrowserPrintPdf = (resultToPrint: AuditResult | null = auditResult) => {
     if (!resultToPrint) return;
     setIsGeneratingBrowserPdf(true);
@@ -286,6 +333,13 @@ export default function AuditClient() {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
+            }
+            .agency-logo-img {
+              max-height: 46px;
+              max-width: 180px;
+              object-fit: contain;
+              display: block;
+              margin-bottom: 4px;
             }
             .agency-title {
               font-size: 18pt;
@@ -423,7 +477,11 @@ export default function AuditClient() {
         <body>
           <div class="header-bar">
             <div>
-              <div class="agency-title">${activeAgency}</div>
+              ${
+                logoDataUrl
+                  ? `<img src="${logoDataUrl}" alt="${activeAgency}" class="agency-logo-img" />`
+                  : `<div class="agency-title">${activeAgency}</div>`
+              }
               <div class="agency-url">${activeAgencyUrl}</div>
             </div>
             <div class="report-meta">
@@ -537,7 +595,7 @@ export default function AuditClient() {
     }
   };
 
-  // Fallback Backend PDF Generation
+  // Fallback Backend PDF Generation (Never sends logo to DB)
   const handleDownloadPdfViaBackend = async () => {
     if (!auditResult) return;
     setIsDownloadingPdf(true);
@@ -552,9 +610,6 @@ export default function AuditClient() {
       formData.append("score", String(auditResult.score));
       formData.append("pages_crawled", String(auditResult.pages_crawled));
       formData.append("issues_json", JSON.stringify(auditResult.issues));
-      if (logoFile) {
-        formData.append("logo", logoFile);
-      }
 
       const response = await fetch(`${apiUrl}/api/generate-pdf`, {
         method: "POST",
@@ -974,14 +1029,67 @@ export default function AuditClient() {
                               </div>
                             </div>
 
+                            {/* AGENCY LOGO: < 200KB, PNG or SVG only, held in browser memory */}
                             <div>
-                              <label className="block text-xs font-medium text-text-muted mb-1.5">Logo (Optional)</label>
-                              <input
-                                type="file"
-                                accept="image/png, image/jpeg"
-                                onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-                                className="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer cursor-pointer bg-background/80 border border-white/15 rounded-lg p-1"
-                              />
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="text-xs font-medium text-text-muted">
+                                  Agency Logo (PNG or SVG &lt; 200 KB)
+                                </label>
+                                <span className="text-[10px] text-text-muted font-mono">
+                                  Browser-held only
+                                </span>
+                              </div>
+
+                              {logoDataUrl ? (
+                                <div className="p-2.5 rounded-lg bg-white/5 border border-white/15 flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2.5 overflow-hidden">
+                                    <div className="w-10 h-10 rounded bg-white/10 p-1 flex items-center justify-center shrink-0 border border-white/10">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={logoDataUrl}
+                                        alt="Agency Logo Preview"
+                                        className="max-h-full max-w-full object-contain"
+                                      />
+                                    </div>
+                                    <div className="overflow-hidden">
+                                      <div className="text-xs text-white font-mono truncate max-w-[160px]">
+                                        {logoFileName || "logo.png"}
+                                      </div>
+                                      <div className="text-[10px] text-emerald-400">
+                                        Ready for PDF reports
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={handleRemoveLogo}
+                                    className="p-1.5 rounded-lg text-text-muted hover:text-red-400 hover:bg-white/5 transition-colors"
+                                    title="Remove Logo"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div>
+                                  <input
+                                    type="file"
+                                    accept=".png,.svg,image/png,image/svg+xml"
+                                    onChange={handleLogoUpload}
+                                    className="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer cursor-pointer bg-background/80 border border-white/15 rounded-lg p-1"
+                                  />
+                                  <p className="text-[10px] text-text-muted/70 mt-1">
+                                    PNG or SVG only • Max 200 KB • Held in browser memory for PDF rendering (never uploaded to DB)
+                                  </p>
+                                </div>
+                              )}
+
+                              {logoError && (
+                                <p className="text-xs text-rose-400 mt-1.5 flex items-center gap-1">
+                                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                  <span>{logoError}</span>
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
