@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
@@ -14,11 +15,6 @@ import Footer from "@/components/Footer";
 
 export interface AuditSession {
   email: string;
-  accountType?: string;
-  fullName?: string;
-  agencyName?: string;
-  agencyUrl?: string;
-  primaryColor?: string;
   token?: string;
   createdAt?: string;
 }
@@ -40,6 +36,8 @@ export interface AuditResult {
 }
 
 export default function AuditClient() {
+  const router = useRouter();
+
   const [apiUrl, setApiUrl] = useState("https://weblytic-engine.onrender.com");
   const [targetUrl, setTargetUrl] = useState("");
   const [showAgencyOptions, setShowAgencyOptions] = useState(false);
@@ -47,7 +45,7 @@ export default function AuditClient() {
 
   // Authentication & Loading States
   const [session, setSession] = useState<AuditSession | null>(null);
-  const [isLoadingSession, setIsLoadingSession] = useState(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Agency branding fields
   const [agencyName, setAgencyName] = useState("Weblytic Agency");
@@ -71,51 +69,57 @@ export default function AuditClient() {
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Load session & history on mount
+  // STRICT AUTHENTICATION GUARD:
+  // Disallow old demo auto-login (`agency@weblytic.cc`) and require active logged in session.
+  // If not authenticated, immediately redirect to /audit/login.
   useEffect(() => {
     try {
-      const rawSession = localStorage.getItem("audit_session") || sessionStorage.getItem("audit_session");
-      if (rawSession) {
-        const parsed: AuditSession = JSON.parse(rawSession);
-        setSession(parsed);
-        if (parsed.agencyName) setAgencyName(parsed.agencyName);
-        if (parsed.agencyUrl) setAgencyUrl(parsed.agencyUrl);
-        if (parsed.primaryColor) setPrimaryColor(parsed.primaryColor);
-        if (parsed.email) setAlertEmail(parsed.email);
+      const isAuthActive = localStorage.getItem("audit_auth_active") === "true";
+      const rawSession = localStorage.getItem("audit_session");
 
-        const rawHistory = localStorage.getItem(`audit_history_${parsed.email}`);
-        if (rawHistory) {
-          setHistory(JSON.parse(rawHistory));
-        }
-      } else {
-        const rawUser = localStorage.getItem("audit_user") || sessionStorage.getItem("audit_user");
-        if (rawUser) {
-          const fallbackSession: AuditSession = { email: rawUser };
-          setSession(fallbackSession);
-          const rawHistory = localStorage.getItem(`audit_history_${rawUser}`);
+      if (isAuthActive && rawSession) {
+        const parsed: AuditSession = JSON.parse(rawSession);
+        // Ensure it's a real user session and not leftover demo state
+        if (parsed.email && parsed.email !== "agency@weblytic.cc" && parsed.email !== "auditor@weblytic.cc") {
+          setSession(parsed);
+          setAlertEmail(parsed.email);
+
+          const rawHistory = localStorage.getItem(`audit_history_${parsed.email}`);
           if (rawHistory) {
             setHistory(JSON.parse(rawHistory));
           }
+          setIsCheckingAuth(false);
+          return;
         }
       }
+
+      // If no valid authenticated session or leftover demo, clear and redirect to login
+      localStorage.removeItem("audit_session");
+      localStorage.removeItem("audit_auth_active");
+      localStorage.removeItem("audit_user");
+      sessionStorage.removeItem("audit_session");
+      sessionStorage.removeItem("audit_user");
+      setSession(null);
+      setIsCheckingAuth(false);
+      router.replace("/audit/login");
     } catch {
-      // Ignore
-    } finally {
-      setIsLoadingSession(false);
+      setIsCheckingAuth(false);
+      router.replace("/audit/login");
     }
-  }, []);
+  }, [router]);
 
   const handleSignOut = () => {
     try {
       localStorage.removeItem("audit_session");
+      localStorage.removeItem("audit_auth_active");
       localStorage.removeItem("audit_user");
-      sessionStorage.removeItem("audit_session");
-      sessionStorage.removeItem("audit_user");
+      sessionStorage.clear();
     } catch {
       // Ignore
     }
     setSession(null);
     setAuditResult(null);
+    router.push("/audit/login");
   };
 
   // Save audit to history list
@@ -198,7 +202,7 @@ export default function AuditClient() {
     }
   };
 
-  // CLIENT-SIDE BROWSER PDF COMPILER (Eliminates Render server memory/CPU spikes!)
+  // CLIENT-SIDE BROWSER PDF COMPILER
   const handleBrowserPrintPdf = (resultToPrint: AuditResult | null = auditResult) => {
     if (!resultToPrint) return;
     setIsGeneratingBrowserPdf(true);
@@ -558,6 +562,38 @@ export default function AuditClient() {
     return { bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-400", label: "Critical Issues Detected" };
   };
 
+  // While checking auth, show clean loading state (or if unauthenticated, redirecting)
+  if (isCheckingAuth || !session) {
+    return (
+      <LazyMotion features={domAnimation}>
+        <div className="min-h-screen bg-background flex flex-col text-text-primary selection:bg-primary selection:text-white">
+          <Navbar />
+          <main className="flex-1 pt-32 pb-24 flex items-center justify-center">
+            <div className="max-w-md w-full mx-auto p-8 rounded-3xl glass-card border border-white/10 text-center shadow-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4">
+                <Lock className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-display font-bold text-white mb-2">
+                Sign In Required
+              </h2>
+              <p className="text-xs text-text-muted mb-6 leading-relaxed">
+                You must be signed in to access the SEO Audit Scanner. Redirecting to login portal...
+              </p>
+              <Link
+                href="/audit/login"
+                className="w-full py-2.5 px-6 rounded-xl font-semibold text-xs tracking-wide bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2"
+              >
+                <span>Go to Sign In</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </LazyMotion>
+    );
+  }
+
   return (
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-background flex flex-col text-text-primary selection:bg-primary selection:text-white">
@@ -585,563 +621,527 @@ export default function AuditClient() {
               </p>
             </m.div>
 
-            {/* LOADING STATE */}
-            {isLoadingSession ? (
-              <div className="p-12 text-center rounded-3xl glass-card border border-white/10 my-8">
-                <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-3" />
-                <p className="text-xs font-mono text-text-muted">Loading...</p>
+            {/* AUTHENTICATED AUDIT ENGINE & DASHBOARD */}
+            <>
+              {/* ACCOUNT STATUS BAR */}
+              <div className="mb-6 p-3 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
+                    <User className="w-3.5 h-3.5" />
+                    <span>{session.email}</span>
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowHistory(!showHistory)}
+                    className={`px-3 py-1.5 rounded-xl font-medium transition-colors flex items-center gap-1.5 ${
+                      showHistory ? "bg-primary text-white" : "bg-white/5 hover:bg-white/10 text-white"
+                    }`}
+                  >
+                    <History className="w-3.5 h-3.5" />
+                    <span>History ({history.length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="px-3 py-1.5 rounded-xl font-medium bg-white/5 hover:bg-red-500/20 hover:text-red-300 text-text-muted transition-colors flex items-center gap-1.5"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
-            ) : !session ? (
-              /* LOGIN WALL (Auditing option is restricted behind this simple wall) */
-              <m.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="max-w-md mx-auto my-8 p-8 rounded-3xl glass-card border border-white/15 shadow-2xl relative overflow-hidden text-center"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4">
-                  <Lock className="w-5 h-5" />
-                </div>
 
-                <h2 className="text-xl sm:text-2xl font-display font-bold text-white mb-2">
-                  Sign In Required
-                </h2>
-
-                <p className="text-xs text-text-muted mb-6 leading-relaxed">
-                  Please sign in to your account to use the SEO Audit Scanner and export reports.
-                </p>
-
-                <Link
-                  href="/audit/login"
-                  className="w-full py-2.5 px-6 rounded-xl font-semibold text-xs tracking-wide bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Sign In to Continue</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </m.div>
-            ) : (
-              /* AUTHENTICATED AUDIT ENGINE & DASHBOARD */
-              <>
-                {/* ACCOUNT STATUS BAR */}
-                <div className="mb-6 p-3 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
-                      <User className="w-3.5 h-3.5" />
-                      <span>{session.email}</span>
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowHistory(!showHistory)}
-                      className={`px-3 py-1.5 rounded-xl font-medium transition-colors flex items-center gap-1.5 ${
-                        showHistory ? "bg-primary text-white" : "bg-white/5 hover:bg-white/10 text-white"
-                      }`}
-                    >
-                      <History className="w-3.5 h-3.5" />
-                      <span>History ({history.length})</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleSignOut}
-                      className="px-3 py-1.5 rounded-xl font-medium bg-white/5 hover:bg-red-500/20 hover:text-red-300 text-text-muted transition-colors flex items-center gap-1.5"
-                      title="Sign Out"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* AUDIT HISTORY DRAWER */}
-                <AnimatePresence>
-                  {showHistory && (
-                    <m.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mb-8 p-5 rounded-2xl glass-card border border-white/10 overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
-                        <div className="flex items-center gap-2">
-                          <History className="w-4 h-4 text-primary" />
-                          <h3 className="font-bold text-white text-sm">Saved Scans ({history.length})</h3>
-                        </div>
-                        {history.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={clearHistory}
-                            className="text-text-muted hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            <span>Clear History</span>
-                          </button>
-                        )}
+              {/* AUDIT HISTORY DRAWER */}
+              <AnimatePresence>
+                {showHistory && (
+                  <m.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-8 p-5 rounded-2xl glass-card border border-white/10 overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                      <div className="flex items-center gap-2">
+                        <History className="w-4 h-4 text-primary" />
+                        <h3 className="font-bold text-white text-sm">Saved Scans ({history.length})</h3>
                       </div>
+                      {history.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearHistory}
+                          className="text-text-muted hover:text-red-400 text-xs flex items-center gap-1 transition-colors"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Clear History</span>
+                        </button>
+                      )}
+                    </div>
 
-                      {history.length === 0 ? (
-                        <div className="py-6 text-center text-text-muted text-xs">
-                          No audits saved yet. Run an audit below to save results.
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {history.map((item, idx) => (
-                            <div
-                              key={item.id || idx}
-                              className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-primary/40 transition-all flex flex-col justify-between"
-                            >
-                              <div>
-                                <div className="flex items-start justify-between gap-2 mb-2">
-                                  <span className="font-mono text-xs text-white font-semibold truncate max-w-[180px]">
-                                    {item.target_url}
-                                  </span>
-                                  <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                      getScoreColor(item.score).bg
-                                    } ${getScoreColor(item.score).text}`}
-                                  >
-                                    {item.score}/100
-                                  </span>
-                                </div>
-                                <div className="text-[11px] text-text-muted flex items-center gap-2 mb-3">
-                                  <Clock className="w-3 h-3" />
-                                  <span>{item.checked_at || "Recent scan"}</span>
-                                </div>
+                    {history.length === 0 ? (
+                      <div className="py-6 text-center text-text-muted text-xs">
+                        No audits saved yet. Run an audit below to save results.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {history.map((item, idx) => (
+                          <div
+                            key={item.id || idx}
+                            className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-primary/40 transition-all flex flex-col justify-between"
+                          >
+                            <div>
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <span className="font-mono text-xs text-white font-semibold truncate max-w-[180px]">
+                                  {item.target_url}
+                                </span>
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    getScoreColor(item.score).bg
+                                  } ${getScoreColor(item.score).text}`}
+                                >
+                                  {item.score}/100
+                                </span>
                               </div>
-
-                              <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setAuditResult(item);
-                                    setTargetUrl(item.target_url);
-                                  }}
-                                  className="flex-1 py-1 px-2 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-[11px] font-semibold transition-colors"
-                                >
-                                  Load Report
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleBrowserPrintPdf(item)}
-                                  className="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] font-medium transition-colors flex items-center gap-1"
-                                  title="Print PDF"
-                                >
-                                  <Printer className="w-3 h-3" />
-                                  <span>PDF</span>
-                                </button>
+                              <div className="text-[11px] text-text-muted flex items-center gap-2 mb-3">
+                                <Clock className="w-3 h-3" />
+                                <span>{item.checked_at || "Recent scan"}</span>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </m.div>
-                  )}
-                </AnimatePresence>
 
-                {/* Error Banner */}
-                {errorMessage && (
-                  <m.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 flex items-start gap-3"
-                  >
-                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
-                    <div>
-                      <h4 className="font-semibold text-sm">Crawl Failed</h4>
-                      <p className="text-xs text-red-300/80 mt-1 font-mono">{errorMessage}</p>
-                    </div>
+                            <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAuditResult(item);
+                                  setTargetUrl(item.target_url);
+                                }}
+                                className="flex-1 py-1 px-2 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-[11px] font-semibold transition-colors"
+                              >
+                                Load Report
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleBrowserPrintPdf(item)}
+                                className="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] font-medium transition-colors flex items-center gap-1"
+                                title="Print PDF"
+                              >
+                                <Printer className="w-3 h-3" />
+                                <span>PDF</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </m.div>
                 )}
+              </AnimatePresence>
 
-                {/* SEARCH & AUDIT BAR (Only available when logged in) */}
+              {/* Error Banner */}
+              {errorMessage && (
+                <m.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 flex items-start gap-3"
+                >
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Crawl Failed</h4>
+                    <p className="text-xs text-red-300/80 mt-1 font-mono">{errorMessage}</p>
+                  </div>
+                </m.div>
+              )}
+
+              {/* SEARCH & AUDIT BAR (Only rendered if session exists) */}
+              <m.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="bg-elevated/90 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl mb-10"
+              >
+                <form onSubmit={handleScan} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-primary" /> Target Website URL
+                      </span>
+                      <span className="text-xs text-text-muted">Technical audit &amp; Core Web Vitals</span>
+                    </label>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="relative flex-1">
+                        <input
+                          type="url"
+                          name="target_url"
+                          required
+                          value={targetUrl}
+                          onChange={(e) => setTargetUrl(e.target.value)}
+                          placeholder="https://example.com"
+                          className="w-full bg-background/80 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-text-muted/60 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                        />
+                        <Search className="w-4 h-4 text-text-muted absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isScanning}
+                        className={`py-3.5 px-8 rounded-xl font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg sm:w-auto w-full ${
+                          isScanning
+                            ? "bg-white/10 text-white/50 cursor-not-allowed"
+                            : "bg-primary-gradient hover:opacity-95 text-white shadow-primary/25 hover:shadow-primary/40 cursor-pointer"
+                        }`}
+                      >
+                        {isScanning ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Crawling...
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="w-4 h-4" />
+                            Scan Website
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Customization Toggle */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAgencyOptions(!showAgencyOptions)}
+                      className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
+                    >
+                      <Palette className="w-3.5 h-3.5 text-primary" />
+                      <span>Report Branding Settings</span>
+                      {showAgencyOptions ? (
+                        <ChevronUp className="w-3.5 h-3.5 text-text-muted" />
+                      ) : (
+                        <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Collapsible Customization Panel */}
+                  <AnimatePresence>
+                    {showAgencyOptions && (
+                      <m.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden pt-4 border-t border-white/10"
+                      >
+                        <div className="p-5 rounded-xl bg-black/30 border border-white/10 space-y-4 text-sm">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-medium text-text-muted mb-1.5">Agency / Company Name</label>
+                              <input
+                                type="text"
+                                value={agencyName}
+                                onChange={(e) => setAgencyName(e.target.value)}
+                                placeholder="Weblytic Agency"
+                                className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-primary"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-text-muted mb-1.5">Website</label>
+                              <input
+                                type="text"
+                                value={agencyUrl}
+                                onChange={(e) => setAgencyUrl(e.target.value)}
+                                placeholder="weblytic.cc"
+                                className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-primary"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-medium text-text-muted mb-1.5">Accent Color</label>
+                              <div className="flex items-center gap-3">
+                                <input
+                                  type="color"
+                                  value={primaryColor}
+                                  onChange={(e) => setPrimaryColor(e.target.value)}
+                                  className="w-10 h-9 bg-transparent border border-white/15 rounded-lg cursor-pointer p-0.5"
+                                />
+                                <input
+                                  type="text"
+                                  value={primaryColor}
+                                  onChange={(e) => setPrimaryColor(e.target.value)}
+                                  className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-primary"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-text-muted mb-1.5">Logo (Optional)</label>
+                              <input
+                                type="file"
+                                accept="image/png, image/jpeg"
+                                onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                                className="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer cursor-pointer bg-background/80 border border-white/15 rounded-lg p-1"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+                </form>
+              </m.div>
+
+              {/* SCANNING PROGRESS HUD */}
+              {isScanning && (
+                <m.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-8 rounded-2xl bg-elevated border border-primary/20 shadow-2xl mb-10 text-center"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4 animate-spin">
+                    <RefreshCw className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Analyzing Target Website...</h3>
+                  <p className="text-sm text-text-muted max-w-md mx-auto mb-6">
+                    {scanStep === 1 && "Connecting to server & verifying HTTP response codes..."}
+                    {scanStep === 2 && "Crawling internal links & parsing HTML headings and meta tags..."}
+                    {scanStep === 3 && "Analyzing image alt attributes, canonicals & calculating word density..."}
+                  </p>
+
+                  <div className="w-full max-w-md mx-auto bg-white/10 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full bg-primary-gradient transition-all duration-700"
+                      style={{ width: scanStep === 1 ? "30%" : scanStep === 2 ? "65%" : "90%" }}
+                    />
+                  </div>
+                </m.div>
+              )}
+
+              {/* AUDIT RESULTS DASHBOARD */}
+              {auditResult && (
                 <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="bg-elevated/90 backdrop-blur border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl mb-10"
+                  transition={{ duration: 0.5 }}
+                  className="space-y-8"
                 >
-                  <form onSubmit={handleScan} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-white mb-2 flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <Globe className="w-4 h-4 text-primary" /> Target Website URL
-                        </span>
-                        <span className="text-xs text-text-muted">Technical audit &amp; Core Web Vitals</span>
-                      </label>
-
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <div className="relative flex-1">
-                          <input
-                            type="url"
-                            name="target_url"
-                            required
-                            value={targetUrl}
-                            onChange={(e) => setTargetUrl(e.target.value)}
-                            placeholder="https://example.com"
-                            className="w-full bg-background/80 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-text-muted/60 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono"
-                          />
-                          <Search className="w-4 h-4 text-text-muted absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  {/* Hero Results Banner */}
+                  <div className="p-6 md:p-8 rounded-2xl bg-elevated/90 border border-white/15 shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                      <div className="flex items-center gap-5">
+                        {/* Health Score Gauge */}
+                        <div
+                          className={`w-20 h-20 rounded-2xl flex flex-col items-center justify-center border-2 ${
+                            getScoreColor(auditResult.score).bg
+                          } ${getScoreColor(auditResult.score).border}`}
+                        >
+                          <span className={`text-3xl font-display font-bold ${getScoreColor(auditResult.score).text}`}>
+                            {auditResult.score}
+                          </span>
+                          <span className="text-[10px] uppercase font-semibold text-text-muted tracking-wider">Health</span>
                         </div>
 
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h2 className="text-xl md:text-2xl font-bold text-white">{auditResult.target_url}</h2>
+                            <a
+                              href={auditResult.target_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-text-muted hover:text-white transition-colors"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-text-muted">
+                            <span>Audited: {auditResult.checked_at}</span>
+                            <span>•</span>
+                            <span className={`font-semibold ${getScoreColor(auditResult.score).text}`}>
+                              {getScoreColor(auditResult.score).label}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* PDF Export Actions */}
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
                         <button
-                          type="submit"
-                          disabled={isScanning}
-                          className={`py-3.5 px-8 rounded-xl font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg sm:w-auto w-full ${
-                            isScanning
-                              ? "bg-white/10 text-white/50 cursor-not-allowed"
-                              : "bg-primary-gradient hover:opacity-95 text-white shadow-primary/25 hover:shadow-primary/40 cursor-pointer"
-                          }`}
+                          type="button"
+                          onClick={() => handleBrowserPrintPdf()}
+                          disabled={isGeneratingBrowserPdf}
+                          className="py-3 px-5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 bg-primary-gradient text-white shadow-lg shadow-primary/25 hover:brightness-110 cursor-pointer"
                         >
-                          {isScanning ? (
+                          {isGeneratingBrowserPdf ? (
                             <>
                               <Loader2 className="w-4 h-4 animate-spin" />
-                              Crawling...
+                              <span>Compiling PDF...</span>
                             </>
                           ) : (
                             <>
-                              <ShieldCheck className="w-4 h-4" />
-                              Scan Website
+                              <Printer className="w-4 h-4" />
+                              <span>Download PDF</span>
                             </>
                           )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleDownloadPdfViaBackend}
+                          disabled={isDownloadingPdf}
+                          className="py-3 px-4 rounded-xl font-medium text-xs bg-white/5 hover:bg-white/10 text-text-muted hover:text-white border border-white/10 transition-all flex items-center justify-center gap-1.5"
+                          title="Backend PDF Generation"
+                        >
+                          {isDownloadingPdf ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Download className="w-3.5 h-3.5" />
+                          )}
+                          <span>Server PDF</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* White-Label Customization Toggle */}
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowAgencyOptions(!showAgencyOptions)}
-                        className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
-                      >
-                        <Palette className="w-3.5 h-3.5 text-primary" />
-                        <span>Report Branding Settings</span>
-                        {showAgencyOptions ? (
-                          <ChevronUp className="w-3.5 h-3.5 text-text-muted" />
-                        ) : (
-                          <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
-                        )}
-                      </button>
+                    {/* Summary Metric Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-xs text-text-muted block mb-1">Pages Crawled</span>
+                        <span className="text-2xl font-bold text-white">{auditResult.pages_crawled}</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-xs text-text-muted block mb-1">Issues Detected</span>
+                        <span className="text-2xl font-bold text-rose-400">{auditResult.issues.length}</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-xs text-text-muted block mb-1">Technical Score</span>
+                        <span className="text-2xl font-bold text-cyan-400">{auditResult.score} / 100</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-xs text-text-muted block mb-1">Scan Status</span>
+                        <span className="text-sm font-semibold text-white truncate block mt-1">{auditResult.status}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Audit Findings Explorer */}
+                  <div className="p-6 md:p-8 rounded-2xl bg-elevated/90 border border-white/15 shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                          <Layers className="w-5 h-5 text-primary" /> Audit Findings ({auditResult.issues.length})
+                        </h3>
+                        <p className="text-xs text-text-muted mt-0.5">Filter by category or search by URL</p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <input
+                          type="text"
+                          placeholder="Search findings..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="bg-background/80 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white placeholder-text-muted/60 focus:outline-none focus:border-primary md:w-48 w-full"
+                        />
+                      </div>
                     </div>
 
-                    {/* Collapsible Agency Customization Panel */}
-                    <AnimatePresence>
-                      {showAgencyOptions && (
-                        <m.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden pt-4 border-t border-white/10"
+                    {/* Filter Pills */}
+                    <div className="flex flex-wrap gap-2 pb-5 border-b border-white/10 mb-6">
+                      {[
+                        { id: "all", label: `All Issues (${auditResult.issues.length})` },
+                        { id: "title-h1", label: "Title & H1s" },
+                        { id: "meta", label: "Meta & Canonical" },
+                        { id: "content-img", label: "Images & Content" },
+                        { id: "http", label: "HTTP & Broken Links" },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setFilterType(tab.id)}
+                          className={`text-xs px-3 py-1.5 rounded-lg transition-colors font-medium ${
+                            filterType === tab.id
+                              ? "bg-primary text-white"
+                              : "bg-white/5 text-text-muted hover:bg-white/10 hover:text-white"
+                          }`}
                         >
-                          <div className="p-5 rounded-xl bg-black/30 border border-white/10 space-y-4 text-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Agency / Company Name</label>
-                                <input
-                                  type="text"
-                                  value={agencyName}
-                                  onChange={(e) => setAgencyName(e.target.value)}
-                                  placeholder="Weblytic Agency"
-                                  className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-primary"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Website</label>
-                                <input
-                                  type="text"
-                                  value={agencyUrl}
-                                  onChange={(e) => setAgencyUrl(e.target.value)}
-                                  placeholder="weblytic.cc"
-                                  className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-primary"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Accent Color</label>
-                                <div className="flex items-center gap-3">
-                                  <input
-                                    type="color"
-                                    value={primaryColor}
-                                    onChange={(e) => setPrimaryColor(e.target.value)}
-                                    className="w-10 h-9 bg-transparent border border-white/15 rounded-lg cursor-pointer p-0.5"
-                                  />
-                                  <input
-                                    type="text"
-                                    value={primaryColor}
-                                    onChange={(e) => setPrimaryColor(e.target.value)}
-                                    className="w-full bg-background/80 border border-white/15 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-primary"
-                                  />
-                                </div>
-                              </div>
-
-                              <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Logo (Optional)</label>
-                                <input
-                                  type="file"
-                                  accept="image/png, image/jpeg"
-                                  onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-                                  className="w-full text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer cursor-pointer bg-background/80 border border-white/15 rounded-lg p-1"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </m.div>
-                      )}
-                    </AnimatePresence>
-                  </form>
-                </m.div>
-
-                {/* SCANNING PROGRESS HUD */}
-                {isScanning && (
-                  <m.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-8 rounded-2xl bg-elevated border border-primary/20 shadow-2xl mb-10 text-center"
-                  >
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4 animate-spin">
-                      <RefreshCw className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Analyzing Target Website...</h3>
-                    <p className="text-sm text-text-muted max-w-md mx-auto mb-6">
-                      {scanStep === 1 && "Connecting to server & verifying HTTP response codes..."}
-                      {scanStep === 2 && "Crawling internal links & parsing HTML headings and meta tags..."}
-                      {scanStep === 3 && "Analyzing image alt attributes, canonicals & calculating word density..."}
-                    </p>
-
-                    <div className="w-full max-w-md mx-auto bg-white/10 rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-full bg-primary-gradient transition-all duration-700"
-                        style={{ width: scanStep === 1 ? "30%" : scanStep === 2 ? "65%" : "90%" }}
-                      />
-                    </div>
-                  </m.div>
-                )}
-
-                {/* AUDIT RESULTS DASHBOARD */}
-                {auditResult && (
-                  <m.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-8"
-                  >
-                    {/* Hero Results Banner */}
-                    <div className="p-6 md:p-8 rounded-2xl bg-elevated/90 border border-white/15 shadow-2xl">
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
-                        <div className="flex items-center gap-5">
-                          {/* Health Score Gauge */}
-                          <div
-                            className={`w-20 h-20 rounded-2xl flex flex-col items-center justify-center border-2 ${
-                              getScoreColor(auditResult.score).bg
-                            } ${getScoreColor(auditResult.score).border}`}
-                          >
-                            <span className={`text-3xl font-display font-bold ${getScoreColor(auditResult.score).text}`}>
-                              {auditResult.score}
-                            </span>
-                            <span className="text-[10px] uppercase font-semibold text-text-muted tracking-wider">Health</span>
-                          </div>
-
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h2 className="text-xl md:text-2xl font-bold text-white">{auditResult.target_url}</h2>
-                              <a
-                                href={auditResult.target_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-text-muted hover:text-white transition-colors"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </a>
-                            </div>
-                            <div className="flex items-center gap-3 text-xs text-text-muted">
-                              <span>Audited: {auditResult.checked_at}</span>
-                              <span>•</span>
-                              <span className={`font-semibold ${getScoreColor(auditResult.score).text}`}>
-                                {getScoreColor(auditResult.score).label}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* PDF Export Actions */}
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
-                          <button
-                            type="button"
-                            onClick={() => handleBrowserPrintPdf()}
-                            disabled={isGeneratingBrowserPdf}
-                            className="py-3 px-5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 bg-primary-gradient text-white shadow-lg shadow-primary/25 hover:brightness-110 cursor-pointer"
-                          >
-                            {isGeneratingBrowserPdf ? (
-                              <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span>Compiling PDF...</span>
-                              </>
-                            ) : (
-                              <>
-                                <Printer className="w-4 h-4" />
-                                <span>Download PDF</span>
-                              </>
-                            )}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={handleDownloadPdfViaBackend}
-                            disabled={isDownloadingPdf}
-                            className="py-3 px-4 rounded-xl font-medium text-xs bg-white/5 hover:bg-white/10 text-text-muted hover:text-white border border-white/10 transition-all flex items-center justify-center gap-1.5"
-                            title="Backend PDF Generation"
-                          >
-                            {isDownloadingPdf ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <Download className="w-3.5 h-3.5" />
-                            )}
-                            <span>Server PDF</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Summary Metric Cards */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                          <span className="text-xs text-text-muted block mb-1">Pages Crawled</span>
-                          <span className="text-2xl font-bold text-white">{auditResult.pages_crawled}</span>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                          <span className="text-xs text-text-muted block mb-1">Issues Detected</span>
-                          <span className="text-2xl font-bold text-rose-400">{auditResult.issues.length}</span>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                          <span className="text-xs text-text-muted block mb-1">Technical Score</span>
-                          <span className="text-2xl font-bold text-cyan-400">{auditResult.score} / 100</span>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                          <span className="text-xs text-text-muted block mb-1">Scan Status</span>
-                          <span className="text-sm font-semibold text-white truncate block mt-1">{auditResult.status}</span>
-                        </div>
-                      </div>
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
 
-                    {/* Audit Findings Explorer */}
-                    <div className="p-6 md:p-8 rounded-2xl bg-elevated/90 border border-white/15 shadow-2xl">
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-                        <div>
-                          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Layers className="w-5 h-5 text-primary" /> Audit Findings ({auditResult.issues.length})
-                          </h3>
-                          <p className="text-xs text-text-muted mt-0.5">Filter by category or search by URL</p>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                          <input
-                            type="text"
-                            placeholder="Search findings..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-background/80 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white placeholder-text-muted/60 focus:outline-none focus:border-primary md:w-48 w-full"
-                          />
-                        </div>
+                    {/* Findings Table */}
+                    {filteredIssues.length === 0 ? (
+                      <div className="text-center py-12 px-4 rounded-xl bg-white/5 border border-white/5">
+                        <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+                        <h4 className="text-base font-bold text-white mb-1">
+                          {auditResult.issues.length === 0
+                            ? "Zero Issues Detected!"
+                            : "No issues match this filter"}
+                        </h4>
+                        <p className="text-xs text-text-muted max-w-sm mx-auto">
+                          {auditResult.issues.length === 0
+                            ? "All scanned pages returned 200 OK with valid Title, H1, Meta Description, Canonical, and Alt tags."
+                            : "Try switching to 'All Issues' to view other detected findings."}
+                        </p>
                       </div>
-
-                      {/* Filter Pills */}
-                      <div className="flex flex-wrap gap-2 pb-5 border-b border-white/10 mb-6">
-                        {[
-                          { id: "all", label: `All Issues (${auditResult.issues.length})` },
-                          { id: "title-h1", label: "Title & H1s" },
-                          { id: "meta", label: "Meta & Canonical" },
-                          { id: "content-img", label: "Images & Content" },
-                          { id: "http", label: "HTTP & Broken Links" },
-                        ].map((tab) => (
-                          <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setFilterType(tab.id)}
-                            className={`text-xs px-3 py-1.5 rounded-lg transition-colors font-medium ${
-                              filterType === tab.id
-                                ? "bg-primary text-white"
-                                : "bg-white/5 text-text-muted hover:bg-white/10 hover:text-white"
-                            }`}
-                          >
-                            {tab.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Findings Table */}
-                      {filteredIssues.length === 0 ? (
-                        <div className="text-center py-12 px-4 rounded-xl bg-white/5 border border-white/5">
-                          <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-                          <h4 className="text-base font-bold text-white mb-1">
-                            {auditResult.issues.length === 0
-                              ? "Zero Issues Detected!"
-                              : "No issues match this filter"}
-                          </h4>
-                          <p className="text-xs text-text-muted max-w-sm mx-auto">
-                            {auditResult.issues.length === 0
-                              ? "All scanned pages returned 200 OK with valid Title, H1, Meta Description, Canonical, and Alt tags."
-                              : "Try switching to 'All Issues' to view other detected findings."}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs border-collapse">
-                            <thead>
-                              <tr className="border-b border-white/10 text-text-muted uppercase tracking-wider text-[11px]">
-                                <th className="py-3 px-4 font-semibold">Page URL</th>
-                                <th className="py-3 px-4 font-semibold">Detected Issue</th>
-                                <th className="py-3 px-4 font-semibold w-24">HTTP Code</th>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="border-b border-white/10 text-text-muted uppercase tracking-wider text-[11px]">
+                              <th className="py-3 px-4 font-semibold">Page URL</th>
+                              <th className="py-3 px-4 font-semibold">Detected Issue</th>
+                              <th className="py-3 px-4 font-semibold w-24">HTTP Code</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {filteredIssues.map((issue, idx) => (
+                              <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                                <td className="py-3 px-4 text-white font-mono max-w-md truncate">
+                                  <a
+                                    href={issue.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-primary transition-colors inline-flex items-center gap-1.5 truncate"
+                                    title={issue.url}
+                                  >
+                                    <span className="truncate">{issue.url}</span>
+                                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                                  </a>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 border border-rose-500/20 text-rose-300">
+                                    <AlertTriangle className="w-3 h-3 text-rose-400 flex-shrink-0" />
+                                    {issue.type}
+                                  </span>
+                                </td>
+                                <td className="py-3 px-4 font-mono font-semibold">
+                                  <span
+                                    className={`px-2 py-0.5 rounded text-[11px] ${
+                                      issue.code >= 400 ? "bg-red-500/20 text-red-300" : "bg-emerald-500/20 text-emerald-300"
+                                    }`}
+                                  >
+                                    {issue.code}
+                                  </span>
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                              {filteredIssues.map((issue, idx) => (
-                                <tr key={idx} className="hover:bg-white/5 transition-colors group">
-                                  <td className="py-3 px-4 text-white font-mono max-w-md truncate">
-                                    <a
-                                      href={issue.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="hover:text-primary transition-colors inline-flex items-center gap-1.5 truncate"
-                                      title={issue.url}
-                                    >
-                                      <span className="truncate">{issue.url}</span>
-                                      <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                                    </a>
-                                  </td>
-                                  <td className="py-3 px-4">
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 border border-rose-500/20 text-rose-300">
-                                      <AlertTriangle className="w-3 h-3 text-rose-400 flex-shrink-0" />
-                                      {issue.type}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-4 font-mono font-semibold">
-                                    <span
-                                      className={`px-2 py-0.5 rounded text-[11px] ${
-                                        issue.code >= 400 ? "bg-red-500/20 text-red-300" : "bg-emerald-500/20 text-emerald-300"
-                                      }`}
-                                    >
-                                      {issue.code}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  </m.div>
-                )}
-              </>
-            )}
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </m.div>
+              )}
+            </>
           </div>
         </main>
 

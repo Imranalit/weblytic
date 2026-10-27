@@ -70,9 +70,11 @@ export default function AuditLoginClient() {
         };
 
         if (rememberMe) {
+          localStorage.setItem("audit_auth_active", "true");
           localStorage.setItem("audit_session", JSON.stringify(sessionData));
           localStorage.setItem("audit_user", cleanEmail);
         } else {
+          sessionStorage.setItem("audit_auth_active", "true");
           sessionStorage.setItem("audit_session", JSON.stringify(sessionData));
           sessionStorage.setItem("audit_user", cleanEmail);
         }
