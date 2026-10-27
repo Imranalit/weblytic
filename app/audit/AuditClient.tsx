@@ -97,8 +97,12 @@ export default function AuditClient() {
   // STRICT AUTHENTICATION GUARD & QUOTA LOAD
   useEffect(() => {
     try {
-      const isAuthActive = localStorage.getItem("audit_auth_active") === "true";
-      const rawSession = localStorage.getItem("audit_session");
+      const isAuthActive =
+        localStorage.getItem("audit_auth_active") === "true" ||
+        sessionStorage.getItem("audit_auth_active") === "true";
+      const rawSession =
+        localStorage.getItem("audit_session") ||
+        sessionStorage.getItem("audit_session");
 
       if (isAuthActive && rawSession) {
         const parsed: AuditSession = JSON.parse(rawSession);
@@ -132,6 +136,7 @@ export default function AuditClient() {
       localStorage.removeItem("audit_auth_active");
       localStorage.removeItem("audit_user");
       sessionStorage.removeItem("audit_session");
+      sessionStorage.removeItem("audit_auth_active");
       sessionStorage.removeItem("audit_user");
       setSession(null);
       setIsCheckingAuth(false);

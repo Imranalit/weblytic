@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import {
@@ -50,6 +50,8 @@ async function hashCredentials(password: string): Promise<string> {
     .join("");
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_ENGINE_URL || "https://weblytic-engine.onrender.com";
+
 export default function AuditLoginClient() {
   const router = useRouter();
 
@@ -67,13 +69,20 @@ export default function AuditLoginClient() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // STRICT SIGN IN VALIDATION (Blocks false sign-ins and unauthorized access)
+  // Pre-warm backend on page mount to minimize cold-start latency
+  useEffect(() => {
+    fetch(`${API_BASE}/ping`, { method: "GET" }).catch(() => {});
+  }, []);
+
+  // SERVER-BACKED SIGN IN (Pings Render to verify credentials against DB)
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setLoadingStatus(null);
 
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
@@ -87,48 +96,65 @@ export default function AuditLoginClient() {
     }
 
     setIsLoading(true);
+    setLoadingStatus("Verifying credentials with database...");
 
     try {
-      // 1. Retrieve registered accounts database
-      const rawAccounts = localStorage.getItem("audit_accounts");
-      const accounts: Record<string, { name: string; passwordHash: string; country: string; createdAt: string }> = rawAccounts
-        ? JSON.parse(rawAccounts)
-        : {};
-
-      // 2. Prevent False Sign-In: Email MUST exist in registered accounts
-      const existingUser = accounts[cleanEmail];
-      if (!existingUser) {
-        setErrorMessage("No account exists with this email address. Please click 'Create Account' first.");
-        setIsLoading(false);
-        return;
-      }
-
-      // 3. Cryptographic Hash Verification
       const inputHash = await hashCredentials(password);
-      if (existingUser.passwordHash !== inputHash) {
-        setErrorMessage("Incorrect password. Please verify your credentials and try again.");
+
+      // Ping Render Backend Auth Endpoint
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleanEmail,
+          password_hash: inputHash,
+        }),
+      });
+
+      if (!response.ok) {
+        let errDetail = "Authentication failed.";
+        try {
+          const errJson = await response.json();
+          if (errJson.detail) {
+            errDetail = typeof errJson.detail === "string" ? errJson.detail : JSON.stringify(errJson.detail);
+          } else if (errJson.error) {
+            errDetail = errJson.error;
+          } else if (errJson.message) {
+            errDetail = errJson.message;
+          }
+        } catch {
+          if (response.status === 404) {
+            errDetail = "No account exists with this email address. Please click 'Create Account' first.";
+          } else if (response.status === 401) {
+            errDetail = "Incorrect password. Please verify your credentials and try again.";
+          }
+        }
+        setErrorMessage(errDetail);
         setIsLoading(false);
+        setLoadingStatus(null);
         return;
       }
 
-      // 4. Authenticated Session Generation
+      const result = await response.json();
+      const user = result.user || {};
+
+      // Authenticated Session Object
       const sessionData = {
         email: cleanEmail,
-        name: existingUser.name,
-        country: existingUser.country,
-        token: `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
-        createdAt: new Date().toISOString(),
+        name: user.name || "Agency User",
+        country: user.country || "United States",
+        token: result.token || `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
+        createdAt: user.created_at || new Date().toISOString(),
       };
 
-      if (rememberMe) {
-        localStorage.setItem("audit_auth_active", "true");
-        localStorage.setItem("audit_session", JSON.stringify(sessionData));
-        localStorage.setItem("audit_user", cleanEmail);
-      } else {
-        sessionStorage.setItem("audit_auth_active", "true");
-        sessionStorage.setItem("audit_session", JSON.stringify(sessionData));
-        sessionStorage.setItem("audit_user", cleanEmail);
-      }
+      // Persist across browser and tabs
+      localStorage.setItem("audit_auth_active", "true");
+      localStorage.setItem("audit_session", JSON.stringify(sessionData));
+      localStorage.setItem("audit_user", cleanEmail);
+
+      sessionStorage.setItem("audit_auth_active", "true");
+      sessionStorage.setItem("audit_session", JSON.stringify(sessionData));
+      sessionStorage.setItem("audit_user", cleanEmail);
 
       setSuccessMessage("Authentication successful. Redirecting to SEO Audit Console...");
       setTimeout(() => {
@@ -136,15 +162,44 @@ export default function AuditLoginClient() {
       }, 500);
     } catch (err) {
       console.error("Auth error:", err);
-      setErrorMessage("An error occurred during authentication. Please try again.");
+      // Offline fallback: Check local storage cache in case server is unreachable
+      try {
+        const rawAccounts = localStorage.getItem("audit_accounts");
+        const accounts = rawAccounts ? JSON.parse(rawAccounts) : {};
+        const localUser = accounts[cleanEmail];
+        const inputHash = await hashCredentials(password);
+        if (localUser && localUser.passwordHash === inputHash) {
+          const sessionData = {
+            email: cleanEmail,
+            name: localUser.name,
+            country: localUser.country,
+            token: `tok_cached_${Date.now()}`,
+            createdAt: localUser.createdAt,
+          };
+          localStorage.setItem("audit_auth_active", "true");
+          localStorage.setItem("audit_session", JSON.stringify(sessionData));
+          localStorage.setItem("audit_user", cleanEmail);
+          sessionStorage.setItem("audit_auth_active", "true");
+          sessionStorage.setItem("audit_session", JSON.stringify(sessionData));
+          sessionStorage.setItem("audit_user", cleanEmail);
+          setSuccessMessage("Authenticated via offline cache. Redirecting...");
+          setTimeout(() => router.push("/audit"), 500);
+          return;
+        }
+      } catch {
+        // ignore
+      }
+      setErrorMessage("Could not reach authentication server. Please check your connection and try again.");
       setIsLoading(false);
+      setLoadingStatus(null);
     }
   };
 
-  // SECURE ACCOUNT REGISTRATION (Hashes password and protects user secrets)
+  // SERVER-BACKED ACCOUNT REGISTRATION (Pings Render to persist lead in DB)
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setLoadingStatus(null);
 
     const cleanName = name.trim();
     const cleanEmail = email.trim().toLowerCase();
@@ -175,52 +230,89 @@ export default function AuditLoginClient() {
     }
 
     setIsLoading(true);
+    setLoadingStatus("Recording account and saving lead in database...");
 
     try {
-      const rawAccounts = localStorage.getItem("audit_accounts");
-      const accounts: Record<string, { name: string; passwordHash: string; country: string; createdAt: string }> = rawAccounts
-        ? JSON.parse(rawAccounts)
-        : {};
+      const passwordHash = await hashCredentials(password);
 
-      // Check if account already exists
-      if (accounts[cleanEmail]) {
-        setErrorMessage("An account with this email already exists. Please switch to 'Sign In'.");
+      // Ping Render Backend Register Endpoint
+      const response = await fetch(`${API_BASE}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleanEmail,
+          password_hash: passwordHash,
+          name: cleanName,
+          country: country,
+        }),
+      });
+
+      if (!response.ok) {
+        let errDetail = "Account registration failed.";
+        try {
+          const errJson = await response.json();
+          if (errJson.detail) {
+            errDetail = typeof errJson.detail === "string" ? errJson.detail : JSON.stringify(errJson.detail);
+          } else if (errJson.error) {
+            errDetail = errJson.error;
+          } else if (errJson.message) {
+            errDetail = errJson.message;
+          }
+        } catch {
+          if (response.status === 409) {
+            errDetail = "An account with this email already exists. Please switch to 'Sign In'.";
+          }
+        }
+        setErrorMessage(errDetail);
         setIsLoading(false);
+        setLoadingStatus(null);
         return;
       }
 
-      // Hash password before persisting
-      const passwordHash = await hashCredentials(password);
+      const result = await response.json();
+      const user = result.user || {};
 
-      accounts[cleanEmail] = {
-        name: cleanName,
-        passwordHash: passwordHash,
-        country: country,
-        createdAt: new Date().toISOString(),
-      };
-      localStorage.setItem("audit_accounts", JSON.stringify(accounts));
+      // Also cache in local accounts for offline convenience
+      try {
+        const rawAccounts = localStorage.getItem("audit_accounts");
+        const accounts = rawAccounts ? JSON.parse(rawAccounts) : {};
+        accounts[cleanEmail] = {
+          name: cleanName,
+          passwordHash: passwordHash,
+          country: country,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("audit_accounts", JSON.stringify(accounts));
+      } catch {
+        // ignore
+      }
 
-      // Create authenticated session
+      // Establish authenticated session
       const sessionData = {
         email: cleanEmail,
         name: cleanName,
         country: country,
-        token: `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
-        createdAt: new Date().toISOString(),
+        token: result.token || `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
+        createdAt: user.created_at || new Date().toISOString(),
       };
 
       localStorage.setItem("audit_auth_active", "true");
       localStorage.setItem("audit_session", JSON.stringify(sessionData));
       localStorage.setItem("audit_user", cleanEmail);
 
-      setSuccessMessage("Account created successfully! Redirecting to SEO Audit...");
+      sessionStorage.setItem("audit_auth_active", "true");
+      sessionStorage.setItem("audit_session", JSON.stringify(sessionData));
+      sessionStorage.setItem("audit_user", cleanEmail);
+
+      setSuccessMessage("Account created successfully! Redirecting to SEO Audit Console...");
       setTimeout(() => {
         router.push("/audit");
       }, 600);
     } catch (err) {
       console.error("Registration error:", err);
-      setErrorMessage("Could not complete registration. Please check browser storage permissions.");
+      setErrorMessage("Could not connect to registration server. Please try again in a few moments.");
       setIsLoading(false);
+      setLoadingStatus(null);
     }
   };
 
