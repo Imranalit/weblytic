@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import {
   Lock,
   Mail,
+  User,
+  Globe,
   ArrowRight,
-  ArrowLeft,
   KeyRound,
   Eye,
   EyeOff,
@@ -19,34 +19,51 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+const COUNTRIES = [
+  "United States",
+  "United Kingdom",
+  "Canada",
+  "Australia",
+  "Germany",
+  "France",
+  "United Arab Emirates",
+  "Pakistan",
+  "India",
+  "Singapore",
+  "Netherlands",
+  "Spain",
+  "Italy",
+  "Brazil",
+  "Japan",
+  "Saudi Arabia",
+  "Other",
+];
+
 export default function AuditLoginClient() {
   const router = useRouter();
 
+  // Mode: "signin" | "create"
+  const [mode, setMode] = useState<"signin" | "create">("signin");
+
+  // Form Fields
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("United States");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Check if session already exists
-  useEffect(() => {
-    try {
-      const existingUser = localStorage.getItem("audit_user");
-      if (existingUser) {
-        setEmail(existingUser);
-      }
-    } catch {
-      // Ignore storage restrictions
-    }
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    const cleanEmail = email.trim();
+    const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       setErrorMessage("Please enter a valid email address.");
       return;
@@ -59,12 +76,23 @@ export default function AuditLoginClient() {
 
     setIsLoading(true);
 
-    // Authenticate and store session
     setTimeout(() => {
       try {
+        // Check registered accounts if available
+        const rawAccounts = localStorage.getItem("audit_accounts");
+        if (rawAccounts) {
+          const accounts: Record<string, { password?: string; name?: string; country?: string }> = JSON.parse(rawAccounts);
+          if (accounts[cleanEmail] && accounts[cleanEmail].password && accounts[cleanEmail].password !== password) {
+            setErrorMessage("Incorrect password. Please try again.");
+            setIsLoading(false);
+            return;
+          }
+        }
+
         const sessionData = {
           email: cleanEmail,
-          accountType: "standard",
+          name: name.trim() || undefined,
+          country: country || undefined,
           token: `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
           createdAt: new Date().toISOString(),
         };
@@ -82,12 +110,86 @@ export default function AuditLoginClient() {
         setSuccessMessage("Signed in successfully. Redirecting to SEO Audit...");
         setTimeout(() => {
           router.push("/audit");
-        }, 600);
+        }, 500);
       } catch {
         setErrorMessage("Could not save session. Please check your browser privacy settings.");
         setIsLoading(false);
       }
-    }, 500);
+    }, 450);
+  };
+
+  const handleCreateAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName) {
+      setErrorMessage("Please enter your full name.");
+      return;
+    }
+
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (!country) {
+      setErrorMessage("Please select your country.");
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match. Please re-enter.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    setTimeout(() => {
+      try {
+        // Save account locally
+        const rawAccounts = localStorage.getItem("audit_accounts");
+        const accounts: Record<string, { name: string; password: string; country: string; createdAt: string }> = rawAccounts
+          ? JSON.parse(rawAccounts)
+          : {};
+
+        accounts[cleanEmail] = {
+          name: cleanName,
+          password: password,
+          country: country,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("audit_accounts", JSON.stringify(accounts));
+
+        // Create active session
+        const sessionData = {
+          email: cleanEmail,
+          name: cleanName,
+          country: country,
+          token: `tok_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`,
+          createdAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem("audit_auth_active", "true");
+        localStorage.setItem("audit_session", JSON.stringify(sessionData));
+        localStorage.setItem("audit_user", cleanEmail);
+
+        setSuccessMessage("Account created successfully! Redirecting to SEO Audit...");
+        setTimeout(() => {
+          router.push("/audit");
+        }, 600);
+      } catch {
+        setErrorMessage("Could not save account. Please check your browser privacy settings.");
+        setIsLoading(false);
+      }
+    }, 550);
   };
 
   return (
@@ -100,18 +202,7 @@ export default function AuditLoginClient() {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="container mx-auto px-4 sm:px-6 max-w-md relative z-10">
-            {/* Top Back Link */}
-            <div className="mb-6">
-              <Link
-                href="/audit"
-                className="inline-flex items-center gap-2 text-xs font-mono text-text-muted hover:text-white transition-colors group"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span>BACK TO SEO AUDIT</span>
-              </Link>
-            </div>
-
-            {/* Simple Login Card */}
+            {/* Simple Card */}
             <m.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,124 +210,291 @@ export default function AuditLoginClient() {
               className="p-6 sm:p-8 rounded-3xl glass-card border border-white/10 shadow-2xl relative"
             >
               {/* Header */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-primary/15 text-primary border border-primary/25 mb-3">
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>SEO AUDIT PORTAL</span>
                 </div>
                 <h1 className="text-2xl font-display font-bold text-white mb-1.5">
-                  Sign In
+                  {mode === "signin" ? "Sign In" : "Create Account"}
                 </h1>
                 <p className="text-xs text-text-muted">
-                  Enter your credentials to access the SEO Audit Scanner.
+                  {mode === "signin"
+                    ? "Enter your credentials to access the SEO Audit Scanner."
+                    : "Create an account to start auditing websites (4 free audits / week)."}
                 </p>
+              </div>
+
+              {/* Mode Switcher Tabs */}
+              <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setErrorMessage(null);
+                    setSuccessMessage(null);
+                  }}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    mode === "signin"
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "text-text-muted hover:text-white"
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("create");
+                    setErrorMessage(null);
+                    setSuccessMessage(null);
+                  }}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
+                    mode === "create"
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "text-text-muted hover:text-white"
+                  }`}
+                >
+                  Create Account
+                </button>
               </div>
 
               {/* Status Messages */}
               {errorMessage && (
-                <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2.5">
+                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2.5">
                   <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="mb-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-start gap-2.5">
+                <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <span>{successMessage}</span>
                 </div>
               )}
 
-              {/* Form */}
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label htmlFor="login-email" className="text-xs font-medium text-white block">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      id="login-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@company.com"
-                      required
-                      autoComplete="email"
-                      className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
-                    />
+              {/* SIGN IN FORM */}
+              {mode === "signin" ? (
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="signin-email" className="text-xs font-medium text-white block">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="signin-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@company.com"
+                        required
+                        autoComplete="email"
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-1.5">
-                  <label htmlFor="login-password" className="text-xs font-medium text-white block">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      id="login-password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      required
-                      autoComplete="current-password"
-                      className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                  <div className="space-y-1.5">
+                    <label htmlFor="signin-password" className="text-xs font-medium text-white block">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="signin-password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        required
+                        autoComplete="current-password"
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <label className="flex items-center gap-2 cursor-pointer text-text-muted hover:text-white select-none">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="rounded border-white/20 bg-background text-primary focus:ring-primary accent-primary"
+                      />
+                      <span>Remember me</span>
+                    </label>
+
+                    <a
+                      href="mailto:support@weblytic.cc?subject=SEO%20Audit%20Password%20Reset"
+                      className="text-primary hover:text-primary-end transition-colors"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                      Forgot password?
+                    </a>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <label className="flex items-center gap-2 cursor-pointer text-text-muted hover:text-white select-none">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="rounded border-white/20 bg-background text-primary focus:ring-primary accent-primary"
-                    />
-                    <span>Remember me</span>
-                  </label>
-
-                  <a
-                    href="mailto:support@weblytic.cc?subject=SEO%20Audit%20Password%20Reset"
-                    className="text-primary hover:text-primary-end transition-colors"
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold tracking-wide flex items-center justify-center gap-2 bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
                   >
-                    Forgot password?
-                  </a>
-                </div>
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Signing in...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Sign In</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                /* CREATE ACCOUNT FORM */
+                <form onSubmit={handleCreateAccount} className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label htmlFor="create-name" className="text-xs font-medium text-white block">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="create-name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="John Doe"
+                        required
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                    </div>
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold tracking-wide flex items-center justify-center gap-2 bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Signing in...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Sign In</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
+                  <div className="space-y-1">
+                    <label htmlFor="create-email" className="text-xs font-medium text-white block">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="create-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@company.com"
+                        required
+                        autoComplete="email"
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="create-country" className="text-xs font-medium text-white block">
+                      Country
+                    </label>
+                    <div className="relative">
+                      <Globe className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <select
+                        id="create-country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                      >
+                        {COUNTRIES.map((c) => (
+                          <option key={c} value={c} className="bg-elevated text-white">
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="create-password" className="text-xs font-medium text-white block">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="create-password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="At least 6 characters"
+                        required
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-10 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label htmlFor="create-confirm-password" className="text-xs font-medium text-white block">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="create-confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter password"
+                        required
+                        className="w-full bg-background border border-white/10 rounded-xl pl-10 pr-10 py-2 text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-text-muted/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold tracking-wide flex items-center justify-center gap-2 bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Creating account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Create Free Account</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
 
               {/* Secure Notice */}
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-center gap-2 text-[11px] text-text-muted">
+              <div className="mt-5 pt-3.5 border-t border-white/10 flex items-center justify-center gap-2 text-[11px] text-text-muted">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Secure SSL Encrypted Connection</span>
+                <span>SSL Encrypted Connection • 4 Free Audits / Week</span>
               </div>
             </m.div>
           </div>

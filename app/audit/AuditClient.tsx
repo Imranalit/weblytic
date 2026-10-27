@@ -8,13 +8,16 @@ import {
   ShieldCheck, Search, Globe, Building2, Palette, Mail, CheckCircle2,
   AlertCircle, Loader2, Sparkles, Download, ChevronDown, ChevronUp,
   ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle,
-  User, History, Printer, LogOut, ArrowRight, Clock, Trash2, Lock
+  User, History, Printer, LogOut, ArrowRight, Clock, Trash2, Lock,
+  Calendar
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export interface AuditSession {
   email: string;
+  name?: string;
+  country?: string;
   token?: string;
   createdAt?: string;
 }
@@ -35,6 +38,9 @@ export interface AuditResult {
   status: string;
 }
 
+const WEEKLY_AUDIT_LIMIT = 4;
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
 export default function AuditClient() {
   const router = useRouter();
 
@@ -46,6 +52,9 @@ export default function AuditClient() {
   // Authentication & Loading States
   const [session, setSession] = useState<AuditSession | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Weekly Audit Usage Timestamps
+  const [auditTimestamps, setAuditTimestamps] = useState<number[]>([]);
 
   // Agency branding fields
   const [agencyName, setAgencyName] = useState("Weblytic Agency");
@@ -69,9 +78,7 @@ export default function AuditClient() {
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // STRICT AUTHENTICATION GUARD:
-  // Disallow old demo auto-login (`agency@weblytic.cc`) and require active logged in session.
-  // If not authenticated, immediately redirect to /audit/login.
+  // STRICT AUTHENTICATION GUARD & QUOTA LOAD
   useEffect(() => {
     try {
       const isAuthActive = localStorage.getItem("audit_auth_active") === "true";
@@ -79,21 +86,32 @@ export default function AuditClient() {
 
       if (isAuthActive && rawSession) {
         const parsed: AuditSession = JSON.parse(rawSession);
-        // Ensure it's a real user session and not leftover demo state
+        // Ensure real authenticated session and reject old demo leftovers
         if (parsed.email && parsed.email !== "agency@weblytic.cc" && parsed.email !== "auditor@weblytic.cc") {
           setSession(parsed);
           setAlertEmail(parsed.email);
 
+          // Load account history
           const rawHistory = localStorage.getItem(`audit_history_${parsed.email}`);
           if (rawHistory) {
             setHistory(JSON.parse(rawHistory));
           }
+
+          // Load weekly audit timestamps
+          const rawTimestamps = localStorage.getItem(`audit_timestamps_${parsed.email}`);
+          if (rawTimestamps) {
+            const parsedTimes: number[] = JSON.parse(rawTimestamps);
+            // Filter timestamps strictly to last 7 days
+            const valid = parsedTimes.filter((t) => Date.now() - t < ONE_WEEK_MS);
+            setAuditTimestamps(valid);
+          }
+
           setIsCheckingAuth(false);
           return;
         }
       }
 
-      // If no valid authenticated session or leftover demo, clear and redirect to login
+      // Not authenticated: clear any residual state and redirect to login
       localStorage.removeItem("audit_session");
       localStorage.removeItem("audit_auth_active");
       localStorage.removeItem("audit_user");
@@ -107,6 +125,24 @@ export default function AuditClient() {
       router.replace("/audit/login");
     }
   }, [router]);
+
+  // Compute Weekly Audit Quota (4 audits per week per user)
+  const activeWeekScans = useMemo(() => {
+    return auditTimestamps.filter((t) => Date.now() - t < ONE_WEEK_MS);
+  }, [auditTimestamps]);
+
+  const usedAuditsThisWeek = activeWeekScans.length;
+  const remainingAudits = Math.max(0, WEEKLY_AUDIT_LIMIT - usedAuditsThisWeek);
+  const isWeeklyLimitReached = remainingAudits <= 0;
+
+  // Calculate days until oldest weekly scan expires
+  const daysUntilQuotaReset = useMemo(() => {
+    if (activeWeekScans.length === 0) return 7;
+    const oldest = Math.min(...activeWeekScans);
+    const resetTime = oldest + ONE_WEEK_MS;
+    const diffDays = Math.ceil((resetTime - Date.now()) / (24 * 60 * 60 * 1000));
+    return Math.max(1, diffDays);
+  }, [activeWeekScans]);
 
   const handleSignOut = () => {
     try {
@@ -149,7 +185,7 @@ export default function AuditClient() {
   // Run Scan Website
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!targetUrl) return;
+    if (!targetUrl || isWeeklyLimitReached) return;
 
     setErrorMessage(null);
     setAuditResult(null);
@@ -190,6 +226,17 @@ export default function AuditClient() {
       data.id = `audit_${Date.now()}`;
       setAuditResult(data);
       saveAuditToHistory(data);
+
+      // Record quota usage timestamp
+      const newTimestamps = [...activeWeekScans, Date.now()];
+      setAuditTimestamps(newTimestamps);
+      if (session?.email) {
+        try {
+          localStorage.setItem(`audit_timestamps_${session.email}`, JSON.stringify(newTimestamps));
+        } catch {
+          // Ignore
+        }
+      }
     } catch (err: unknown) {
       const errorStr = err instanceof Error ? err.message : "Error crawling website. Ensure target URL is valid.";
       setErrorMessage(errorStr);
@@ -562,7 +609,7 @@ export default function AuditClient() {
     return { bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-400", label: "Critical Issues Detected" };
   };
 
-  // While checking auth, show clean loading state (or if unauthenticated, redirecting)
+  // While checking auth, show clean loading state (or redirecting to login)
   if (isCheckingAuth || !session) {
     return (
       <LazyMotion features={domAnimation}>
@@ -623,13 +670,30 @@ export default function AuditClient() {
 
             {/* AUTHENTICATED AUDIT ENGINE & DASHBOARD */}
             <>
-              {/* ACCOUNT STATUS BAR */}
-              <div className="mb-6 p-3 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2">
+              {/* ACCOUNT STATUS & QUOTA BAR */}
+              <div className="mb-6 p-3.5 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
                     <User className="w-3.5 h-3.5" />
-                    <span>{session.email}</span>
+                    <span>{session.name ? `${session.name} (${session.email})` : session.email}</span>
                   </span>
+
+                  {/* WEEKLY QUOTA BADGE (4 audits/week cap) */}
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono font-medium text-[11px] bg-white/5 border-white/10">
+                    <Calendar className="w-3 h-3 text-text-muted" />
+                    <span className="text-text-muted">Weekly Audits:</span>
+                    <span
+                      className={`font-bold ${
+                        remainingAudits > 1
+                          ? "text-emerald-400"
+                          : remainingAudits === 1
+                          ? "text-amber-400"
+                          : "text-rose-400"
+                      }`}
+                    >
+                      {remainingAudits} / {WEEKLY_AUDIT_LIMIT} remaining
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -756,7 +820,24 @@ export default function AuditClient() {
                 </m.div>
               )}
 
-              {/* SEARCH & AUDIT BAR (Only rendered if session exists) */}
+              {/* WEEKLY LIMIT REACHED NOTICE BANNER */}
+              {isWeeklyLimitReached && (
+                <m.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-start gap-3"
+                >
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-400" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Weekly Audit Limit Reached (4/4 Used)</h4>
+                    <p className="text-xs text-amber-200/80 mt-1 leading-relaxed">
+                      You have used your 4 free audits for this 7-day period. Your next audit will become available in approximately {daysUntilQuotaReset} day(s).
+                    </p>
+                  </div>
+                </m.div>
+              )}
+
+              {/* SEARCH & AUDIT BAR */}
               <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -769,7 +850,9 @@ export default function AuditClient() {
                       <span className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-primary" /> Target Website URL
                       </span>
-                      <span className="text-xs text-text-muted">Technical audit &amp; Core Web Vitals</span>
+                      <span className="text-xs text-text-muted">
+                        {isWeeklyLimitReached ? "Weekly limit reached" : `${remainingAudits} of 4 audits remaining this week`}
+                      </span>
                     </label>
 
                     <div className="flex flex-col sm:flex-row gap-3">
@@ -778,20 +861,25 @@ export default function AuditClient() {
                           type="url"
                           name="target_url"
                           required
+                          disabled={isWeeklyLimitReached || isScanning}
                           value={targetUrl}
                           onChange={(e) => setTargetUrl(e.target.value)}
-                          placeholder="https://example.com"
-                          className="w-full bg-background/80 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-text-muted/60 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                          placeholder={
+                            isWeeklyLimitReached
+                              ? `Weekly limit reached (4/4 audits used). Resets in ${daysUntilQuotaReset} days.`
+                              : "https://example.com"
+                          }
+                          className="w-full bg-background/80 border border-white/15 rounded-xl px-4 py-3.5 text-white placeholder-text-muted/60 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <Search className="w-4 h-4 text-text-muted absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
 
                       <button
                         type="submit"
-                        disabled={isScanning}
+                        disabled={isScanning || isWeeklyLimitReached}
                         className={`py-3.5 px-8 rounded-xl font-bold text-sm tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg sm:w-auto w-full ${
-                          isScanning
-                            ? "bg-white/10 text-white/50 cursor-not-allowed"
+                          isScanning || isWeeklyLimitReached
+                            ? "bg-white/10 text-white/50 cursor-not-allowed shadow-none"
                             : "bg-primary-gradient hover:opacity-95 text-white shadow-primary/25 hover:shadow-primary/40 cursor-pointer"
                         }`}
                       >
@@ -799,6 +887,11 @@ export default function AuditClient() {
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
                             Crawling...
+                          </>
+                        ) : isWeeklyLimitReached ? (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            Limit Reached (4/4)
                           </>
                         ) : (
                           <>
