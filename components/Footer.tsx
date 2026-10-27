@@ -168,7 +168,7 @@ export default function Footer() {
           
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 md:pr-24">
+        <div id="footer-bottom-bar" className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-text-muted">
             © {new Date().getFullYear()} Weblytic. All rights reserved.
           </div>

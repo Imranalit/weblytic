@@ -67,6 +67,49 @@ export default function Chatbot() {
   const latestMessageRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const [bottomOffset, setBottomOffset] = useState<number>(24);
+
+  // Stop bot from entering the footer bottom bar:
+  // Stays at original 24px position when anywhere in hero or middle of page,
+  // but halts floating down exactly on the separating line above the privacy/refund policy links.
+  useEffect(() => {
+    let ticking = false;
+
+    const updatePosition = () => {
+      const bottomBar = document.getElementById("footer-bottom-bar");
+      if (bottomBar) {
+        const rect = bottomBar.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const visibleHeight = windowHeight - rect.top;
+
+        if (visibleHeight > 0) {
+          // Halts immediately above the separating line
+          setBottomOffset(visibleHeight + 16);
+        } else {
+          setBottomOffset(24);
+        }
+      } else {
+        setBottomOffset(24);
+      }
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updatePosition);
+        ticking = true;
+      }
+    };
+
+    updatePosition();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   // Smart auto-scroll:
   // When Konain sends a new reply, scroll so the TOP (head) of her reply
   // appears at the top of the chat area, so users don't have to scroll up to find the start!
@@ -142,10 +185,10 @@ export default function Chatbot() {
         {!isOpen && (
           <m.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 1, scale: 1, bottom: `${bottomOffset}px` }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-6 right-6 z-50 flex items-center"
+            className="fixed right-6 z-50 flex items-center"
           >
             {/* Calling-out speech bubble (prompts visitor to chat) */}
             <m.div
@@ -199,10 +242,10 @@ export default function Chatbot() {
         {isOpen && (
           <m.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1, bottom: `${bottomOffset}px` }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 right-4 sm:right-6 md:right-8 w-[calc(100vw-2rem)] sm:w-[420px] md:w-[450px] h-[550px] max-h-[calc(100dvh-5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+            className="fixed right-4 sm:right-6 md:right-8 w-[calc(100vw-2rem)] sm:w-[420px] md:w-[450px] h-[550px] max-h-[calc(100dvh-5rem)] bg-elevated/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
           >
             {/* Header with Konain Avatar & Single Clean Close Button */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 shrink-0">
