@@ -5,22 +5,22 @@ import Link from "next/link";
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck, Search, Globe, Building2, Palette, Mail, CheckCircle2,
-  AlertCircle, Loader2, Sparkles, Server, Download, ChevronDown, ChevronUp,
-  FileText, ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle,
-  User, History, Printer, LogOut, ArrowRight, Clock, Trash2, Lock, KeyRound
+  AlertCircle, Loader2, Sparkles, Download, ChevronDown, ChevronUp,
+  ExternalLink, RefreshCw, AlertTriangle, Layers, CheckCircle,
+  User, History, Printer, LogOut, ArrowRight, Clock, Trash2, Lock
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export interface AuditSession {
   email: string;
-  accountType: "agency" | "individual";
+  accountType?: string;
   fullName?: string;
   agencyName?: string;
   agencyUrl?: string;
   primaryColor?: string;
-  token: string;
-  createdAt: string;
+  token?: string;
+  createdAt?: string;
 }
 
 export interface AuditIssue {
@@ -61,7 +61,6 @@ export default function AuditClient() {
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isGeneratingBrowserPdf, setIsGeneratingBrowserPdf] = useState(false);
   const [scanStep, setScanStep] = useState(0);
-  const [engineAwake, setEngineAwake] = useState<boolean | null>(null);
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -84,10 +83,19 @@ export default function AuditClient() {
         if (parsed.primaryColor) setPrimaryColor(parsed.primaryColor);
         if (parsed.email) setAlertEmail(parsed.email);
 
-        // Load account's saved audits
         const rawHistory = localStorage.getItem(`audit_history_${parsed.email}`);
         if (rawHistory) {
           setHistory(JSON.parse(rawHistory));
+        }
+      } else {
+        const rawUser = localStorage.getItem("audit_user") || sessionStorage.getItem("audit_user");
+        if (rawUser) {
+          const fallbackSession: AuditSession = { email: rawUser };
+          setSession(fallbackSession);
+          const rawHistory = localStorage.getItem(`audit_history_${rawUser}`);
+          if (rawHistory) {
+            setHistory(JSON.parse(rawHistory));
+          }
         }
       }
     } catch {
@@ -96,21 +104,6 @@ export default function AuditClient() {
       setIsLoadingSession(false);
     }
   }, []);
-
-  // Wake up backend engine
-  useEffect(() => {
-    let isMounted = true;
-    fetch(`${apiUrl}/health`)
-      .then((res) => {
-        if (isMounted) setEngineAwake(res.ok);
-      })
-      .catch(() => {
-        if (isMounted) setEngineAwake(false);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [apiUrl]);
 
   const handleSignOut = () => {
     try {
@@ -123,44 +116,6 @@ export default function AuditClient() {
     }
     setSession(null);
     setAuditResult(null);
-  };
-
-  const handleQuickDemoLogin = (type: "agency" | "individual") => {
-    const demoSession: AuditSession =
-      type === "agency"
-        ? {
-            email: "agency@weblytic.cc",
-            accountType: "agency",
-            agencyName: "Acme SEO & Growth Agency",
-            agencyUrl: "acmegrowth.cc",
-            primaryColor: "#2563EB",
-            token: "tok_demo_agency",
-            createdAt: new Date().toISOString(),
-          }
-        : {
-            email: "auditor@weblytic.cc",
-            accountType: "individual",
-            fullName: "Alex Morgan (Solo Auditor)",
-            token: "tok_demo_individual",
-            createdAt: new Date().toISOString(),
-          };
-
-    try {
-      localStorage.setItem("audit_session", JSON.stringify(demoSession));
-      localStorage.setItem("audit_user", demoSession.email);
-    } catch {
-      // Ignore
-    }
-
-    setSession(demoSession);
-    if (demoSession.agencyName) setAgencyName(demoSession.agencyName);
-    if (demoSession.agencyUrl) setAgencyUrl(demoSession.agencyUrl);
-    if (demoSession.primaryColor) setPrimaryColor(demoSession.primaryColor);
-
-    const rawHistory = localStorage.getItem(`audit_history_${demoSession.email}`);
-    if (rawHistory) {
-      setHistory(JSON.parse(rawHistory));
-    }
   };
 
   // Save audit to history list
@@ -249,8 +204,8 @@ export default function AuditClient() {
     setIsGeneratingBrowserPdf(true);
 
     try {
-      const activeAgency = session?.accountType === "agency" ? agencyName : "Weblytic SEO Engine";
-      const activeAgencyUrl = session?.accountType === "agency" ? agencyUrl : "weblytic.cc";
+      const activeAgency = agencyName || "Weblytic SEO Engine";
+      const activeAgencyUrl = agencyUrl || "weblytic.cc";
       const accent = primaryColor || "#2563EB";
 
       const printHtml = `
@@ -493,7 +448,6 @@ export default function AuditClient() {
 
           <div class="footer-notice">
             <span>Confidential SEO Audit Report • Prepared by ${activeAgency}</span>
-            <span>Render Stress: 0% (Client-Side Vector Engine)</span>
           </div>
         </body>
         </html>
@@ -528,7 +482,7 @@ export default function AuditClient() {
     } catch (err) {
       console.error("Browser PDF print error:", err);
       setIsGeneratingBrowserPdf(false);
-      alert("Error printing PDF in browser. You can also try the backend export button.");
+      alert("Error printing PDF in browser.");
     }
   };
 
@@ -574,7 +528,7 @@ export default function AuditClient() {
       document.body.removeChild(a);
     } catch (err) {
       console.error("PDF download error:", err);
-      alert("Error generating PDF via backend. Please use the instant Client-Side PDF button.");
+      alert("Error generating PDF via backend.");
     } finally {
       setIsDownloadingPdf(false);
     }
@@ -621,13 +575,13 @@ export default function AuditClient() {
             >
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-secondary text-xs font-semibold uppercase tracking-wider mb-4">
                 <Sparkles className="w-3.5 h-3.5" />
-                SEO Audit Engine 2.0
+                SEO Audit Engine
               </div>
               <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-3">
                 SEO Audit &amp; <span className="text-transparent bg-clip-text bg-primary-gradient">Health Scanner</span>
               </h1>
               <p className="text-text-muted text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-                Comprehensive technical SEO diagnostics, crawl error inspections, Google PageSpeed insights, and agency white-label reports.
+                Scan any website in real-time. Inspect technical SEO health, Core Web Vitals, and generate vector PDF reports.
               </p>
             </m.div>
 
@@ -635,118 +589,46 @@ export default function AuditClient() {
             {isLoadingSession ? (
               <div className="p-12 text-center rounded-3xl glass-card border border-white/10 my-8">
                 <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-3" />
-                <p className="text-xs font-mono text-text-muted">Verifying audit engine credentials...</p>
+                <p className="text-xs font-mono text-text-muted">Loading...</p>
               </div>
             ) : !session ? (
-              /* LOGIN WALL (Auditing option is restricted behind this wall) */
+              /* LOGIN WALL (Auditing option is restricted behind this simple wall) */
               <m.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="max-w-2xl mx-auto my-8 p-8 sm:p-10 rounded-3xl glass-card border border-white/15 shadow-2xl relative overflow-hidden text-center"
+                className="max-w-md mx-auto my-8 p-8 rounded-3xl glass-card border border-white/15 shadow-2xl relative overflow-hidden text-center"
               >
-                {/* Glow accent */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-5 shadow-inner">
-                  <Lock className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 mx-auto flex items-center justify-center text-primary mb-4">
+                  <Lock className="w-5 h-5" />
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/25 mb-3">
-                  <span>AUTHENTICATION REQUIRED</span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
-                  Sign In to Access the <span className="text-transparent bg-clip-text bg-primary-gradient">Audit Scanner</span>
+                <h2 className="text-xl sm:text-2xl font-display font-bold text-white mb-2">
+                  Sign In Required
                 </h2>
 
-                <p className="text-xs sm:text-sm text-text-muted max-w-lg mx-auto mb-6 leading-relaxed">
-                  Live website crawling, Core Web Vitals extraction, database history tracking, and client-side vector PDF exports sit behind our secure Agency &amp; Individual portal.
+                <p className="text-xs text-text-muted mb-6 leading-relaxed">
+                  Please sign in to your account to use the SEO Audit Scanner and export reports.
                 </p>
 
-                {/* Feature Badges */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 text-left">
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <Building2 className="w-4 h-4 text-primary mb-1.5" />
-                    <div className="text-xs font-bold text-white">Agency Branding</div>
-                    <div className="text-[11px] text-text-muted mt-0.5">White-label reports with custom logo &amp; color</div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <History className="w-4 h-4 text-secondary mb-1.5" />
-                    <div className="text-xs font-bold text-white">Database History</div>
-                    <div className="text-[11px] text-text-muted mt-0.5">Structured scans saved to database as text JSON</div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                    <Printer className="w-4 h-4 text-emerald-400 mb-1.5" />
-                    <div className="text-xs font-bold text-white">Browser PDF Engine</div>
-                    <div className="text-[11px] text-text-muted mt-0.5">Instant vector exports with 0% server stress</div>
-                  </div>
-                </div>
-
-                {/* Primary Action Buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-                  <Link
-                    href="/audit/login"
-                    className="w-full sm:w-auto py-3 px-6 rounded-xl font-semibold text-xs tracking-wide bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2"
-                  >
-                    <span>Sign In / Create Account</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-
-                {/* Instant 1-Click Demo Buttons */}
-                <div className="pt-6 border-t border-white/10">
-                  <div className="text-[11px] uppercase tracking-wider font-mono text-text-muted mb-3">
-                    Or Test Instantly With One Click:
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemoLogin("agency")}
-                      className="py-2 px-4 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all flex items-center gap-2"
-                    >
-                      <Building2 className="w-3.5 h-3.5 text-primary" />
-                      <span>Unlock Demo Agency</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemoLogin("individual")}
-                      className="py-2 px-4 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all flex items-center gap-2"
-                    >
-                      <User className="w-3.5 h-3.5 text-secondary" />
-                      <span>Unlock Demo Individual</span>
-                    </button>
-                  </div>
-                </div>
+                <Link
+                  href="/audit/login"
+                  className="w-full py-2.5 px-6 rounded-xl font-semibold text-xs tracking-wide bg-primary-gradient text-white hover:brightness-110 shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Sign In to Continue</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </m.div>
             ) : (
               /* AUTHENTICATED AUDIT ENGINE & DASHBOARD */
               <>
                 {/* ACCOUNT STATUS BAR */}
-                <div className="mb-6 p-3.5 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      {session.accountType === "agency" ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
-                          <Building2 className="w-3.5 h-3.5" />
-                          <span>AGENCY: {session.agencyName || agencyName}</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
-                          <User className="w-3.5 h-3.5" />
-                          <span>INDIVIDUAL: {session.fullName || session.email}</span>
-                        </span>
-                      )}
-                      <span className="text-text-muted hidden sm:inline">•</span>
-                      <span className="text-text-muted hidden sm:inline font-mono">{session.email}</span>
-                    </div>
-
-                    {session.accountType === "agency" && (
-                      <div className="flex items-center gap-1.5 text-text-muted text-[11px]">
-                        <span>Brand Accent:</span>
-                        <span className="w-3.5 h-3.5 rounded-full border border-white/30" style={{ backgroundColor: primaryColor }} />
-                      </div>
-                    )}
+                <div className="mb-6 p-3 rounded-2xl glass-card border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/20 text-primary border border-primary/30 font-semibold font-mono">
+                      <User className="w-3.5 h-3.5" />
+                      <span>{session.email}</span>
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -768,7 +650,7 @@ export default function AuditClient() {
                       title="Sign Out"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Sign Out</span>
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 </div>
@@ -785,7 +667,7 @@ export default function AuditClient() {
                       <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
                         <div className="flex items-center gap-2">
                           <History className="w-4 h-4 text-primary" />
-                          <h3 className="font-bold text-white text-sm">Saved Scans in Database ({history.length})</h3>
+                          <h3 className="font-bold text-white text-sm">Saved Scans ({history.length})</h3>
                         </div>
                         {history.length > 0 && (
                           <button
@@ -801,7 +683,7 @@ export default function AuditClient() {
 
                       {history.length === 0 ? (
                         <div className="py-6 text-center text-text-muted text-xs">
-                          No audits saved yet. Run an audit below to record structured scan results against your account.
+                          No audits saved yet. Run an audit below to save results.
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -844,7 +726,7 @@ export default function AuditClient() {
                                   type="button"
                                   onClick={() => handleBrowserPrintPdf(item)}
                                   className="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] font-medium transition-colors flex items-center gap-1"
-                                  title="Print Vector PDF"
+                                  title="Print PDF"
                                 >
                                   <Printer className="w-3 h-3" />
                                   <span>PDF</span>
@@ -886,7 +768,7 @@ export default function AuditClient() {
                         <span className="flex items-center gap-2">
                           <Globe className="w-4 h-4 text-primary" /> Target Website URL
                         </span>
-                        <span className="text-xs text-text-muted">Extracts technical tags &amp; Core Web Vitals</span>
+                        <span className="text-xs text-text-muted">Technical audit &amp; Core Web Vitals</span>
                       </label>
 
                       <div className="flex flex-col sm:flex-row gap-3">
@@ -935,7 +817,7 @@ export default function AuditClient() {
                         className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
                       >
                         <Palette className="w-3.5 h-3.5 text-primary" />
-                        <span>White-Label Customization ({agencyName})</span>
+                        <span>Report Branding Settings</span>
                         {showAgencyOptions ? (
                           <ChevronUp className="w-3.5 h-3.5 text-text-muted" />
                         ) : (
@@ -954,17 +836,10 @@ export default function AuditClient() {
                           transition={{ duration: 0.3 }}
                           className="overflow-hidden pt-4 border-t border-white/10"
                         >
-                          <div className="p-5 rounded-xl bg-black/30 border border-white/10 space-y-5 text-sm">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-white flex items-center gap-2">
-                                <Building2 className="w-4 h-4 text-primary" /> Report Branding Parameters
-                              </h4>
-                              <span className="text-xs text-text-muted">Injected into PDF report</span>
-                            </div>
-
+                          <div className="p-5 rounded-xl bg-black/30 border border-white/10 space-y-4 text-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Agency / Author Name</label>
+                                <label className="block text-xs font-medium text-text-muted mb-1.5">Agency / Company Name</label>
                                 <input
                                   type="text"
                                   value={agencyName}
@@ -975,7 +850,7 @@ export default function AuditClient() {
                               </div>
 
                               <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Agency Website</label>
+                                <label className="block text-xs font-medium text-text-muted mb-1.5">Website</label>
                                 <input
                                   type="text"
                                   value={agencyUrl}
@@ -988,7 +863,7 @@ export default function AuditClient() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Report Accent Color</label>
+                                <label className="block text-xs font-medium text-text-muted mb-1.5">Accent Color</label>
                                 <div className="flex items-center gap-3">
                                   <input
                                     type="color"
@@ -1006,7 +881,7 @@ export default function AuditClient() {
                               </div>
 
                               <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1.5">Agency Logo (Optional)</label>
+                                <label className="block text-xs font-medium text-text-muted mb-1.5">Logo (Optional)</label>
                                 <input
                                   type="file"
                                   accept="image/png, image/jpeg"
@@ -1094,15 +969,13 @@ export default function AuditClient() {
                           </div>
                         </div>
 
-                        {/* PDF Export Actions: Client-Side (Zero Server Stress) + Server Fallback */}
+                        {/* PDF Export Actions */}
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
-                          {/* Client-Side Browser PDF (Recommended) */}
                           <button
                             type="button"
                             onClick={() => handleBrowserPrintPdf()}
                             disabled={isGeneratingBrowserPdf}
                             className="py-3 px-5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 bg-primary-gradient text-white shadow-lg shadow-primary/25 hover:brightness-110 cursor-pointer"
-                            title="Renders PDF in browser saving Render server memory"
                           >
                             {isGeneratingBrowserPdf ? (
                               <>
@@ -1112,25 +985,24 @@ export default function AuditClient() {
                             ) : (
                               <>
                                 <Printer className="w-4 h-4" />
-                                <span>Download PDF (Instant)</span>
+                                <span>Download PDF</span>
                               </>
                             )}
                           </button>
 
-                          {/* Server Fallback Button */}
                           <button
                             type="button"
                             onClick={handleDownloadPdfViaBackend}
                             disabled={isDownloadingPdf}
                             className="py-3 px-4 rounded-xl font-medium text-xs bg-white/5 hover:bg-white/10 text-text-muted hover:text-white border border-white/10 transition-all flex items-center justify-center gap-1.5"
-                            title="Legacy Render WeasyPrint Backend"
+                            title="Backend PDF Generation"
                           >
                             {isDownloadingPdf ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             ) : (
                               <Download className="w-3.5 h-3.5" />
                             )}
-                            <span>Backend PDF</span>
+                            <span>Server PDF</span>
                           </button>
                         </div>
                       </div>
