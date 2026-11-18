@@ -15,7 +15,7 @@
 
   <!-- Core pages -->
   <url>
-    <loc>https://weblytic.cc/about</loc>
+    <loc>https://weblytic.cc/about/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -23,25 +23,25 @@
 
   <!-- Pricing detail pages -->
   <url>
-    <loc>https://weblytic.cc/pricing/desktop-software</loc>
+    <loc>https://weblytic.cc/pricing/desktop-software/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/pricing/starter-landing-page</loc>
+    <loc>https://weblytic.cc/pricing/starter-landing-page/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/pricing/managed-infrastructure</loc>
+    <loc>https://weblytic.cc/pricing/managed-infrastructure/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/pricing/ai-assistant</loc>
+    <loc>https://weblytic.cc/pricing/ai-assistant/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -49,7 +49,7 @@
 
   <!-- Lead-gen pages -->
   <url>
-    <loc>https://weblytic.cc/custom-quote</loc>
+    <loc>https://weblytic.cc/custom-quote/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -57,13 +57,13 @@
 
   <!-- Supporting pages -->
   <url>
-    <loc>https://weblytic.cc/careers</loc>
+    <loc>https://weblytic.cc/careers/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/faq</loc>
+    <loc>https://weblytic.cc/faq/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -71,19 +71,19 @@
 
   <!-- Legal pages -->
   <url>
-    <loc>https://weblytic.cc/terms</loc>
+    <loc>https://weblytic.cc/terms/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/privacy</loc>
+    <loc>https://weblytic.cc/privacy/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://weblytic.cc/refund-policy</loc>
+    <loc>https://weblytic.cc/refund-policy/</loc>
     <lastmod>2026-11-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
